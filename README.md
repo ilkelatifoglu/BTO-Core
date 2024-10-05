@@ -1,4 +1,4 @@
-# S2T7 \- agora
+# S2-T7-agora
 
 ## 1\. Project Title
 

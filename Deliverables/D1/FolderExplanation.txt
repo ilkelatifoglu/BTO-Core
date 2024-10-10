@@ -1,0 +1,1 @@
+This file contains the report requested by Bilkent University for the CS319 project. The deliverable includes use case diagrams and explanations, non-functional requirements (NFRs), and the tech stack.

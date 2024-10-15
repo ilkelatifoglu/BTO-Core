@@ -1,22 +1,13 @@
-import React, { useState, useEffect } from "react";
+// src/App.js
+import React from 'react';
+import { BrowserRouter as Router } from 'react-router-dom';
+import AppRoutes from './routes/AppRoutes';  // uses AppRoutes to handle all route definitions
 
 function App() {
-  const [backendData, setBackendData] = useState([{}]);
-
-  useEffect(() => {
-    fetch("/api")
-      .then((response) => response.json())
-      .then((data) => {
-        setBackendData(data);
-      });
-  }, []);
-
   return (
-    <div>
-      {typeof backendData.users === "undefined"
-        ? "Loading..."
-        : backendData.users.map((user) => <p>{user}</p>)}
-    </div>
+    <Router>
+      <AppRoutes />  {/* Use the AppRoutes component here */}
+    </Router>
   );
 }
 

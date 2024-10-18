@@ -30,27 +30,30 @@ exports.register = async (req, res) => {
     res.status(500).json({ message: "server error" });
   }
 };
-
 exports.login = async (req, res) => {
   const { email, password } = req.body;
   try {
     const result = await query("SELECT * FROM users WHERE email = $1", [email]);
     if (result.rows.length === 0) {
-      return res.status(400).json({ message: "invalid credentials" });
+      // Email not found in the database
+      return res.status(400).json({ message: "Invalid email" });
     }
 
     const user = result.rows[0];
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(400).json({ message: "invalid credentials" });
+    
+    // Plaintext password comparison (since the passwords in the database are not hashed)
+    if (password !== user.password) {
+      // Email exists but password is incorrect
+      return res.status(400).json({ message: "Password incorrect" });
     }
 
+    // Both email and password are correct
     const token = generateToken(user.id);
-    res.json({ token });
+    res.json({ message: "Login successful", token });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "server error" });
-  }
+    res.status(500).json({ message: "server error" });
+  }
 };
 
 exports.getUser = async (req, res) => {
@@ -65,6 +68,6 @@ exports.getUser = async (req, res) => {
     res.json(result.rows[0]);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "server error" });
-  }
+    res.status(500).json({ message: "server error" });
+  }
 };

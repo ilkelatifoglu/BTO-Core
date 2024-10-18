@@ -2,28 +2,31 @@
 //. It is where you define all the API calls related to login, signup, and possibly other authentication actions.
 import axios from "axios"; // Use axios for the HTTP request
 
+// Set up Axios interceptor to include token in all requests
+axios.interceptors.request.use(function (config) {
+  const token = localStorage.getItem("token");  // Get the token from localStorage
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;  // Set the token in the Authorization header
+  }
+  return config;
+}, function (error) {
+  return Promise.reject(error);
+});
 const AuthService = {
   login: async (credentials) => {
     try {
-      //const response = await axios.post('http://localhost:5000/api/login', credentials);
-      //return response.data.user;  // Return the user data from the response
-      // Check if the entered email and password match any user in the mock API
-      const response = await axios.get("http://localhost:5000/users");
-      const user = response.data.find(
-        (user) =>
-          user.email === credentials.email &&
-          user.password === credentials.password
-      );
+      const response = await axios.post("http://localhost:3001/auth/login", credentials);
+      const { token, user } = response.data;
+      
+      // Save token to localStorage for future authenticated requests
+      localStorage.setItem("token", token);
 
-      if (user) {
-        return user; // Return user data from the response
-      } else {
-        throw new Error("Invalid email or password");
-      }
+      return user; // Return user data
     } catch (err) {
-      throw new Error("Invalid email or password"); // Throw error if login fails
+      throw new Error("Invalid email or password");
     }
   },
 };
+
 
 export default AuthService;

@@ -1,34 +1,23 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import AuthService from '../../services/AuthService'; 
+import AuthService from '../../services/AuthService';
 import './LoginForm.css';
 
-const LoginForm = () => {
+const LoginForm = ({ onSubmit }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const navigate = useNavigate(); // Initialize useNavigate
 
-  // Function to handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!email || !password) {
       setError('Please fill in all fields');
       return;
     }
-
     try {
-      // Call the AuthService to validate login credentials
-      const isLoggedIn = await AuthService.login({ email, password });
-
-      if (isLoggedIn) {
-        setError('');
-        // If login is successful, redirect the user to another page
-        navigate('/dashboard'); // Redirect to the dashboard or any other route
-      }
+      await onSubmit(email, password); // Pass to the parent component
     } catch (error) {
-      setError(error.message); // Set the error message if login fails
+      setError(error.message);
     }
   };
 
@@ -45,7 +34,6 @@ const LoginForm = () => {
           required
         />
       </div>
-      
       <div className="form-group">
         <label htmlFor="password">Password</label>
         <input
@@ -57,9 +45,7 @@ const LoginForm = () => {
           required
         />
       </div>
-
-      {error && <p className="error-message">{error}</p>} {/* Display error message if login fails */}
-
+      {error && <p className="error-message">{error}</p>}
       <button type="submit" className="btn">Login</button>
     </form>
   );

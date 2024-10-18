@@ -48,7 +48,11 @@ exports.login = async (req, res) => {
     }
 
     const token = generateToken(user.id); // Generate a token for the authenticated user
-    return res.json({ message: "Login successful", token });
+    return res.json({ 
+      message: "Login successful", 
+      token, 
+      user_type: user.user_type  // Add user_type to the response
+    });
   } catch (error) {
     console.error("Error in login function:", error);
     return res.status(500).json({ message: "server error" });

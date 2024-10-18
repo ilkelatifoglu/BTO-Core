@@ -9,12 +9,13 @@ export const useAuth = () => {
 
   const login = async (email, password) => {
     try {
-      const userData = await AuthService.login({ email, password });
-      setUser(userData);  // Assuming setUser in AuthContext sets user in global state
-      setUserData(userData); // Set local user data
+      const { token, user_type } = await AuthService.login({ email, password });
+      setUser({ token, user_type }); // Store token and user_type in global state or context
       setError(null);
+      return { token, user_type };  // Return token and user_type if needed
     } catch (err) {
       setError(err.message);
+      return null;
     }
   };
 

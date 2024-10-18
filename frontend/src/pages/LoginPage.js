@@ -11,26 +11,11 @@ const LoginPage = () => {
   const navigate = useNavigate();
 
   const handleLogin = async (email, password) => {
-    await login(email, password);
-    if (user) {
-      // Check user_type as an integer and navigate to the correct dashboard
-      switch (user.user_type) {
-        case 1:
-          navigate('/dashboard'); // Admin dashboard
-          break;
-        case 2:
-          navigate('/dashboard'); // Student dashboard
-          break;
-        case 3:
-          navigate('/dashboard'); // Teacher dashboard
-          break;
-        case 4:
-          navigate('/dashboard'); // Guest dashboard or default
-          break;
-        default:
-          navigate('/dashboard'); // Default dashboard if user_type is not matched
-          break;
-      }
+    const response = await login(email, password);  
+    if (response) {
+      navigate('/dashboard', { state: { user_type: response.user_type } });
+    } else {
+      console.log('Login failed');
     }
   };
 

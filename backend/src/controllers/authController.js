@@ -30,10 +30,15 @@ exports.register = async (req, res) => {
     res.status(500).json({ message: "server error" });
   }
 };
+
 exports.login = async (req, res) => {
   const { email, password } = req.body;
   try {
     const result = await query("SELECT * FROM users WHERE email = $1", [email]);
+
+    // Log the result for debugging purposes
+    console.log("Query result:", result);
+
     if (result.rows.length === 0) {
       // Email not found in the database
       return res.status(400).json({ message: "Invalid email" });
@@ -41,7 +46,10 @@ exports.login = async (req, res) => {
 
     const user = result.rows[0];
     
-    // Plaintext password comparison (since the passwords in the database are not hashed)
+    // Log the user data for debugging
+    console.log("User from DB:", user);
+
+    // Direct comparison of passwords as plain strings
     if (password !== user.password) {
       // Email exists but password is incorrect
       return res.status(400).json({ message: "Password incorrect" });
@@ -49,12 +57,15 @@ exports.login = async (req, res) => {
 
     // Both email and password are correct
     const token = generateToken(user.id);
-    res.json({ message: "Login successful", token });
+    return res.json({ message: "Login successful", token });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "server error" });
-  }
+    // Log the error for better debugging
+    console.error("Error in login function:", error);
+    return res.status(500).json({ message: "server error" });
+  }
 };
+
+
 
 exports.getUser = async (req, res) => {
   try {

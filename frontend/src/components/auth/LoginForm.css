@@ -14,15 +14,18 @@
     padding: 8px;
     border: 1px solid #ccc;
     border-radius: 4px;
+    background-color: #ececec; 
   }
   
   .error-message {
-    color: red;
+    color: rgb(131, 12, 12);
     margin-top: 10px;
+    font-size: 1.2rem;  
+    font-weight: bold;
   }
   
   .btn {
-    background-color: #007bff;
+    background-color: #14239a;
     color: white;
     padding: 10px 20px;
     border: none;
@@ -32,4 +35,6 @@
   .btn:hover {
     background-color: #0056b3;
   }
+
+ 
   

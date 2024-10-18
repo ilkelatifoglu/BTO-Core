@@ -1,7 +1,10 @@
 import React from 'react';
-import LoginForm from '../components/auth/LoginForm';  // Ensure LoginForm is correctly imported
-import { useAuth } from '../hooks/useAuth';  // Ensure named import
+import './LoginPage.css'; 
+import LoginForm from '../components/auth/LoginForm';
+import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+
+import BilkentLogo from './BilkentÜniversitesi-logo.png'; 
 
 const LoginPage = () => {
   const { login, error, user } = useAuth();
@@ -14,13 +17,32 @@ const LoginPage = () => {
     }
   };
 
+  const handleForgotPassword = () => {
+    navigate('/forgot-password');
+  };
+
   return (
-    <div>
-      <h1>Login</h1>
-      <LoginForm onSubmit={handleLogin} />
-      {error && <p>{error}</p>}
+    <div className="container">
+      {/* Left side: login form */}
+      <div className="left-side">
+      <img src={BilkentLogo} alt="Bilkent University Logo" className="bilkent-logo" />
+
+        <h2>Welcome to BTO Core 🌟</h2> 
+   
+          <LoginForm onSubmit={handleLogin} />
+          {error && <p className="error-message">{error}</p>}
+
+          {/* Forgot Password Button */}
+          <button className="forgot-password" onClick={handleForgotPassword}>
+            Forgot Password?
+          </button>
+       
+      </div>
+
+      {/* Right side: abstract image */}
+      <div className="right-side"></div>
     </div>
   );
 };
 
-export default LoginPage;  // Ensure correct default export
+export default LoginPage;

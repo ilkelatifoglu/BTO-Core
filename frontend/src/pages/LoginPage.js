@@ -4,6 +4,8 @@ import LoginForm from '../components/auth/LoginForm';
 import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 
+import BilkentLogo from './BilkentÜniversitesi-logo.png'; 
+
 const LoginPage = () => {
   const { login, error, user } = useAuth();
   const navigate = useNavigate();
@@ -23,8 +25,10 @@ const LoginPage = () => {
     <div className="container">
       {/* Left side: login form */}
       <div className="left-side">
-        <div className="login-page">
-          <h1>Login</h1>
+      <img src={BilkentLogo} alt="Bilkent University Logo" className="bilkent-logo" />
+
+        <h2>Welcome to BTO Core 🌟</h2> 
+   
           <LoginForm onSubmit={handleLogin} />
           {error && <p className="error-message">{error}</p>}
 
@@ -32,7 +36,7 @@ const LoginPage = () => {
           <button className="forgot-password" onClick={handleForgotPassword}>
             Forgot Password?
           </button>
-        </div>
+       
       </div>
 
       {/* Right side: abstract image */}

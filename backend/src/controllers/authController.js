@@ -4,7 +4,7 @@ const { generateToken } = require("../utils/jwt");
 
 exports.register = async (req, res) => {
   console.log(req.body);
-  const { username, email, password } = req.body;
+  const { username, email, password, user_type } = req.body;
   try {
     const userCheck = await query("SELECT * FROM users WHERE email = $1", [
       email,
@@ -16,13 +16,13 @@ exports.register = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    const result = await query(
-      "INSERT INTO users (email, password) VALUES ($1, $2) RETURNING id",
-      [email, hashedPassword]
+     const result = await query(
+      "INSERT INTO users (email, password, user_type) VALUES ($1, $2, $3) RETURNING id",
+      [email, hashedPassword, user_type] // Include user_type in the parameter array
     );
 
     res.status(201).json({
-      message: "user registered successfully",
+      message: `user registered successfully, usertype of: ${user_type}`,
       userId: result.rows[0].id,
     });
   } catch (error) {

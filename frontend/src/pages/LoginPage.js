@@ -11,9 +11,11 @@ const LoginPage = () => {
   const navigate = useNavigate();
 
   const handleLogin = async (email, password) => {
-    await login(email, password);
-    if (user) {
-      navigate('/dashboard');
+    const response = await login(email, password);  
+    if (response) {
+      navigate('/dashboard', { state: { user_type: response.user_type } });
+    } else {
+      console.log('Login failed');
     }
   };
 

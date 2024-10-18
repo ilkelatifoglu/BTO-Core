@@ -17,8 +17,8 @@ exports.register = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     const result = await query(
-      "INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING id",
-      [username, email, hashedPassword]
+      "INSERT INTO users (email, password) VALUES ($1, $2) RETURNING id",
+      [email, hashedPassword]
     );
 
     res.status(201).json({
@@ -45,7 +45,7 @@ exports.login = async (req, res) => {
     }
 
     const user = result.rows[0];
-    
+
     // Log the user data for debugging
     console.log("User from DB:", user);
 
@@ -65,8 +65,6 @@ exports.login = async (req, res) => {
   }
 };
 
-
-
 exports.getUser = async (req, res) => {
   try {
     const result = await query(
@@ -79,6 +77,6 @@ exports.getUser = async (req, res) => {
     res.json(result.rows[0]);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "server error" });
-  }
+    res.status(500).json({ message: "server error" });
+  }
 };

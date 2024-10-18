@@ -6,19 +6,19 @@ const pool = new Pool({
   database: process.env.DB_NAME,
   password: process.env.DB_PASSWORD,
   port: process.env.DB_PORT,
-  ssl: { rejectUnauthorized: false }
+  ssl: { rejectUnauthorized: false },
 });
 
 // Test the connection on startup
 pool.connect((err, client, release) => {
   if (err) {
-    console.error('Error acquiring client', err.stack);
+    console.error("Error acquiring client", err.stack);
   } else {
-    console.log('Connected to the database');
+    console.log("Connected to the database");
     release();
   }
 });
 
 const query = (text, params) => pool.query(text, params);
 
-module.exports = { query };
+module.exports = { query };

@@ -1,25 +1,35 @@
-//Handles the login form which includes inputs for the email and password and submit button. 
-import React, { useState } from 'react'; //allows to store state variables for form fields(email, password) and errors
-import './LoginForm.css'; 
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import AuthService from '../../services/AuthService'; 
+import './LoginForm.css';
 
-const LoginForm = ({ onSubmit }) => { //will be triggered when the user submits the form
-  // Local state to handle form fields and error messages
+const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const navigate = useNavigate(); // Initialize useNavigate
 
   // Function to handle form submission
-  const handleSubmit = (e) => { //triggered when the user clicks the "Login" button.
-    e.preventDefault(); // Prevent page refresh
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-    // Basic validation
     if (!email || !password) {
       setError('Please fill in all fields');
       return;
     }
 
-    setError(''); // Clear error message
-    onSubmit(email, password); // Call the onSubmit function passed as a prop from the parent
+    try {
+      // Call the AuthService to validate login credentials
+      const isLoggedIn = await AuthService.login({ email, password });
+
+      if (isLoggedIn) {
+        setError('');
+        // If login is successful, redirect the user to another page
+        navigate('/dashboard'); // Redirect to the dashboard or any other route
+      }
+    } catch (error) {
+      setError(error.message); // Set the error message if login fails
+    }
   };
 
   return (
@@ -48,7 +58,7 @@ const LoginForm = ({ onSubmit }) => { //will be triggered when the user submits 
         />
       </div>
 
-      {error && <p className="error-message">{error}</p>} {/* Display error message if validation fails */}
+      {error && <p className="error-message">{error}</p>} {/* Display error message if login fails */}
 
       <button type="submit" className="btn">Login</button>
     </form>

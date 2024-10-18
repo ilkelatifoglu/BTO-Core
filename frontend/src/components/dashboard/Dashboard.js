@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate, Link } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Dashboard.css";
 
 const Dashboard = () => {
   const [showProfile, setShowProfile] = useState(false);
   const [showAddUser, setShowAddUser] = useState(false);
+  const [showDeleteUser, setShowDeleteUser] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const userEmail = location.state?.email;
@@ -43,7 +44,11 @@ const Dashboard = () => {
             <button onClick={() => setShowAddUser(!showAddUser)}>
               Add User
             </button>
+            <button onClick={() => setShowDeleteUser(!showDeleteUser)}>
+              Delete User
+            </button>
             {showAddUser && <AddUserForm userEmail={userEmail} />}
+            {showDeleteUser && <DeleteUserForm />}
           </div>
         )}
       </div>
@@ -197,6 +202,74 @@ const AddUserForm = () => {
           required
         />
         <button type="submit">Add User</button>
+      </form>
+      {error && <p className="error-message">{error}</p>}
+      {success && <p className="success-message">{success}</p>}
+    </div>
+  );
+};
+
+const DeleteUserForm = () => {
+  const [users, setUsers] = useState([]);
+  const [selectedUser, setSelectedUser] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const fetchUsers = async () => {
+    try {
+      const response = await axios.get("http://localhost:3001/auth/users");
+      setUsers(response.data);
+    } catch (err) {
+      setError("Failed to fetch users");
+    }
+  };
+
+  const handleDelete = async (e) => {
+    e.preventDefault();
+    setError("");
+    setSuccess("");
+
+    if (!selectedUser) {
+      setError("Please select a user to delete");
+      return;
+    }
+
+    try {
+      const response = await axios.delete(
+        "http://localhost:3001/auth/delete-user",
+        {
+          data: { email: selectedUser },
+        }
+      );
+      setSuccess(response.data.message);
+      setSelectedUser("");
+      fetchUsers(); // Refresh the user list
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to delete user");
+    }
+  };
+
+  return (
+    <div className="delete-user-section">
+      <h2>Delete User</h2>
+      <form onSubmit={handleDelete}>
+        <select
+          value={selectedUser}
+          onChange={(e) => setSelectedUser(e.target.value)}
+          required
+        >
+          <option value="">Select a user</option>
+          {users.map((user) => (
+            <option key={user.id} value={user.email}>
+              {user.email}
+            </option>
+          ))}
+        </select>
+        <button type="submit">Delete User</button>
       </form>
       {error && <p className="error-message">{error}</p>}
       {success && <p className="success-message">{success}</p>}

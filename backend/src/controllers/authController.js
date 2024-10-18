@@ -128,3 +128,13 @@ exports.getUser = async (req, res) => {
     res.status(500).json({ message: "server error" });
   }
 };
+
+exports.getAllUsers = async (req, res) => {
+  try {
+    const result = await query("SELECT id, email FROM users");
+    res.json(result.rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "server error" });
+  }
+};

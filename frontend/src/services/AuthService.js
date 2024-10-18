@@ -21,14 +21,12 @@ const AuthService = {
       // Save token to localStorage for future authenticated requests
       localStorage.setItem("token", token);
 
-      // Return user data including user_type
-      return user; // Assume user contains user_type
+      return user; // Return user data
     } catch (err) {
       throw new Error("Invalid email or password");
     }
   },
 };
-
 
 
 export default AuthService;

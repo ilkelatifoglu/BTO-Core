@@ -5,7 +5,7 @@ import "./DashboardPage.css";
 import useProtectRoute from "../hooks/useProtectRoute";
 
 const DashboardPage = () => {
-  useProtectRoute("/login", [1, 4]); 
+  useProtectRoute("/login"); 
 
   const [showProfile, setShowProfile] = useState(false);
   const [showAddUser, setShowAddUser] = useState(false);

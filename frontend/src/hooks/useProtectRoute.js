@@ -1,20 +1,19 @@
-import { useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 
 const useProtectRoute = (redirectPath = "/login", requiredRoles = null) => {
-  const location = useLocation();
   const navigate = useNavigate();
+  const { user } = useContext(AuthContext);
 
   useEffect(() => {
-    const { user_type } = location.state || {};
-
-    const isAuthorized = checkAuthorization(user_type, requiredRoles);
+    const isAuthorized = checkAuthorization(user?.user_type, requiredRoles);
 
     // If not authorized, redirect to the specified path
     if (!isAuthorized) {
       navigate(redirectPath);
     }
-  }, [location, navigate, requiredRoles, redirectPath]);
+  }, [user, navigate, requiredRoles, redirectPath]);
 
   // Helper function to check if user_type matches any of the required roles
   const checkAuthorization = (userType, requiredRoles) => {
@@ -30,7 +29,7 @@ const useProtectRoute = (redirectPath = "/login", requiredRoles = null) => {
   };
 
   // Return whether the user is allowed based on the role
-  const isAuthorized = checkAuthorization(location.state?.user_type, requiredRoles);
+  const isAuthorized = checkAuthorization(user?.user_type, requiredRoles);
 
   return isAuthorized;
 };

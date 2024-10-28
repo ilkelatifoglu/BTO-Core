@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import BilkentLogo from "./BilkentÜniversitesi-logo.png";
 
 const LoginPage = () => {
-  const { login, error, user } = useAuth();
+  const { login, error} = useAuth();
   const navigate = useNavigate();
 
   const handleLogin = async (email, password) => {

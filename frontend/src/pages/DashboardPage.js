@@ -1,19 +1,21 @@
-import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import React, { useState, useEffect, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./DashboardPage.css";
 import useProtectRoute from "../hooks/useProtectRoute";
+import {AuthContext} from "../context/AuthContext";
 
 const DashboardPage = () => {
-  useProtectRoute("/login"); 
+  useProtectRoute("/login", [1,2,3,4]);
 
   const [showProfile, setShowProfile] = useState(false);
   const [showAddUser, setShowAddUser] = useState(false);
   const [showDeleteUser, setShowDeleteUser] = useState(false);
-  const location = useLocation();
+  const {user} = useContext(AuthContext);
   const navigate = useNavigate();
-  const userEmail = location.state?.email;
-  const userType = location.state?.user_type || "Admin";
+
+  const userEmail = user?.email;
+  const userType = user?.user_type;
 
   useEffect(() => {
     document.body.classList.add("dashboard-body");
@@ -22,10 +24,12 @@ const DashboardPage = () => {
     };
   }, []);
 
+
   const handleLogout = () => {
-    localStorage.removeItem("authToken");
+    localStorage.clear();
     navigate("/login");
   };
+  
 
   return (
     <div className="dashboard-container">

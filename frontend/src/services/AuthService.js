@@ -15,11 +15,6 @@ const AuthService = {
     try {
       const response = await axios.post("http://localhost:3001/auth/login", credentials);
       const { token, user_type } = response.data; // Extract token and user_type from response
-      
-      // Save token to localStorage for future authenticated requests
-      localStorage.setItem("token", token);
-
-      // Return the user type and token to store in global state/context if needed
       return { token, user_type }; 
     } catch (err) {
       throw new Error("Invalid email or password");

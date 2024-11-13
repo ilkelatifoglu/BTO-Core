@@ -4,56 +4,58 @@
     align-items: center;
     padding: 10px 20px;
     background-color: #f8f9fa;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15); /* Updated for a softer, more diffused shadow */
-    border-radius: 8px; /* Added to match the rounded corners */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    /* Updated for a softer, more diffused shadow */
+    border-radius: 8px;
+    /* Added to match the rounded corners */
     width: 100%;
     position: fixed;
     top: 0;
     left: 0;
     z-index: 1000;
-  }
-  
-  .header__logo {
+}
+
+.header__logo {
     display: flex;
     align-items: center;
     font-size: 1.2em;
     font-weight: bold;
-  }
-  
-  .header__nav {
+}
+
+.header__nav {
     flex-grow: 1;
     text-align: center;
     margin-right: 10px;
-  }
-  
-  .header__nav .nav__list {
+}
+
+.header__nav .nav__list {
     display: inline-flex;
     list-style: none;
     margin: 0;
-    padding: 0;
-  }
-  
-  .nav__item {
-    margin-left: 10px;
-  }
-  
-  .nav__item a {
+    padding: 0px;
+}
+
+.nav__item {
+    margin: 0 10px;
+}
+
+.nav__item a {
     text-decoration: none;
     color: #333;
     transition: color 0.3s;
-  }
-  
-  .nav__item a:hover {
+}
+
+.nav__item a:hover {
     color: #007bff;
-  }
-  
-  .header__login {
+}
+
+.header__login {
     margin-left: auto;
     display: flex;
     align-items: center;
-  }
-  
-  .header__login .login__button {
+}
+
+.header__login .login__button {
     padding: 8px 15px;
     background-color: #6c757d;
     color: #fff;
@@ -61,45 +63,45 @@
     border-radius: 5px;
     cursor: pointer;
     margin-right: 40px;
-  }
-  
-  .login__button:hover {
+}
+
+.login__button:hover {
     background-color: #5a6268;
-  }
-  
-  /* Responsive Styling */
-  @media (max-width: 768px) {
+}
+
+/* Responsive Styling */
+@media (max-width: 768px) {
     .header {
-      flex-direction: column;
-      align-items: flex-start;
-      padding: 10px;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 10px;
     }
-  
+
     .header__nav {
-      width: 100%;
-      margin-top: 10px;
-      text-align: left;
+        width: 100%;
+        margin-top: 10px;
+        text-align: left;
     }
-  
+
     .header__nav .nav__list {
-      flex-direction: column;
-      align-items: flex-start;
-      width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
     }
-  
+
     .nav__item {
-      margin: 10px 0;
+        margin: 50px 0;
     }
-  
+
     .header__login {
-      align-self: flex-start;
-      margin-top: 10px;
-      width: 100%;
-      margin-right: 0;
+        align-self: flex-start;
+        margin-top: 10px;
+        width: 100%;
+        margin-right: 0;
     }
-  
+
     .login__button {
-      width: 100%;
-      padding: 10px;
+        width: 100%;
+        padding: 10px;
     }
-  }
+}

@@ -4,7 +4,8 @@
     align-items: center;
     padding: 10px 20px;
     background-color: #f8f9fa;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15); /* Updated for a softer, more diffused shadow */
+    border-radius: 8px; /* Added to match the rounded corners */
     width: 100%;
     position: fixed;
     top: 0;

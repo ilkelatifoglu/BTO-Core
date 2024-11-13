@@ -7,7 +7,9 @@ import AppRoutes from './routes/AppRoutes';  // uses AppRoutes to handle all rou
 function App() {
   return (
     <Router>
-      <AppRoutes />  {/* Use the AppRoutes component here */}
+      <div className="app-container">
+        <AppRoutes />  {/* Use the AppRoutes component here */}
+      </div>
     </Router>
   );
 }

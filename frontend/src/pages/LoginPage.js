@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import BilkentLogo from "./BilkentÜniversitesi-logo.png";
 
 const LoginPage = () => {
-  const { login, error} = useAuth();
+  const { login, error } = useAuth();
   const navigate = useNavigate();
 
   const handleLogin = async (email, password) => {
@@ -26,24 +26,23 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="container">
-      {/* Left side: login form */}
-      <div className="left-side">
-        <img
-          src={BilkentLogo}
-          alt="Bilkent University Logo"
-          className="bilkent-logo"
-        />
-        <h2>Welcome to BTO Core 🌟</h2>
-        <LoginForm onSubmit={handleLogin} />
-        {error && <p className="error-message">{error}</p>}
-        <button className="forgot-password" onClick={handleForgotPassword}>
-          Forgot Password?
-        </button>
+    <div className="outer-container">
+      <div className="container">
+        <div className="left-side">
+          <img
+            src={BilkentLogo}
+            alt="Bilkent University Logo"
+            className="bilkent-logo"
+          />
+          <h2>Welcome to BTO Core 🌟</h2>
+          <LoginForm onSubmit={handleLogin} />
+          {error && <p className="error-message">{error}</p>}
+          <button className="forgot-password" onClick={handleForgotPassword}>
+            Forgot Password?
+          </button>
+        </div>
+        <div className="right-side"></div>
       </div>
-
-      {/* Right side: abstract image */}
-      <div className="right-side"></div>
     </div>
   );
 };

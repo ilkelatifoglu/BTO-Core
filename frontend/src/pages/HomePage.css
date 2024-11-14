@@ -1,0 +1,13 @@
+html {
+    scroll-behavior: smooth; /* Enable smooth scrolling */
+}
+
+.section {
+    padding: 50px 20px; /* Adds padding around each section for consistent spacing */
+    max-width: 1200px;
+    margin: 0 auto; /* Centers content */
+}
+
+.maincontent{
+    margin-top: 50px;
+}

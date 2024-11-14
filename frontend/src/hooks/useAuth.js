@@ -9,14 +9,16 @@ export const useAuth = () => {
   const login = async (email, password) => {
     try {
       const { token, user_type } = await AuthService.login({ email, password });
-      setUser({ token, user_type, email }); // Store token and user_type in global state/context
-      setError(null); // Clear any previous errors
-      return { token, user_type, email };  // Return token and user_type if needed
+      console.log(token, user_type, email);
+      setUser({ token, user_type, email });
+      setError(null); 
+      return { token, user_type, email };  
     } catch (err) {
-      setError(err.message); // Set error if login fails
+      setError(err.message); 
       return null;
     }
   };
+
 
   return {
     login,

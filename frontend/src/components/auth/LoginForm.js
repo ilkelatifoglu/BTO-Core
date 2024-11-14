@@ -1,39 +1,20 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import AuthService from '../../services/AuthService';
 import './LoginForm.css';
+import { useState } from 'react';
 
-const LoginForm = () => {
+const LoginForm = ({ onSubmit }) => {
+  // State for email and password
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const navigate = useNavigate(); // Initialize useNavigate
 
   // Function to handle form submission
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-
-    if (!email || !password) {
-      setError('Please fill in all fields');
-      return;
-    }
-
-    try {
-      // Call the AuthService to validate login credentials
-      const isLoggedIn = await AuthService.login({ email, password });
-
-      if (isLoggedIn) {
-        setError('');
-        // If login is successful, redirect the user to another page
-        navigate('/dashboard'); // Redirect to the dashboard or any other route
-      }
-    } catch (error) {
-      setError(error.message); // Set the error message if login fails
-    }
+    onSubmit(email, password); // Invoke the onSubmit prop with email and password
   };
 
   return (
     <form onSubmit={handleSubmit}>
+      {/* Form fields */}
       <div className="form-group">
         <label htmlFor="email">Email</label>
         <input
@@ -43,6 +24,7 @@ const LoginForm = () => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
+          autoComplete="email"
         />
       </div>
 
@@ -54,11 +36,10 @@ const LoginForm = () => {
           className="form-control"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          autoComplete="current-password"
           required
         />
       </div>
-
-      {error && <p className="error-message">{error}</p>} {/* Display error message if login fails */}
 
       <button type="submit" className="btn">Login</button>
     </form>

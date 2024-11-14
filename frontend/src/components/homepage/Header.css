@@ -62,7 +62,7 @@
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    margin-right: 40px;
+    margin-right: 0px;
 }
 
 .login__button:hover {
@@ -97,7 +97,6 @@
         align-self: flex-start;
         margin-top: 10px;
         width: 100%;
-        margin-right: 0;
     }
 
     .login__button {

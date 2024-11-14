@@ -26,21 +26,23 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="container">
-      <div className="left-side">
-        <img
-          src={BilkentLogo}
-          alt="Bilkent University Logo"
-          className="bilkent-logo"
-        />
-        <h2>Welcome to BTO Core 🌟</h2>
-        <LoginForm onSubmit={handleLogin} />
-        {error && <p className="error-message">{error}</p>}
-        <button className="forgot-password" onClick={handleForgotPassword}>
-          Forgot Password?
-        </button>
+    <div className="outer-container">
+      <div className="container">
+        <div className="left-side">
+          <img
+            src={BilkentLogo}
+            alt="Bilkent University Logo"
+            className="bilkent-logo"
+          />
+          <h2>Welcome to BTO Core 🌟</h2>
+          <LoginForm onSubmit={handleLogin} />
+          {error && <p className="error-message">{error}</p>}
+          <button className="forgot-password" onClick={handleForgotPassword}>
+            Forgot Password?
+          </button>
+        </div>
+        <div className="right-side"></div>
       </div>
-      <div className="right-side"></div>
     </div>
   );
 };

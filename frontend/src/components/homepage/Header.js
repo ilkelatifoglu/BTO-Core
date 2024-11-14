@@ -18,6 +18,9 @@ const Header = () => {
 
   return (
     <header className="header">
+      <div style={{ marginRight: '10px' }}>
+        <i className="pi pi-building-columns"></i>
+      </div>
       <div className="header__logo">
         <span>Bilkent Information Office</span>
       </div>

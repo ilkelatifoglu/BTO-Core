@@ -38,11 +38,8 @@ const LoginPage = () => {
             className="bilkent-logo"
           />
           <h2>Welcome to BTO Core 🌟</h2>
-          <LoginForm onSubmit={handleLogin} />
+          <LoginForm onSubmit={handleLogin} onForgotPassword={handleForgotPassword} />
           {error && <p className="error-message">{error}</p>}
-          <button className="forgot-password" onClick={handleForgotPassword}>
-            Forgot Password?
-          </button>
         </div>
         <div className="right-side"></div>
       </div>

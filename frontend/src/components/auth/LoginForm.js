@@ -3,21 +3,32 @@ import { useNavigate } from 'react-router-dom';
 import AuthService from '../../services/AuthService';
 import './LoginForm.css';
 
-const LoginForm = ({ onSubmit }) => {
+const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const navigate = useNavigate(); // Initialize useNavigate
 
+  // Function to handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!email || !password) {
       setError('Please fill in all fields');
       return;
     }
+
     try {
-      await onSubmit(email, password); // Pass to the parent component
+      // Call the AuthService to validate login credentials
+      const isLoggedIn = await AuthService.login({ email, password });
+
+      if (isLoggedIn) {
+        setError('');
+        // If login is successful, redirect the user to another page
+        navigate('/dashboard'); // Redirect to the dashboard or any other route
+      }
     } catch (error) {
-      setError(error.message);
+      setError(error.message); // Set the error message if login fails
     }
   };
 
@@ -34,6 +45,7 @@ const LoginForm = ({ onSubmit }) => {
           required
         />
       </div>
+
       <div className="form-group">
         <label htmlFor="password">Password</label>
         <input
@@ -45,7 +57,9 @@ const LoginForm = ({ onSubmit }) => {
           required
         />
       </div>
-      {error && <p className="error-message">{error}</p>}
+
+      {error && <p className="error-message">{error}</p>} {/* Display error message if login fails */}
+
       <button type="submit" className="btn">Login</button>
     </form>
   );

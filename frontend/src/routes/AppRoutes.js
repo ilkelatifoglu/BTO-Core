@@ -5,6 +5,7 @@ import HomePage from "../pages/HomePage";
 import NotFound from "../pages/NotFound";
 import ForgotPassword from "../pages/ForgotPassword";
 import DashboardPage from "../pages/DashboardPage";
+import PuantajPage from "../pages/PuantajPage";
 
 const AppRoutes = () => {
   return (
@@ -15,6 +16,7 @@ const AppRoutes = () => {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="*" element={<NotFound />} />
       <Route path="/" element={<Navigate replace to="/home" />} />
+      <Route path="/puantaj-page" element={<PuantajPage />} />
     </Routes>
   );
 };

@@ -62,13 +62,13 @@ export default function EmailVerification() {
         localStorage.getItem("tempCredentials") || "{}"
       );
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/auth/login`,
+        `http://localhost:3000/auth/login`,
         credentials
       );
 
       if (response.data.tempToken) {
         localStorage.setItem("tempToken", response.data.tempToken);
-        setTimeLeft(300); // Reset timer
+        setTimeLeft(300);
       }
     } catch (err) {
       setError("Failed to resend code. Please try logging in again.");

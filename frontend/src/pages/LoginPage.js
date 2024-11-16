@@ -16,7 +16,10 @@ const LoginPage = () => {
     try {
       const response = await login(email, password);
       if (response) {
-        navigate("/dashboard");
+        localStorage.setItem("tempToken", response.token);
+        localStorage.setItem("userType", response.user_type);
+
+        navigate("/verify-otp");
       } else {
         setError("Login failed");
       }
@@ -45,12 +48,13 @@ const LoginPage = () => {
         />
         {error && <p className="error-message">{error}</p>}
       </div>
-      <div
-        className="right-side"
-        style={{
-          "--background-image": `url(${LibraryPhoto})`,
-        }}
-      />
+      <div className="right-side">
+        <img
+          src={LibraryPhoto}
+          alt="Bilkent Library"
+          className="library-photo"
+        />
+      </div>
     </div>
   );
 };

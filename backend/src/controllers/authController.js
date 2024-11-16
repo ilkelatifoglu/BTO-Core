@@ -90,9 +90,9 @@ exports.verifyOtp = async (req, res) => {
   try {
     const decoded = jwt.verify(tempToken, process.env.JWT_SECRET);
 
-    if (!decoded.isTemp) {
-      return res.status(401).json({ message: "Invalid token 1" });
-    }
+    // if (!decoded.isTemp) {
+    //   return res.status(401).json({ message: "Invalid token 1" });
+    // }
 
     const result = await query(
       "SELECT * FROM users WHERE id = $1 AND two_factor_secret = $2 AND reset_token_expires > NOW()",

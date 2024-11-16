@@ -58,12 +58,12 @@ export default function EmailVerification() {
     setError("");
 
     try {
-      const credentials = JSON.parse(
-        localStorage.getItem("tempCredentials") || "{}"
-      );
+      const email = localStorage.getItem("email");
+      const password = localStorage.getItem("password");
       const response = await axios.post(
         `http://localhost:3000/auth/login`,
-        credentials
+        email,
+        password
       );
 
       if (response.data.tempToken) {
@@ -124,7 +124,7 @@ export default function EmailVerification() {
             <button
               type="button"
               onClick={handleResend}
-              disabled={isLoading || timeLeft > 0}
+              disabled={isLoading || timeLeft > 300}
               className="text-indigo-600 hover:text-indigo-500 text-sm font-medium disabled:opacity-50"
             >
               Resend Code

@@ -7,7 +7,7 @@ const router = express.Router();
 // Define routes for work entries
 router.get("/", getAllWorkEntries);      // GET /work - Get all work entries
 router.get("/non-approved", getAllNonApprovedWorkEntries);
-router.put('/approve:id', updateWorkEntry); // Update a specific work entry by ID
+router.put('/approve/:id', updateWorkEntry); // Update a specific work entry by ID
 router.get("/:id", getWorkEntryById);    // GET /work/:id - Get a single work entry by ID
 
 module.exports = router;

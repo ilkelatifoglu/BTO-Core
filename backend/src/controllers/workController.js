@@ -25,7 +25,6 @@ const updateWorkEntry = async (req, res) => {
     const { id } = req.params;
     const { is_approved } = req.body;
 
-    // Ensure the `is_approved` field is provided
     if (is_approved === undefined) {
         return res.status(400).json({ error: 'Missing required field: is_approved' });
     }
@@ -40,7 +39,7 @@ const updateWorkEntry = async (req, res) => {
             return res.status(404).json({ error: 'Work entry not found' });
         }
 
-        res.status(200).json(result.rows[0]); // Return the updated work entry
+        res.status(200).json(result.rows[0]);
     } catch (error) {
         console.error(`Error updating work entry with id ${id}:`, error);
         res.status(500).json({ error: 'Internal server error' });

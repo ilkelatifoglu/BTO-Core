@@ -10,7 +10,7 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(null);
-  
+
   const handleLogin = async (email, password) => {
     try {
       const response = await login(email, password);
@@ -37,11 +37,12 @@ const LoginPage = () => {
           className="bilkent-logo"
         />
         <h2>Welcome to BTO Core 🌟</h2>
-        <LoginForm onSubmit={handleLogin} isLoading={isLoading} />
+        <LoginForm
+          onSubmit={handleLogin}
+          isLoading={isLoading}
+          onForgotPassword={handleForgotPassword}
+        />
         {error && <p className="error-message">{error}</p>}
-        <button className="forgot-password" onClick={handleForgotPassword}>
-          Forgot Password?
-        </button>
       </div>
     </div>
   );

@@ -1,0 +1,89 @@
+/* CoreValues.css */
+
+/* Outer Container */
+.outer-container {
+    width: 100%;
+    height: auto;
+    padding: 40px 20px;
+    background-color: #ffffff; /* Card-style background */
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Optional shadow for card effect */
+    display: flex;
+    flex-wrap: wrap; /* Ensure responsiveness */
+    justify-content: space-between; /* Space between items */
+}
+
+/* Individual Value Boxes */
+.value-box {
+    flex: 1 1 100%; /* Flex grow, shrink, and base width 22% for 4 in a row */
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    text-align: left;
+    padding: 10px;
+}
+
+/* Remove border for the last box */
+.value-box:last-child {
+    border-right: none;
+}
+
+/* Upper Section */
+.upper-section {
+    display: flex; /* Align items in a row */
+    align-items: center; /* Ensure vertical alignment between number and title */
+    gap: 10px; /* Space between number and title */
+    margin-bottom: 10px; /* Space below the upper section */
+    flex-wrap: nowrap; /* Prevent wrapping */
+}
+
+/* Number Circle */
+.value-number {
+    flex-shrink: 0; /* Prevent shrinking of the circle */
+    width: 35px; /* Fixed width for perfect circle */
+    height: 35px; /* Fixed height for perfect circle */
+    background-color: #000000; /* Circle background */
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%; /* Ensures a perfect circle */
+    font-size: 1rem; /* Ensures text fits inside the circle */
+    font-weight: bold;
+    line-height: 1; /* Prevent text from stretching the circle */
+}
+
+/* Title */
+.value-title {
+    font-size: 1.3rem; /* Title adjusts independently */
+    font-weight: bold;
+    flex: 1; /* Allow title to use remaining space */
+    white-space: nowrap; /* Prevent title from wrapping to the next line */
+    overflow: hidden; /* Prevent overflow beyond the container */
+    text-overflow: ellipsis; /* Add ellipsis for long titles */
+}
+
+/* Lower Section */
+.lower-section {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+/* Description */
+.value-description {
+    font-size: clamp(0.85rem, 1.25vw, 0.95rem); /* Reduced font size for responsiveness */
+    line-height: 1.5;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .value-box {
+        flex: 1 1 100%; /* Full width on small screens */
+        border-right: none; /* Remove border for single-column layout */
+        border-bottom: 1px solid #c1c2c2;
+    }
+
+    .value-box:last-child {
+        border-bottom: none;
+    }
+}

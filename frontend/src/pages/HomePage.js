@@ -5,6 +5,7 @@ import CoreValues from '../components/homepage/CoreValues';
 import TourForm from '../components/homepage/TourForm';
 import Contact from '../components/homepage/Contact';
 import Home from '../components/homepage/Home';
+import HorizontalDivider from '../components/homepage/HorizontalDivider80';
 
 const HomePage = () => {
     return (
@@ -14,12 +15,15 @@ const HomePage = () => {
                 <section className='section' id="home">
                     <Home />
                 </section>
+                <HorizontalDivider />
                 <section className='section' id="core-values">
                     <CoreValues />
                 </section>
+                <HorizontalDivider />
                 <section className='section' id="tour-form">
                     <TourForm />
                 </section>
+                <HorizontalDivider />
                 <section className='section' id="contact">
                     <Contact />
                 </section>

@@ -4,7 +4,7 @@ html {
 
 .section {
     padding: 50px 20px; /* Adds padding around each section for consistent spacing */
-    max-width: 1200px;
+    max-width: 85vw;
     margin: 0 auto; /* Centers content */
 }
 

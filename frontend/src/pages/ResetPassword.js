@@ -38,17 +38,6 @@ const ResetPassword = () => {
       return;
     }
 
-    // TODO: password validation
-    // const passwordRegex =
-    //   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-    // if (!passwordRegex.test(formData.newPassword)) {
-    //   setMessage({
-    //     text: "Password must meet all requirements",
-    //     type: "error",
-    //   });
-    //   return;
-    // }
-
     try {
       const response = await PasswordService.resetPassword(
         formData.newPassword,
@@ -61,59 +50,61 @@ const ResetPassword = () => {
       }, 2000);
     } catch (error) {
       setMessage({
-        text: error.response?.data,
+        text: error.response?.data || "An error occurred",
         type: "error",
       });
     }
   };
 
   return (
-    <div className="reset-password-form">
-      <h2>Reset Password</h2>
-      <form onSubmit={handleSubmit}>
-        <div className="password-requirements">
-          Password must contain:
-          <ul>
-            <li>At least 8 characters</li>
-            <li>One uppercase letter</li>
-            <li>One lowercase letter</li>
-            <li>One number</li>
-            <li>One special character (@$!%*?&)</li>
-          </ul>
-        </div>
+    <div className="reset-password-container">
+      <div className="reset-password-form">
+        <h2>Reset Password</h2>
+        <form onSubmit={handleSubmit}>
+          <div className="password-requirements">
+            Password must contain:
+            <ul>
+              <li>At least 8 characters</li>
+              <li>One uppercase letter</li>
+              <li>One lowercase letter</li>
+              <li>One number</li>
+              <li>One special character (@$!%*?&)</li>
+            </ul>
+          </div>
 
-        <input
-          type="password"
-          name="newPassword"
-          placeholder="New Password"
-          value={formData.newPassword}
-          onChange={handleInputChange}
-          required
-        />
+          <input
+            type="password"
+            name="newPassword"
+            placeholder="New Password"
+            value={formData.newPassword}
+            onChange={handleInputChange}
+            required
+          />
 
-        <input
-          type="password"
-          name="confirmPassword"
-          placeholder="Confirm New Password"
-          value={formData.confirmPassword}
-          onChange={handleInputChange}
-          required
-        />
+          <input
+            type="password"
+            name="confirmPassword"
+            placeholder="Confirm New Password"
+            value={formData.confirmPassword}
+            onChange={handleInputChange}
+            required
+          />
 
-        {!passwordsMatch && (
-          <div className="password-match-error">Passwords do not match</div>
-        )}
+          {!passwordsMatch && (
+            <div className="password-match-error">Passwords do not match</div>
+          )}
 
-        {message.text && (
-          <div className={`${message.type}-message`}>{message.text}</div>
-        )}
+          {message.text && (
+            <div className={`${message.type}-message`}>{message.text}</div>
+          )}
 
-        <button type="submit">Reset Password</button>
-      </form>
+          <button type="submit">Reset Password</button>
+        </form>
 
-      <Link to="/login" className="back-to-login">
-        Back to Login
-      </Link>
+        <Link to="/login" className="back-to-login">
+          Back to Login
+        </Link>
+      </div>
     </div>
   );
 };

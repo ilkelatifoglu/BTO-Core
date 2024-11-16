@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import "./OtpVerification.css";
 
 export default function EmailVerification() {
   const [otp, setOtp] = useState("");
@@ -8,7 +9,6 @@ export default function EmailVerification() {
   const [isLoading, setIsLoading] = useState(false);
   const [timeLeft, setTimeLeft] = useState(300);
   const navigate = useNavigate();
-  const location = useLocation();
 
   useEffect(() => {
     if (timeLeft <= 0) return;
@@ -47,7 +47,7 @@ export default function EmailVerification() {
 
       navigate("/dashboard");
     } catch (err) {
-      setError(err.response?.data?.message);
+      setError(err.response?.data?.message || "Verification failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -58,17 +58,15 @@ export default function EmailVerification() {
     setError("");
 
     try {
-      const credentials = JSON.parse(
-        localStorage.getItem("tempCredentials") || "{}"
-      );
+      const credentials = JSON.parse(localStorage.getItem("tempCredentials") || "{}");
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/auth/login`,
+        `http://localhost:3000/auth/login`,
         credentials
       );
 
       if (response.data.tempToken) {
         localStorage.setItem("tempToken", response.data.tempToken);
-        setTimeLeft(300); // Reset timer
+        setTimeLeft(300);
       }
     } catch (err) {
       setError("Failed to resend code. Please try logging in again.");
@@ -78,45 +76,35 @@ export default function EmailVerification() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Verify Your Email
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Enter the 6-digit code sent to your email
-          </p>
-        </div>
+    <div className="otp-verification-container">
+      <div className="otp-verification-form">
+        <h2>Verify Your Email</h2>
+        <p>Enter the 6-digit code sent to your email</p>
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="rounded-md shadow-sm">
-            <input
-              type="text"
-              required
-              className="appearance-none rounded relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              placeholder="Enter 6-digit code"
-              value={otp}
-              onChange={(e) =>
-                setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))
-              }
-              maxLength={6}
-            />
-          </div>
+        {error && <div className="error-message">{error}</div>}
 
-          {error && (
-            <div className="text-red-500 text-sm text-center">{error}</div>
-          )}
+        <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            required
+            placeholder="Enter 6-digit code"
+            value={otp}
+            onChange={(e) =>
+              setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))
+            }
+            maxLength={6}
+            className="otp-input"
+          />
 
-          <div className="text-sm text-center">
+          <div className="time-remaining">
             Time remaining: {formatTime(timeLeft)}
           </div>
 
-          <div className="flex flex-col space-y-4">
+          <div className="buttons-container">
             <button
               type="submit"
               disabled={isLoading || otp.length !== 6}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+              className="verify-button"
             >
               {isLoading ? "Verifying..." : "Verify Code"}
             </button>
@@ -125,12 +113,16 @@ export default function EmailVerification() {
               type="button"
               onClick={handleResend}
               disabled={isLoading || timeLeft > 0}
-              className="text-indigo-600 hover:text-indigo-500 text-sm font-medium disabled:opacity-50"
+              className="resend-button"
             >
               Resend Code
             </button>
           </div>
         </form>
+
+        <a href="/login" className="back-to-login">
+          Back to Login
+        </a>
       </div>
     </div>
   );

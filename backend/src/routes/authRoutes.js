@@ -19,7 +19,7 @@ router.put("/update-password", updatePassword);
 router.get("/user", authenticateToken, getUser);
 router.get("/users", getAllUsers);
 
-router.post("/verify-otp", authController.verifyOTP);
+router.post("/verify-otp", authController.verifyOtp);
 
 router.post("/password/reset-request", authController.requestPasswordReset);
 router.post("/password/reset", authController.resetPassword);

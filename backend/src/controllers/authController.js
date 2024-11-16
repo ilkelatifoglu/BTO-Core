@@ -8,7 +8,6 @@ const jwt = require("jsonwebtoken");
 const { generateOtp, validateOtp, isOtpExpired } = require("../utils/otp");
 
 exports.register = async (req, res) => {
-  console.log(req.body);
   const { username, email, password, user_type } = req.body;
   try {
     const userCheck = await query("SELECT * FROM users WHERE email = $1", [
@@ -54,25 +53,25 @@ exports.login = async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    // const otp = generateOtp();
-    // await query(
-    //   "UPDATE users SET two_factor_secret = $1, reset_token_expires = NOW() + interval '5 minutes' WHERE id = $2",
-    //   [otp, user.id]
-    // );
+    const otp = generateOtp();
+    await query(
+      "UPDATE users SET two_factor_secret = $1, reset_token_expires = NOW() + interval '5 minutes' WHERE id = $2",
+      [otp, user.id]
+    );
 
-    // await sendEmail({
-    //   to: email,
-    //   subject: "Your Login Verification Code",
-    //   html: `
-    //     <h1>Login Verification Code</h1>
-    //     <p>Your verification code is:</p>
-    //     <h2 style="font-size: 24px; letter-spacing: 2px; background: #f4f4f4; padding: 10px; text-align: center;">${otp}</h2>
-    //     <p>This code will expire in 5 minutes.</p>
-    //     <p>If you didn't request this code, please ignore this email.</p>
-    //   `,
-    // });
+    await sendEmail({
+      to: email,
+      subject: "Your Login Verification Code",
+      html: `
+        <h1>Login Verification Code</h1>
+        <p>Your verification code is:</p>
+        <h2 style="font-size: 24px; letter-spacing: 2px; background: #f4f4f4; padding: 10px; text-align: center;">${otp}</h2>
+        <p>This code will expire in 5 minutes.</p>
+        <p>If you didn't request this code, please ignore this email.</p>
+      `,
+    });
 
-    const token = generateToken(user.id);
+    const token = generateToken(user.id, true);
     return res.json({
       message: "Login successful",
       token,
@@ -81,6 +80,49 @@ exports.login = async (req, res) => {
   } catch (error) {
     console.error("Error in login function:", error);
     return res.status(500).json({ message: "server error" });
+  }
+};
+
+exports.verifyOtp = async (req, res) => {
+  const { otp } = req.body;
+  const tempToken = req.headers.authorization?.split(" ")[1];
+
+  try {
+    const decoded = jwt.verify(tempToken, process.env.JWT_SECRET);
+
+    if (!decoded.isTemp) {
+      return res.status(401).json({ message: "Invalid token 1" });
+    }
+
+    const result = await query(
+      "SELECT * FROM users WHERE id = $1 AND two_factor_secret = $2 AND reset_token_expires > NOW()",
+      [decoded.userId, otp]
+    );
+
+    if (result.rows.length === 0) {
+      return res
+        .status(401)
+        .json({ message: "Invalid or expired verification code" });
+    }
+
+    await query(
+      "UPDATE users SET two_factor_secret = NULL, reset_token_expires = NULL WHERE id = $1",
+      [decoded.userId]
+    );
+
+    const accessToken = jwt.sign(
+      { userId: decoded.userId },
+      process.env.JWT_SECRET,
+      { expiresIn: "24h" }
+    );
+
+    res.json({
+      message: "Verification successful",
+      token: accessToken,
+    });
+  } catch (err) {
+    console.error("OTP verification error:", err);
+    res.status(500).json(err);
   }
 };
 
@@ -229,52 +271,5 @@ exports.resetPassword = async (req, res) => {
     res.json({ message: "Password reset successful" });
   } catch (err) {
     res.status(500).json({ message: "Error resetting password" });
-  }
-};
-
-exports.verifyOTP = async (req, res) => {
-  const { otp } = req.body;
-  const tempToken = req.headers.authorization?.split(" ")[1];
-
-  try {
-    // Decode temp token to get userId
-    const decoded = jwt.verify(tempToken, process.env.JWT_SECRET);
-    console.log(decoded);
-    // if (!decoded.temp) {
-    //   return res.status(401).json({ message: "Invalid token" });
-    // }
-
-    // Check OTP
-    const result = await query(
-      "SELECT * FROM users WHERE id = $1 AND two_factor_secret = $2 AND reset_token_expires > NOW()",
-      [decoded.userId, otp]
-    );
-
-    if (result.rows.length === 0) {
-      return res
-        .status(401)
-        .json({ message: "Invalid or expired verification code" });
-    }
-
-    // Clear the OTP
-    await query(
-      "UPDATE users SET two_factor_secret = NULL, reset_token_expires = NULL WHERE id = $1",
-      [decoded.userId]
-    );
-
-    // Generate real access token
-    const accessToken = jwt.sign(
-      { userId: decoded.userId },
-      process.env.JWT_SECRET,
-      { expiresIn: "24h" }
-    );
-
-    res.json({
-      message: "Verification successful",
-      token: accessToken,
-    });
-  } catch (err) {
-    console.error("OTP verification error:", err);
-    res.status(500).json(err);
   }
 };

@@ -10,6 +10,7 @@ import ResetPassword from "../pages/ResetPassword";
 import EmailVerification from "../pages/OtpVerification";
 import GuideInfoPage from "../pages/GuideInfoPage";
 import PuantajPage from "../pages/PuantajPage";
+import TourAssignmentPage from "../pages/TourAssignment";
 
 const AppRoutes = () => {
   return (
@@ -25,6 +26,7 @@ const AppRoutes = () => {
       <Route path="/verify-otp" element={<EmailVerification />} />
       <Route path="/guideInfo" element={<GuideInfoPage />} />
       <Route path="/puantaj-page" element={<PuantajPage />} />
+      <Route path="/assign-tour" element={<TourAssignmentPage />} />
     </Routes>
   );
 };

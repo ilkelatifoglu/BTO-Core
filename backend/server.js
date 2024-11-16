@@ -5,12 +5,13 @@ const authRoutes = require("./src/routes/authRoutes");
 
 const app = express();
 
-// Configure CORS with allowed headers
-app.use(cors({
-  origin: 'http://localhost:3000', // Replace this with your frontend's origin
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
 app.use(express.json());
 

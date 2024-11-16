@@ -2,19 +2,18 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: 'Arial', sans-serif;
+  font-family: "Arial", sans-serif;
   height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-
 /* Container to split the screen */
 .container {
   display: flex;
-  height: 85vh; 
-  width: 85vw;  
+  height: 85vh;
+  width: 85vw;
   border-radius: 16px; /* Rounded corners for the entire container */
   overflow: hidden; /* Clip content to fit within rounded corners */
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
@@ -22,21 +21,20 @@ body {
 
 /* Left side (Login form) */
 .left-side {
-  width: 40%; 
+  width: 40%;
   padding: 60px;
   background-color: white;
   backdrop-filter: blur(10px);
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center; 
+  align-items: center;
 }
 /* Style for the logo */
 .bilkent-logo {
   width: 200px; /* Adjust size as needed */
   height: auto;
   margin-bottom: 20px; /* Space between the logo and the heading */
-  
 }
 
 /* Login */
@@ -47,13 +45,12 @@ body {
 
 /* New title (Welcome to BTO Core) */ /*it does not work*/
 h2 {
-  font-size: 1.8rem;  /* Smaller than the Login text */
+  font-size: 1.8rem; /* Smaller than the Login text */
   margin-bottom: 15px;
   color: #000000;
   font-weight: bold;
   text-align: center;
 }
-
 
 /* Input Label Styling (Email and Password labels) */
 label {
@@ -115,8 +112,8 @@ button:hover {
 
 /* Right side with image */
 .right-side {
-  width: 60%; 
-  background-image: url('bilkent-university.jpg'); 
+  width: 60%;
+  background-image: url("../assets/bilkent-university.jpg");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

@@ -3,15 +3,15 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./DashboardPage.css";
 import useProtectRoute from "../hooks/useProtectRoute";
-import {AuthContext} from "../context/AuthContext";
+import { AuthContext } from "../context/AuthContext";
 
 const DashboardPage = () => {
-  useProtectRoute("/login", [1,2,3,4]);
+  useProtectRoute("/login", [1, 2, 3, 4]);
 
   const [showProfile, setShowProfile] = useState(false);
   const [showAddUser, setShowAddUser] = useState(false);
   const [showDeleteUser, setShowDeleteUser] = useState(false);
-  const {user} = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const userEmail = user?.email;
@@ -24,12 +24,10 @@ const DashboardPage = () => {
     };
   }, []);
 
-
   const handleLogout = () => {
     localStorage.clear();
     navigate("/login");
   };
-  
 
   return (
     <div className="dashboard-container">

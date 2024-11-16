@@ -1,23 +1,27 @@
-import React from "react";
+import React, { useState } from "react";
 import "./LoginPage.css";
 import LoginForm from "../components/auth/LoginForm";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 
-import BilkentLogo from "./BilkentÜniversitesi-logo.png";
+import BilkentLogo from "../assets/BilkentÜniversitesi-logo.png";
 
 const LoginPage = () => {
-  const { login, error} = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(null);
 
   const handleLogin = async (email, password) => {
-    const response = await login(email, password);
-    if (response) {
-      navigate("/dashboard", {
-        state: { user_type: response.user_type, email: email },
-      });
-    } else {
-      console.log("Login failed");
+    try {
+      const response = await login(email, password);
+      if (response) {
+        navigate("/dashboard");
+      } else {
+        setError("Login failed");
+      }
+    } catch (err) {
+      setError(err.message || "An error occurred during login.");
     }
   };
 
@@ -34,7 +38,7 @@ const LoginPage = () => {
           className="bilkent-logo"
         />
         <h2>Welcome to BTO Core 🌟</h2>
-        <LoginForm onSubmit={handleLogin} />
+        <LoginForm onSubmit={handleLogin} isLoading={isLoading} />
         {error && <p className="error-message">{error}</p>}
         <button className="forgot-password" onClick={handleForgotPassword}>
           Forgot Password?

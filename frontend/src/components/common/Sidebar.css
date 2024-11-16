@@ -1,0 +1,182 @@
+.sidebar {
+    width: 250px; /* Keep consistent width */
+    height: 100vh; /* Full height */
+    display: flex;
+    flex-direction: column;
+    background-color: #ffffff;
+    border-right: 1px solid #ddd; /* Subtle divider */
+    padding-top: 10px; /* Add some padding for spacing */
+    position: fixed; /* Sidebar remains fixed */
+}
+
+.sidebar.collapsed {
+    width: 80px; /* Collapsed width */
+}
+.sidebar__toggle {
+    background: none;
+    border: none;
+    color: #ecf0f1;
+    cursor: pointer;
+    padding: 10px;
+    text-align: right;
+    width: 100%;
+}
+.sidebar__header {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    padding: 10px 15px; /* Keep padding for spacing */
+    margin-top: 0px; /* Reduce or remove margin to move header up */
+    background-color: #ffffff;
+    color: #333;
+    text-align: center;
+    position: relative;
+}
+
+
+.sidebar__header img {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    margin-bottom: 10px; /* Adjust margin between profile picture and user name */
+    object-fit: cover;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar__header h2 {
+    font-size: 1rem;
+    font-weight: bold;
+    margin: 5px 0; /* Adjust margin for spacing */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+.sidebar__header h2::after {
+    content: ''; /* Creates a decorative line */
+    position: absolute;
+    bottom: -1px; /* Move the border further down */
+    left: 14px;
+    width: 94%; /* Makes the border span the entire width */
+    height: 1px; /* Adjust the thickness of the border */
+    background-color: #ddd; /* Border color */
+}
+
+.sidebar__dashboard {
+    font-size: 1.5rem;
+    font-weight: normal;
+    color: #000000;
+    margin: 5px 0 10px 0; /* Adjust spacing for "Dashboard" text */
+    margin: 10px 0 10px 15px; /* Adjust spacing for "Dashboard" text */
+    text-align: center;
+}
+
+.sidebar.collapsed .sidebar__header h2 {
+    display: none; /* Hide text when collapsed */
+}
+
+.sidebar__dashboard::after {
+    content: '';
+    display: block;
+    width: 100%; /* Adjust the width of the line as needed */
+    height: 1px; /* Thickness of the line */
+    background-color: #ddd; /* Color of the line */
+    margin-top: 5px; /* Space between the text and the line */
+}
+
+.sidebar__toggle {
+    background: none;
+    border: none;
+    color: #2b0b0b;
+    cursor: pointer;
+    margin-top: 10px;
+    font-size: 1.2em;
+    padding: px;
+    margin-left: auto; /* Align toggle to the right */
+    transition: color 0.3s;
+}
+
+.sidebar__toggle:hover {
+    background-color: #f1f3f4;
+    color: #000000;
+}
+
+.sidebar__menu {
+    list-style: none;
+    padding: 10px 0;
+    margin: 0;
+    flex-grow: 1;
+}
+
+.menu__item {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background 0.3s, box-shadow 0.3s;
+    font-size: 0.95rem;
+    color: #333;
+    border-radius: 8px;
+    margin: 5px 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+}
+
+.menu__item:hover {
+    background-color: #f1f3f4;
+    color: #000000;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.menu__item i {
+    margin-right: 10px;
+    font-size: 1.5rem; /* Smaller icon size */
+    color: #333; /* Icon color */
+}
+
+.sidebar.collapsed .menu__item i {
+    margin-right: 0; /* Adjust icon margin when collapsed */
+    text-align: center;
+}
+
+.sidebar.collapsed .menu__item span {
+    display: none; /* Hide text in collapsed mode */
+}
+
+.sidebar__footer {
+    padding: 10px;
+    border-top: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+    background-color: #ffffff;
+}
+
+.sidebar__footer .menu__item {
+    justify-content: center;
+    background-color: #ffffff;
+    border-radius: 8px;
+    width: 90%; /* Full width footer buttons */
+    padding: 10px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar__footer .menu__item:hover {
+    background-color: #f1f3f4;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.sidebar__footer i {
+    font-size: 1.2rem;
+    color: #333;
+}
+
+/* Add spacing between text and icon in expanded mode */
+.sidebar__menu .menu__item span {
+    flex-grow: 1;
+    text-align: left;
+    margin-left: 10px;
+}

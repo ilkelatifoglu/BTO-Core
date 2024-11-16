@@ -1,15 +1,16 @@
-// LoginPage.js
 import React, { useState } from "react";
 import "./LoginPage.css";
 import LoginForm from "../components/auth/LoginForm";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
-import BilkentLogo from "./BilkentÜniversitesi-logo.png";
+import BilkentLogo from "../assets/BilkentÜniversitesi-logo.png";
+import LibraryPhoto from "../assets/bilkent-university.jpg";
 
 const LoginPage = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
   const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(null);
 
   const handleLogin = async (email, password) => {
     try {
@@ -29,20 +30,27 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="outer-container">
-      <div className="container">
-        <div className="left-side">
-          <img
-            src={BilkentLogo}
-            alt="Bilkent University Logo"
-            className="bilkent-logo"
-          />
-          <h2>Welcome to BTO Core 🌟</h2>
-          <LoginForm onSubmit={handleLogin} onForgotPassword={handleForgotPassword} />
-          {error && <p className="error-message">{error}</p>}
-        </div>
-        <div className="right-side"></div>
+    <div className="container">
+      <div className="left-side">
+        <img
+          src={BilkentLogo}
+          alt="Bilkent University Logo"
+          className="bilkent-logo"
+        />
+        <h2>Welcome to BTO Core 🌟</h2>
+        <LoginForm
+          onSubmit={handleLogin}
+          isLoading={isLoading}
+          onForgotPassword={handleForgotPassword}
+        />
+        {error && <p className="error-message">{error}</p>}
       </div>
+      <div
+        className="right-side"
+        style={{
+          "--background-image": `url(${LibraryPhoto})`,
+        }}
+      />
     </div>
   );
 };

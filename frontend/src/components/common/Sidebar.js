@@ -13,14 +13,13 @@ const Sidebar = ({ setCurrentPage }) => {
         setIsExpanded(!isExpanded);
     };
 
+   
     const handleNavigation = (page) => {
         if (page === 'logout') {
             localStorage.clear();
             navigate('/login');
-        } else if (page === 'Settings') {
-            navigate('/settings');
         } else {
-            setCurrentPage(page); // Propagate page change to the parent
+            navigate(`/${page}`);
         }
     };
 
@@ -40,11 +39,11 @@ const Sidebar = ({ setCurrentPage }) => {
                         <i className="pi pi-table"></i>
                         {isExpanded && <span>Tour Tables</span>}
                     </li>
-                    <li className="menu__item" onClick={() => handleNavigation('InfoPage')}>
+                    <li className="menu__item" onClick={() => handleNavigation('guideInfo')}>
                         <i className="pi pi-info-circle"></i>
-                        {isExpanded && <span>Info Page</span>}
+                        {isExpanded && <span>Guide Info</span>}
                     </li>
-                    <li className="menu__item" onClick={() => handleNavigation('PuantajPage')}>
+                    <li className="menu__item" onClick={() => handleNavigation('puantaj-page')}>
                         <i className="pi pi-calendar"></i>
                         {isExpanded && <span>Puantaj Page</span>}
                     </li>

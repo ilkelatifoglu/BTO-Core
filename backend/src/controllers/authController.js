@@ -8,7 +8,7 @@ const jwt = require("jsonwebtoken");
 const { generateOtp, validateOtp, isOtpExpired } = require("../utils/otp");
 
 exports.register = async (req, res) => {
-  const { username, email, password, user_type } = req.body;
+  let { username, email, password, user_type } = req.body; // TODO must be const
   try {
     const userCheck = await query("SELECT * FROM users WHERE email = $1", [
       email,

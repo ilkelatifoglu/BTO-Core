@@ -9,6 +9,7 @@ import SettingsPage from "../pages/SettingsPage";
 import ResetPassword from "../pages/ResetPassword";
 import EmailVerification from "../pages/OtpVerification";
 import GuideInfoPage from "../pages/GuideInfoPage";
+import PuantajPage from "../pages/PuantajPage";
 
 const AppRoutes = () => {
   return (
@@ -23,6 +24,7 @@ const AppRoutes = () => {
       <Route path="/reset-password/:token" element={<ResetPassword />} />
       <Route path="/verify-otp" element={<EmailVerification />} />
       <Route path="/guideInfo" element={<GuideInfoPage />} />
+      <Route path="/puantaj-page" element={<PuantajPage />} />
     </Routes>
   );
 };

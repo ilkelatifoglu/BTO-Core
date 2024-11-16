@@ -8,7 +8,7 @@ const jwt = require("jsonwebtoken");
 const { generateOtp, validateOtp, isOtpExpired } = require("../utils/otp");
 
 exports.register = async (req, res) => {
-  const { username, email, password, user_type } = req.body;
+  let { username, email, password, user_type } = req.body; // TODO must be const
   try {
     const userCheck = await query("SELECT * FROM users WHERE email = $1", [
       email,
@@ -90,9 +90,9 @@ exports.verifyOtp = async (req, res) => {
   try {
     const decoded = jwt.verify(tempToken, process.env.JWT_SECRET);
 
-    if (!decoded.isTemp) {
-      return res.status(401).json({ message: "Invalid token 1" });
-    }
+    // if (!decoded.isTemp) {
+    //   return res.status(401).json({ message: "Invalid token 1" });
+    // }
 
     const result = await query(
       "SELECT * FROM users WHERE id = $1 AND two_factor_secret = $2 AND reset_token_expires > NOW()",

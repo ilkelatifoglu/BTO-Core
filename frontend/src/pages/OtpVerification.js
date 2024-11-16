@@ -47,7 +47,9 @@ export default function EmailVerification() {
 
       navigate("/dashboard");
     } catch (err) {
-      setError(err.response?.data?.message || "Verification failed. Please try again.");
+      setError(
+        err.response?.data?.message || "Verification failed. Please try again."
+      );
     } finally {
       setIsLoading(false);
     }
@@ -58,10 +60,13 @@ export default function EmailVerification() {
     setError("");
 
     try {
-      const credentials = JSON.parse(localStorage.getItem("tempCredentials") || "{}");
+      const email = localStorage.getItem("email");
+      const password = localStorage.getItem("password");
+
       const response = await axios.post(
         `http://localhost:3000/auth/login`,
-        credentials
+        email,
+        password
       );
 
       if (response.data.tempToken) {
@@ -112,7 +117,7 @@ export default function EmailVerification() {
             <button
               type="button"
               onClick={handleResend}
-              disabled={isLoading || timeLeft > 0}
+              disabled={isLoading || timeLeft > 300} // TODO
               className="resend-button"
             >
               Resend Code

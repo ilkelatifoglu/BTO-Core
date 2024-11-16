@@ -18,6 +18,8 @@ const LoginPage = () => {
       if (response) {
         localStorage.setItem("tempToken", response.token);
         localStorage.setItem("userType", response.user_type);
+        localStorage.setItem("email", email);
+        localStorage.setItem("password", email);
 
         navigate("/verify-otp");
       } else {

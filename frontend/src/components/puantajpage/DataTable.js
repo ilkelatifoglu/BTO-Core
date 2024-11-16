@@ -68,6 +68,7 @@ export default function CheckboxRowSelectionDemo() {
 
     return (
         <div className="card">
+            <h1>Puantaj Page</h1>
             {/* Toggle for showing all entries or non-approved entries */}
             <div className="flex justify-content-center align-items-center mb-4 gap-2">
                 <InputSwitch
@@ -99,6 +100,7 @@ export default function CheckboxRowSelectionDemo() {
                         />
                     )}
                 ></Column>
+                <Column field="type" header="Type"></Column>
                 <Column field="date" header="Date" body={(rowData) => formatDate(rowData.date)}></Column>
                 <Column field="day" header="Day"></Column>
                 <Column field="time" header="Time" body={(rowData) => formatTime(rowData.time)}></Column>

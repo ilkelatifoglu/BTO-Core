@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './GuideFilterBar.css'; 
 
 const GuideFilterBar = ({ onFilter }) => {
     const [name, setName] = useState('');

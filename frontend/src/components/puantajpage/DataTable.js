@@ -5,6 +5,7 @@ import { InputSwitch } from 'primereact/inputswitch';
 import { Button } from 'primereact/button';
 import workService from '../../services/CustomerService'; // Import the workService
 import AddWork from './AddWork';
+import "./PuantajComponents.css";
 
 export default function CheckboxRowSelectionDemo() {
     const [workEntries, setWorkEntries] = useState([]);
@@ -67,15 +68,15 @@ export default function CheckboxRowSelectionDemo() {
     };
 
     return (
-        <div className="card">
+        <div className="data-table-container">
+        <div className="data-table-content">
             <h1>Puantaj Page</h1>
-            {/* Toggle for showing all entries or non-approved entries */}
-            <div className="flex justify-content-center align-items-center mb-4 gap-2">
-                <InputSwitch
-                    inputId="input-rowclick"
-                    checked={rowClick}
-                    onChange={(e) => setRowClick(e.value)}
-                />
+            <div className="toggle-container">
+            <InputSwitch
+                        inputId="input-rowclick"
+                        checked={rowClick}
+                        onChange={(e) => setRowClick(e.value)}
+                    />
                 <label htmlFor="input-rowclick">
                     {rowClick ? 'Show All Entries' : 'Show Non-Approved Only'}
                 </label>
@@ -108,11 +109,11 @@ export default function CheckboxRowSelectionDemo() {
                 <Column field="workload" header="Workload"></Column>
             </DataTable>
 
-            {/* Submit Button */}
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px' }}>
-                <Button label="Submit" icon="pi pi-check" className="p-button-primary" onClick={handleSubmit} />
+            <div className="submit-button-container">
+                    <Button label="Submit" icon="pi pi-check" className="p-button-primary" onClick={handleSubmit} />
+                </div>
+                <AddWork />
             </div>
-            <AddWork />
         </div>
     );
 }

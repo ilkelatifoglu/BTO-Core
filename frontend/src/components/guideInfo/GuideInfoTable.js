@@ -1,6 +1,7 @@
 import React from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
+import './GuideInfoTable.css'; 
 
 const GuideInfoTable = ({ guides, loading }) => {
    /* const renderScheduleLink = (rowData) => {

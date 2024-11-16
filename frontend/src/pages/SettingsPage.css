@@ -1,0 +1,62 @@
+.settings-page-container {
+    display: flex;
+    flex-grow: 1;
+    background-color: #f9f9f9;
+    padding: 20px;
+    height: 100%;
+    transition: margin-left 0.3s ease; /* Smooth transition for page adjustment */
+    margin-left: 240px; /* Default sidebar width */
+}
+
+.settings-page-container.collapsed {
+    margin-left: 70px; /* Adjust for collapsed sidebar */
+}
+
+.settings-sidebar {
+    width: 240px;
+    background-color: #ffffff;
+    border-right: 1px solid #ddd;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    transition: width 0.3s ease; /* Smooth transition for collapsing sidebar */
+}
+
+.settings-sidebar.collapsed {
+    width: 70px; /* Width of the collapsed sidebar */
+}
+
+.settings-sidebar h2 {
+    margin-bottom: 20px;
+    font-size: 1.5em;
+    display: none; /* Hide heading in collapsed state */
+}
+
+.settings-sidebar button {
+    background: none;
+    border: none;
+    text-align: left;
+    padding: 10px;
+    margin-bottom: 10px;
+    font-size: 1em;
+    color: #333;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s;
+}
+
+.settings-sidebar button:hover,
+.settings-sidebar button.active-tab {
+    background-color: #ddd;
+    color: #000000;
+    border-radius: 4px;
+}
+
+.settings-content {
+    flex-grow: 1;
+    padding: 40px;
+    background-color: #f9f9f9;
+    overflow-y: auto;
+}

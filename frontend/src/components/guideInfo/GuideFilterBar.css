@@ -1,0 +1,30 @@
+.guide-filter-bar {
+    display: flex;
+    justify-content: flex-start; 
+    align-items: center; 
+    gap: 15px; 
+    margin-bottom: 20px; 
+    margin-left: 300px;
+}
+
+.guide-filter-bar input,
+.guide-filter-bar select,
+.guide-filter-bar button {
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.guide-filter-bar button {
+    background-color: #5a6268; 
+    color: #fff; 
+    cursor: pointer;
+    border: none;
+    padding: 8px 16px; 
+    transition: background-color 0.3s ease; 
+}
+
+.guide-filter-bar button:hover {
+    background-color: #515c67; 
+}

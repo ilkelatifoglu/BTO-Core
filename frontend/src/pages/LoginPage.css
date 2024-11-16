@@ -17,21 +17,20 @@
 }
 
 .left-side {
-  width: 40%; 
+  width: 40%;
   padding: 60px;
   background-color: white;
   backdrop-filter: blur(10px);
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center; 
+  align-items: center;
 }
 
 .bilkent-logo {
   width: 200px; /* Adjust size as needed */
   height: auto;
   margin-bottom: 20px; /* Space between the logo and the heading */
-  
 }
 
 .login-page {
@@ -53,8 +52,8 @@
 }
 
 .right-side {
-  width: 60%; 
-  background-image: url('bilkent-university.jpg'); 
+  width: 60%;
+  background-image: url("../assets/bilkent-university.jpg");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

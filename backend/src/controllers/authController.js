@@ -1,9 +1,13 @@
+const speakeasy = require("speakeasy");
 const bcrypt = require("bcrypt");
 const { query } = require("../config/database");
 const { generateToken } = require("../utils/jwt");
+const pool = require("../config/database"); // TODO
+const { sendEmail } = require("../utils/email");
+const jwt = require("jsonwebtoken");
+const { generateOtp, validateOtp, isOtpExpired } = require("../utils/otp");
 
 exports.register = async (req, res) => {
-  console.log(req.body);
   const { username, email, password, user_type } = req.body;
   try {
     const userCheck = await query("SELECT * FROM users WHERE email = $1", [
@@ -15,6 +19,8 @@ exports.register = async (req, res) => {
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
+
+    if (!user_type) user_type = 4;
 
     const result = await query(
       "INSERT INTO users (email, password, user_type) VALUES ($1, $2, $3) RETURNING id",
@@ -37,26 +43,86 @@ exports.login = async (req, res) => {
   try {
     const result = await query("SELECT * FROM users WHERE email = $1", [email]);
     if (result.rows.length === 0) {
-      return res.status(400).json({ message: "Invalid email" });
+      return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    const user = result.rows[0]; // Get the user record from the query result
-
+    const user = result.rows[0];
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
-      return res.status(400).json({ message: "Password incorrect" });
+      return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    const token = generateToken(user.id); // Generate a token for the authenticated user
+    const otp = generateOtp();
+    await query(
+      "UPDATE users SET two_factor_secret = $1, reset_token_expires = NOW() + interval '5 minutes' WHERE id = $2",
+      [otp, user.id]
+    );
+
+    await sendEmail({
+      to: email,
+      subject: "Your Login Verification Code",
+      html: `
+        <h1>Login Verification Code</h1>
+        <p>Your verification code is:</p>
+        <h2 style="font-size: 24px; letter-spacing: 2px; background: #f4f4f4; padding: 10px; text-align: center;">${otp}</h2>
+        <p>This code will expire in 5 minutes.</p>
+        <p>If you didn't request this code, please ignore this email.</p>
+      `,
+    });
+
+    const token = generateToken(user.id, true);
     return res.json({
       message: "Login successful",
       token,
-      user_type: user.user_type, // Add user_type to the response
+      user_type: user.user_type,
     });
   } catch (error) {
     console.error("Error in login function:", error);
     return res.status(500).json({ message: "server error" });
+  }
+};
+
+exports.verifyOtp = async (req, res) => {
+  const { otp } = req.body;
+  const tempToken = req.headers.authorization?.split(" ")[1];
+
+  try {
+    const decoded = jwt.verify(tempToken, process.env.JWT_SECRET);
+
+    if (!decoded.isTemp) {
+      return res.status(401).json({ message: "Invalid token 1" });
+    }
+
+    const result = await query(
+      "SELECT * FROM users WHERE id = $1 AND two_factor_secret = $2 AND reset_token_expires > NOW()",
+      [decoded.userId, otp]
+    );
+
+    if (result.rows.length === 0) {
+      return res
+        .status(401)
+        .json({ message: "Invalid or expired verification code" });
+    }
+
+    await query(
+      "UPDATE users SET two_factor_secret = NULL, reset_token_expires = NULL WHERE id = $1",
+      [decoded.userId]
+    );
+
+    const accessToken = jwt.sign(
+      { userId: decoded.userId },
+      process.env.JWT_SECRET,
+      { expiresIn: "24h" }
+    );
+
+    res.json({
+      message: "Verification successful",
+      token: accessToken,
+    });
+  } catch (err) {
+    console.error("OTP verification error:", err);
+    res.status(500).json(err);
   }
 };
 
@@ -136,5 +202,74 @@ exports.getAllUsers = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "server error" });
+  }
+};
+
+exports.requestPasswordReset = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const userResult = await query("SELECT * FROM users WHERE email = $1", [
+      email,
+    ]);
+
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({ message: "No user found with this email" });
+    }
+
+    const resetToken = jwt.sign({ email }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+
+    await query(
+      "UPDATE users SET reset_token = $1, reset_token_expires = NOW() + interval '1 hour' WHERE email = $2",
+      [resetToken, email]
+    );
+
+    const resetLink = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
+
+    await sendEmail({
+      to: email,
+      subject: "BTO Core Password Reset Request",
+      html: `
+          <p>Click the link below to reset your password:</p>
+          <a href="${resetLink}">Reset Password</a>
+          <p>This link will expire in 1 hour.</p>
+          <p>\n BTO Core Team</p>
+        `,
+    });
+
+    res.json({ message: "Password reset email sent" });
+  } catch (err) {
+    console.error("Password reset error:", err);
+    res.status(500).json({ message: "Error requesting password reset" });
+  }
+};
+
+exports.resetPassword = async (req, res) => {
+  const { token, newPassword } = req.body;
+
+  try {
+    const result = await query(
+      "SELECT * FROM users WHERE reset_token = $1 AND reset_token_expires > NOW()",
+      [token]
+    );
+
+    if (result.rows.length === 0) {
+      return res
+        .status(400)
+        .json({ message: "Invalid or expired reset token" });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    await query(
+      "UPDATE users SET password = $1, reset_token = NULL, reset_token_expires = NULL WHERE reset_token = $2",
+      [hashedPassword, token]
+    );
+
+    res.json({ message: "Password reset successful" });
+  } catch (err) {
+    res.status(500).json({ message: "Error resetting password" });
   }
 };

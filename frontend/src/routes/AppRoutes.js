@@ -8,6 +8,7 @@ import DashboardPage from "../pages/DashboardPage";
 import ResetPassword from "../pages/ResetPassword";
 import EmailVerification from "../pages/OtpVerification";
 import GuideInfoPage from "../pages/GuideInfoPage";
+import TourAssignmentPage from "../pages/TourAssignment";
 
 const AppRoutes = () => {
   return (
@@ -21,6 +22,7 @@ const AppRoutes = () => {
       <Route path="/reset-password/:token" element={<ResetPassword />} />
       <Route path="/verify-otp" element={<EmailVerification />} />
       <Route path="/guideInfo" element={<GuideInfoPage />} />
+      <Route path="/assign-tour" element={<TourAssignmentPage />} />
     </Routes>
   );
 };

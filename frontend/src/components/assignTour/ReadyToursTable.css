@@ -1,0 +1,50 @@
+/* Align container to the top but center it horizontally */
+.assign-tour-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center horizontally */
+    padding: 2rem;
+    margin-top: 2rem; /* Push the table slightly down from the very top */
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Table title styling */
+.table-title {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+/* Align headers and content to the left */
+.p-datatable thead th,
+.p-datatable tbody td {
+    text-align: left; /* Align headers and cells to the left */
+    vertical-align: middle;
+    padding-left: 1rem; /* Add padding for consistent spacing */
+}
+
+/* Table container width */
+.assign-tour-table {
+    width: 75%; /* Adjust table width */
+    margin: 0 auto; /* Center horizontally */
+}
+
+/* Styling for the action buttons */
+.p-button-rounded.p-button-success {
+    background-color: #28a745;
+    border: none;
+}
+
+.p-datatable-tbody > tr > td {
+    vertical-align: middle; /* Ensure vertical alignment for table cells */
+}
+
+/* Add margin for the message */
+.message {
+    font-size: 1rem;
+    color: #28a745; /* Success message color */
+    margin-bottom: 1rem;
+    text-align: center;
+}

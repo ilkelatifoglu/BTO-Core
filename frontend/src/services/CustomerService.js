@@ -1,4 +1,3 @@
-// src/services/workService.js
 import axios from 'axios';
 
 const API_URL = "http://localhost:3001";
@@ -37,6 +36,15 @@ const workService = {
             return response.data;
         } catch (error) {
             console.error(`Error fetching work entry with id ${id}:`, error);
+            throw error;
+        }
+    },
+    addWork: async (workData) => {
+        try {
+            const response = await axios.post(`${API_URL}/work/add`, workData);
+            return response.data;
+        } catch (error) {
+            console.error('Error adding work entry:', error);
             throw error;
         }
     },

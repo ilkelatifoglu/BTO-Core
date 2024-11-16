@@ -1,35 +1,29 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { InputSwitch } from 'primereact/inputswitch';
 import { Button } from 'primereact/button';
 import workService from '../../services/CustomerService'; // Import the workService
+import AddWork from './AddWork';
 
 export default function CheckboxRowSelectionDemo() {
     const [workEntries, setWorkEntries] = useState([]);
     const [rowClick, setRowClick] = useState(true); // Toggle row click functionality (on: all entries, off: only non-approved)
 
-    const fetchAndSortEntries = useCallback(async () => {
-        let data;
-        if (rowClick) {
-            data = await workService.getAllWorkEntries();
-        } else {
-            data = await workService.getAllNonApprovedWorkEntries();
-        }
-
-        const sortedEntries = data.sort((a, b) => {
-            if (a.is_approved === b.is_approved) {
-                return new Date(a.date) - new Date(b.date);
-            }
-            return a.is_approved - b.is_approved;
-        });
-
-        setWorkEntries(sortedEntries);
-    }, [rowClick]);
-
+    // Fetch work entries based on rowClick state
     useEffect(() => {
-        fetchAndSortEntries();
-    }, [fetchAndSortEntries]);
+        if (rowClick) {
+            // Fetch all work entries when rowClick is ON
+            workService.getAllWorkEntries().then((data) => {
+                setWorkEntries(data);
+            });
+        } else {
+            // Fetch only non-approved work entries when rowClick is OFF
+            workService.getAllNonApprovedWorkEntries().then((data) => {
+                setWorkEntries(data);
+            });
+        }
+    }, [rowClick]); // Re-fetch data whenever rowClick state changes
 
     const formatDate = (date) => {
         return new Date(date).toLocaleDateString('en-GB'); // e.g., "dd/mm/yyyy" format
@@ -39,23 +33,17 @@ export default function CheckboxRowSelectionDemo() {
         return new Date(`1970-01-01T${time}`).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     };
 
+    // Toggle the checkbox for each row
     const toggleApproval = (rowData) => {
         const updatedEntries = workEntries.map((entry) =>
             entry.id === rowData.id
                 ? { ...entry, is_approved: !entry.is_approved }
                 : entry
         );
-
-        const sortedEntries = updatedEntries.sort((a, b) => {
-            if (a.is_approved === b.is_approved) {
-                return new Date(a.date) - new Date(b.date);
-            }
-            return a.is_approved - b.is_approved;
-        });
-
-        setWorkEntries(sortedEntries);
+        setWorkEntries(updatedEntries);
     };
 
+    // Handle the Submit button click
     const handleSubmit = async () => {
         try {
             const updatePromises = workEntries.map((entry) =>
@@ -66,7 +54,12 @@ export default function CheckboxRowSelectionDemo() {
 
             alert('Entries updated successfully!');
 
-            fetchAndSortEntries();
+            // Refresh the table after updates
+            if (rowClick) {
+                workService.getAllWorkEntries().then((data) => setWorkEntries(data));
+            } else {
+                workService.getAllNonApprovedWorkEntries().then((data) => setWorkEntries(data));
+            }
         } catch (error) {
             console.error('Error updating entries:', error);
             alert('An error occurred while updating entries.');
@@ -75,6 +68,7 @@ export default function CheckboxRowSelectionDemo() {
 
     return (
         <div className="card">
+            {/* Toggle for showing all entries or non-approved entries */}
             <div className="flex justify-content-center align-items-center mb-4 gap-2">
                 <InputSwitch
                     inputId="input-rowclick"
@@ -112,9 +106,11 @@ export default function CheckboxRowSelectionDemo() {
                 <Column field="workload" header="Workload"></Column>
             </DataTable>
 
+            {/* Submit Button */}
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px' }}>
                 <Button label="Submit" icon="pi pi-check" className="p-button-primary" onClick={handleSubmit} />
             </div>
+            <AddWork />
         </div>
     );
 }

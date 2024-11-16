@@ -1,7 +1,5 @@
-// src/controllers/workController.js
 const db = require("../config/database");
 
-// Function to get all records from the "work" table
 const getAllWorkEntries = async (req, res) => {
     try {
         const result = await db.query("SELECT * FROM work");
@@ -45,7 +43,6 @@ const updateWorkEntry = async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 };
-// Function to get a single work entry by ID
 const getWorkEntryById = async (req, res) => {
     const { id } = req.params;
     try {
@@ -59,10 +56,34 @@ const getWorkEntryById = async (req, res) => {
         res.status(500).json({ error: "Internal Server Error" });
     }
 };
+const addWork = async (req, res) => {
+    const { type, date, day, time, guide_name, workload, is_approved = false } = req.body;
+
+    if (!type || !date || !day || !time || !guide_name || !workload) {
+        return res.status(400).json({ message: "All fields are required" });
+    }
+
+    try {
+        const result = await db.query( // Changed query to db.query
+            "INSERT INTO work (type, date, day, time, guide_name, workload, is_approved) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
+            [type, date, day, time, guide_name, workload, is_approved]
+        );
+
+        res.status(201).json({
+            success: true,
+            message: "Work entry added successfully",
+            work: result.rows[0], // Return the added work entry
+        });
+    } catch (error) {
+        console.error("Error adding work entry:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+};
 
 module.exports = {
     getAllWorkEntries,
     getAllNonApprovedWorkEntries,
     updateWorkEntry,
     getWorkEntryById,
+    addWork
 };

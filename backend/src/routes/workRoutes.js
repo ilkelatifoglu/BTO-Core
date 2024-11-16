@@ -1,6 +1,6 @@
 // src/routes/workRoutes.js
 const express = require("express");
-const { getAllWorkEntries, getAllNonApprovedWorkEntries, updateWorkEntry, getWorkEntryById } = require("../controllers/workController");
+const { getAllWorkEntries, getAllNonApprovedWorkEntries, updateWorkEntry, getWorkEntryById, addWork } = require("../controllers/workController");
 
 const router = express.Router();
 
@@ -9,5 +9,5 @@ router.get("/", getAllWorkEntries);      // GET /work - Get all work entries
 router.get("/non-approved", getAllNonApprovedWorkEntries);
 router.put('/approve/:id', updateWorkEntry); // Update a specific work entry by ID
 router.get("/:id", getWorkEntryById);    // GET /work/:id - Get a single work entry by ID
-
+router.post("/add", addWork)
 module.exports = router;

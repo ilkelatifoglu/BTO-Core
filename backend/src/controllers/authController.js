@@ -54,23 +54,23 @@ exports.login = async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    const otp = generateOtp();
-    await query(
-      "UPDATE users SET two_factor_secret = $1, reset_token_expires = NOW() + interval '5 minutes' WHERE id = $2",
-      [otp, user.id]
-    );
+    // const otp = generateOtp();
+    // await query(
+    //   "UPDATE users SET two_factor_secret = $1, reset_token_expires = NOW() + interval '5 minutes' WHERE id = $2",
+    //   [otp, user.id]
+    // );
 
-    await sendEmail({
-      to: email,
-      subject: "Your Login Verification Code",
-      html: `
-        <h1>Login Verification Code</h1>
-        <p>Your verification code is:</p>
-        <h2 style="font-size: 24px; letter-spacing: 2px; background: #f4f4f4; padding: 10px; text-align: center;">${otp}</h2>
-        <p>This code will expire in 5 minutes.</p>
-        <p>If you didn't request this code, please ignore this email.</p>
-      `,
-    });
+    // await sendEmail({
+    //   to: email,
+    //   subject: "Your Login Verification Code",
+    //   html: `
+    //     <h1>Login Verification Code</h1>
+    //     <p>Your verification code is:</p>
+    //     <h2 style="font-size: 24px; letter-spacing: 2px; background: #f4f4f4; padding: 10px; text-align: center;">${otp}</h2>
+    //     <p>This code will expire in 5 minutes.</p>
+    //     <p>If you didn't request this code, please ignore this email.</p>
+    //   `,
+    // });
 
     const token = generateToken(user.id);
     return res.json({

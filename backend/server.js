@@ -4,6 +4,8 @@ const cors = require("cors");
 const authRoutes = require("./src/routes/authRoutes");
 const guideInfoRoutes = require('./src/routes/guideInfoRoutes'); // Import the new route
 
+const tourRoutes = require("./src/routes/tourRoutes"); 
+const schoolRoutes = require("./src/routes/schoolRoutes"); 
 
 const app = express();
 
@@ -20,6 +22,8 @@ app.use(express.json());
 app.use("/auth", authRoutes);
 app.use('/guideInfo', guideInfoRoutes); // Register the new route
 
+app.use("/tour", tourRoutes);
+app.use("/school", schoolRoutes);
 
 const PORT = process.env.PORT || 3001;
 

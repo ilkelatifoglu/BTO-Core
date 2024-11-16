@@ -53,7 +53,7 @@
 
 .right-side {
   width: 60%;
-  background-image: url("../assets/bilkent-university.jpg");
+  background-image: var(--background-image);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

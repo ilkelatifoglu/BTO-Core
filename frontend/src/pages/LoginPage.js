@@ -4,6 +4,7 @@ import LoginForm from "../components/auth/LoginForm";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import BilkentLogo from "../assets/BilkentÜniversitesi-logo.png";
+import LibraryPhoto from "../assets/bilkent-university.jpg";
 
 const LoginPage = () => {
   const { login } = useAuth();
@@ -44,6 +45,12 @@ const LoginPage = () => {
         />
         {error && <p className="error-message">{error}</p>}
       </div>
+      <div
+        className="right-side"
+        style={{
+          "--background-image": `url(${LibraryPhoto})`,
+        }}
+      />
     </div>
   );
 };

@@ -1,0 +1,47 @@
+.guide-info-page {
+    padding: 10px;
+    font-family: Arial, sans-serif;
+}
+
+.guide-info-table {
+    margin-top: 5px;
+    font-size: 5px;
+}
+
+.p-datatable {
+    border-collapse: collapse;
+    table-layout: auto;
+}
+
+.p-datatable-tbody > tr > td {
+    padding: 3px 5px;
+}
+
+.p-datatable-thead > tr > th {
+    padding: 3px 5px;
+    font-size: 11px;
+}
+
+.p-datatable-header {
+    padding: 5px;
+}
+
+.p-paginator {
+    font-size: 10px;
+}
+
+.guide-filter-bar {
+    display: flex !important; /* Force flex display */
+    gap: 50px !important; /* Increase spacing between components */
+    margin-bottom: 20px !important; /* Add space below the filter bar */
+    justify-content: flex-start !important;
+    align-items: center !important;
+}
+
+.guide-filter-bar input,
+.guide-filter-bar select,
+.guide-filter-bar button {
+    max-width: 200px !important;
+    padding: 10px !important;
+    font-size: 14px !important;
+}

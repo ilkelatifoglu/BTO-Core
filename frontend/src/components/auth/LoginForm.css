@@ -1,40 +1,18 @@
-/* src/components/auth/LoginForm.css */
-.form-group {
-    margin-bottom: 15px;
-  }
-  
-  .form-group label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-  }
-  
-  .form-group input {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    background-color: #ececec; 
-  }
-  
-  .error-message {
-    color: rgb(131, 12, 12);
-    margin-top: 10px;
-    font-size: 1.2rem;  
-    font-weight: bold;
-  }
-  
-  .btn {
-    background-color: #14239a;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    cursor: pointer;
-  }
-  
-  .btn:hover {
-    background-color: #0056b3;
-  }
+.login-card {
+  max-width: 400px;
+  margin: 0 auto;
+}
 
- 
-  
+.field {
+  margin-bottom: 1rem;
+}
+
+.block {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+.w-full {
+  width: 100%;
+}

@@ -1,0 +1,56 @@
+/* Home.css */
+
+/* Main Container */
+.main-container {
+    width: 100%;
+    height: 450px; /* Adjust as needed */
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around; /* Space between the three sections */
+    align-items: center; /* Align vertically in center */
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Optional for a card-like look */
+    background-color: #ffffff; /* Optional for card-style background */
+    padding: 20px;
+    margin: 0 auto;
+  }
+  
+  /* Left Section - Image Container */
+  .left-section {
+    width: 40%;
+    height: 90%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  /* Image */
+  .left-section img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 16px; /* All corners rounded */
+  }
+  
+  /* Right Section - Text Content */
+  .right-section {
+    width: 40%;
+    height: 85%;
+    padding-left: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  
+  /* Header Text */
+  .right-section h2 {
+    font-weight: bold;
+    font-size: clamp(1.0rem, 1.5vw, 1.5rem); /* Responsive font size */
+  }
+  
+  /* Paragraph Text */
+  .right-section p {
+    font-size: clamp(0.9rem, 1.5vw, 1rem); /* Responsive font size */
+    line-height: 1.5;
+  }
+  

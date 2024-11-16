@@ -3,7 +3,6 @@ import "./LoginPage.css";
 import LoginForm from "../components/auth/LoginForm";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
-
 import BilkentLogo from "../assets/BilkentÜniversitesi-logo.png";
 
 const LoginPage = () => {
@@ -11,7 +10,7 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(null);
-
+  
   const handleLogin = async (email, password) => {
     try {
       const response = await login(email, password);
@@ -44,7 +43,6 @@ const LoginPage = () => {
           Forgot Password?
         </button>
       </div>
-      <div className="right-side"></div>
     </div>
   );
 };

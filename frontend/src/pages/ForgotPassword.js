@@ -7,17 +7,30 @@ const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Basic client-side email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError("Please enter a valid email address.");
+      setMessage("");
+      return;
+    }
+
+    setIsLoading(true);
 
     try {
       await PasswordService.requestPasswordReset(email);
       setMessage("A reset link has been sent to your email.");
       setError("");
     } catch (err) {
-      setError(err.response?.data);
+      setError(err.response?.data || "An error occurred. Please try again.");
       setMessage("");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -27,18 +40,33 @@ const ForgotPassword = () => {
         <h2>Forgot Password</h2>
         <p>Enter your email to receive a password reset link.</p>
 
-        {message && <p className="success-message">{message}</p>}
-        {error && <p className="error-message">{error}</p>}
+        {message && (
+          <p className="success-message" aria-live="polite">
+            {message}
+          </p>
+        )}
+        {error && (
+          <p className="error-message" aria-live="assertive">
+            {error}
+          </p>
+        )}
 
         <form onSubmit={handleSubmit}>
+          <label htmlFor="email" className="visually-hidden">
+            Email Address
+          </label>
           <input
+            id="email"
             type="email"
             placeholder="Enter your email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            aria-required="true"
           />
-          <button type="submit">Send Reset Link</button>
+          <button type="submit" disabled={isLoading}>
+            {isLoading ? "Sending..." : "Send Reset Link"}
+          </button>
         </form>
 
         <Link to="/login" className="back-to-login">

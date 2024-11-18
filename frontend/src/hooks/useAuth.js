@@ -9,7 +9,6 @@ export const useAuth = () => {
   const login = async (email, password) => {
     try {
       const { token, user_type } = await AuthService.login({ email, password });
-      console.log(token, user_type, email);
       setUser({ token, user_type, email });
       setError(null);
       return { token, user_type, email };
@@ -18,7 +17,6 @@ export const useAuth = () => {
       return null;
     }
   };
-
 
   return {
     login,

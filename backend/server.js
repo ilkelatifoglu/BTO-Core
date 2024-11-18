@@ -2,11 +2,10 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const authRoutes = require("./src/routes/authRoutes");
-const guideInfoRoutes = require('./src/routes/guideInfoRoutes'); // Import the new route
-
-const workRoutes = require("./src/routes/workRoutes"); // Import work routes
-const tourRoutes = require("./src/routes/tourRoutes"); 
-const schoolRoutes = require("./src/routes/schoolRoutes"); 
+const guideInfoRoutes = require("./src/routes/guideInfoRoutes");
+const workRoutes = require("./src/routes/workRoutes");
+const tourRoutes = require("./src/routes/tourRoutes");
+const schoolRoutes = require("./src/routes/schoolRoutes");
 
 const app = express();
 
@@ -21,7 +20,7 @@ app.use(
 app.use(express.json());
 
 app.use("/auth", authRoutes);
-app.use('/guideInfo', guideInfoRoutes); // Register the new route
+app.use("/guideInfo", guideInfoRoutes);
 
 app.use("/work", workRoutes);
 app.use("/tour", tourRoutes);

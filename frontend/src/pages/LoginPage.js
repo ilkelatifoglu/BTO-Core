@@ -15,12 +15,13 @@ const LoginPage = () => {
 
   const handleLogin = async (email, password) => {
     try {
+      localStorage.clear();
       const response = await login(email, password);
       if (response) {
         localStorage.setItem("tempToken", response.token);
         localStorage.setItem("userType", response.user_type);
         localStorage.setItem("email", email);
-        localStorage.setItem("password", email);
+        localStorage.setItem("password", password);
 
         if (useOtp) {
           navigate("/verify-otp");

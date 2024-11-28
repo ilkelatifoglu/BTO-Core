@@ -1,0 +1,25 @@
+/* Tour Form Container */
+.tour-form-container {
+    background-color: #ffffff; /* White background */
+    border: 1px solid #dddddd; /* Light border */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Soft shadow for floating effect */
+    border-radius: 12px; /* Slightly rounded corners */
+    padding: 40px 20px; /* Padding from top and bottom */
+    margin: 20px auto; /* Center horizontally with vertical spacing */
+}
+
+/* Inner Container */
+.tour-form-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Space between elements */
+    max-width: 800px; /* Limit the form width */
+    margin: 0 auto; /* Center the form horizontally */
+}
+
+/* Form Sections */
+.tour-form-sections {
+    display: flex;
+    justify-content: space-between; /* Space out left and right forms */
+    gap: 20px; /* Space between sections */
+}

@@ -20,8 +20,8 @@ const AuthService = {
         "http://localhost:3001/auth/login",
         credentials
       );
-      const { token, user_type } = response.data;
-      return { token, user_type };
+      const { token, user_type, user_id } = response.data;
+      return { token, user_type, user_id };
     } catch (err) {
       throw new Error("Invalid email or password");
     }

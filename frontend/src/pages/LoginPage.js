@@ -20,6 +20,7 @@ const LoginPage = () => {
       if (response) {
         localStorage.setItem("tempToken", response.token);
         localStorage.setItem("userType", response.user_type);
+        localStorage.setItem("userId", response.user_id);
         localStorage.setItem("email", email);
         localStorage.setItem("password", password);
 

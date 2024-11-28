@@ -90,6 +90,7 @@ exports.login = async (req, res) => {
       message: "Login successful",
       token: token,
       user_type: user.user_type,
+      user_id: user.id,
     });
   } catch (error) {
     console.log("Error in login function:", error);

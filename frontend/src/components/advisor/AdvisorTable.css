@@ -1,0 +1,37 @@
+table {
+    width: 100%;
+    text-align: center;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 10px;
+    border: 1px solid #ccc;
+}
+
+thead th {
+    background-color: #e0e0ff;
+}
+
+p {
+    margin: 5px 0;
+    cursor: pointer;
+    color: #007bff;
+}
+
+p:hover {
+    text-decoration: underline;
+}
+
+div {
+    margin: 10px;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+ul li {
+    margin: 5px 0;
+}

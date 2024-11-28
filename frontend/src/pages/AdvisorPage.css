@@ -1,0 +1,74 @@
+/* Container Styling */
+.advisor-page-container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: auto;
+    font-family: Arial, sans-serif;
+}
+
+/* Title */
+.advisor-page-title {
+    text-align: center;
+    font-size: 2rem;
+    color: #4caf50;
+    margin-bottom: 30px;
+}
+
+/* Button Styling */
+.advisor-button {
+    display: inline-block;
+    margin: 8px 0;
+    padding: 5px 10px;
+    color: #007bff;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.advisor-button:hover {
+    color: #0056b3;
+}
+
+/* Advisor Card Styling */
+.advisor-details-section {
+    margin-top: 40px;
+}
+
+.advisor-card {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.advisor-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Title */
+.advisor-page-title {
+    text-align: center;
+    font-size: 2rem;
+    color: black; /* Change from green to black */
+    margin-bottom: 30px;
+}
+
+
+/* List Styling */
+.advisor-guides-list {
+    list-style-type: none;
+    padding: 0;
+    margin-top: 10px;
+}
+
+.advisor-guide-item {
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.advisor-guide-item:last-child {
+    border-bottom: none;
+}

@@ -8,33 +8,89 @@ const jwt = require("jsonwebtoken");
 const { generateOtp, validateOtp, isOtpExpired } = require("../utils/otp");
 
 exports.register = async (req, res) => {
-  let { username, email, password, user_type } = req.body; // TODO must be const
-  try {
-    const userCheck = await query("SELECT * FROM users WHERE email = $1", [
+  const {
+      first_name,
+      last_name,
       email,
-    ]);
-    if (userCheck.rows.length > 0) {
-      return res.status(400).json({ message: "user already exists" });
-    }
+      password,
+      user_id,
+      department,
+      role,
+      phone_number,
+      crew_no,
+      advisor_name,
+      days
+  } = req.body;
 
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+  try {
+      // Email validation for Bilkent domain
+      if (!email.endsWith("@ug.bilkent.edu.tr")) {
+          return res.status(400).json({ message: "Email must be a valid Bilkent email." });
+      }
 
-    if (!user_type) user_type = 4;
+      // Check if user already exists
+      const userCheck = await query("SELECT * FROM users WHERE email = $1", [email]);
+      if (userCheck.rows.length > 0) {
+          return res.status(400).json({ message: "User already exists." });
+      }
 
-    const result = await query(
-      "INSERT INTO users (email, password, user_type) VALUES ($1, $2, $3) RETURNING id",
-      [email, hashedPassword, user_type]
-    );
+      // Hash password
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
 
-    res.status(200).json({
-      success: true,
-      message: `User registered successfully`,
-      userId: result.rows[0].id,
-    });
+      // Insert into users table
+      const userResult = await query(
+          "INSERT INTO users (first_name, last_name, email, password, user_id, department, role, phone_number, crew_no) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id",
+          [first_name, last_name, email, hashedPassword, user_id, department, role, phone_number, crew_no || null]
+      );
+
+      const newUserId = userResult.rows[0].id;
+
+      // Additional logic based on the role
+      if (role === "candidate guide") {
+          // Get advisor details
+          const advisor = await query("SELECT * FROM advisors WHERE full_name = $1", [advisor_name]);
+          if (advisor.rows.length === 0) {
+              return res.status(400).json({ message: "Advisor not found." });
+          }
+
+          const advisorId = advisor.rows[0].id;
+
+          // Insert into candidate_guides table
+          await query(
+              "INSERT INTO candidate_guides (user_id, advisor_user_id, advisor_name, full_name, department) VALUES ($1, $2, $3, $4, $5)",
+              [newUserId, advisorId, advisor_name, `${first_name} ${last_name}`, department]
+          );
+
+          // Increment candidate_guides count in advisors table
+          await query("UPDATE advisors SET candidate_guide = candidate_guide + 1 WHERE id = $1", [advisorId]);
+
+      } else if (role === "guide") {
+          if (!crew_no) {
+              return res.status(400).json({ message: "Crew number is required for guide role." });
+          }
+
+      } else if (role === "advisor") {
+          if (!crew_no || !days) {
+              return res.status(400).json({ message: "Crew number and days are required for advisor role." });
+          }
+
+          // Insert into advisors table
+          await query(
+              "INSERT INTO advisors (user_id, full_name, day) VALUES ($1, $2, $3)",
+              [newUserId, `${first_name} ${last_name}`, days]
+          );
+      }
+
+      res.status(200).json({
+          success: true,
+          message: "User registered successfully.",
+          userId: newUserId
+      });
+
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: "Server error" });
+      console.error(error);
+      res.status(500).json({ success: false, message: "Server error." });
   }
 };
 

@@ -82,9 +82,23 @@ exports.register = async (req, res) => {
           );
       }
 
+    await sendEmail({
+      to: email,
+      subject: "Your Account Details",
+      html: `
+        <h1>Welcome to Our Platform</h1>
+        <p>Your account has been created by an administrator. Here are your login details:</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Password:</strong> ${originalPassword}</p>
+        <p>For security reasons, we recommend changing your password after your first login.</p>
+        <p>You can log in using the link below:</p>
+        <a href="${process.env.FRONTEND_URL}/login">Login to Your Account</a>
+      `,
+    });
+
       res.status(200).json({
           success: true,
-          message: "User registered successfully.",
+          message: "User registered successfully and credentials sent to email.",
           userId: newUserId
       });
 
@@ -132,6 +146,7 @@ exports.login = async (req, res) => {
       message: "Login successful",
       token: token,
       user_type: user.user_type,
+      user_id: user.id,
     });
   } catch (error) {
     console.log("Error in login function:", error);

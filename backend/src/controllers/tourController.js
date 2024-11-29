@@ -8,6 +8,9 @@ const {
   getAssignedGuideCount,
   getGuideCountForTour,
   getReadyTours,
+  getAllTours,
+  approveTour,
+  rejectTour
 } = require("../queries/tourQueries");
 
 const { getSchoolId } = require("../queries/schoolQueries"); // Import from school queries
@@ -162,5 +165,52 @@ exports.getReadyTours = async (req, res) => {
   } catch (error) {
     console.error("Error fetching READY tours:", error.message || error);
     res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+exports.getAllTours = async (req, res) => {
+  try {
+    const tours = await getAllTours();
+    res.status(200).json({
+      success: true,
+      data: tours,
+    });
+  } catch (error) {
+    console.error("Error fetching all tours:", error.message || error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+exports.approveTour = async (req, res) => {
+  const { id } = req.params;
+  const { selectedTime } = req.body;
+
+  if (!selectedTime) {
+    return res.status(400).json({ message: "Time preference is required" });
+  }
+
+  try {
+    await approveTour(id, selectedTime);
+    res.status(200).json({ message: "Tour approved successfully" });
+  } catch (error) {
+    console.error("Error approving tour:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to approve tour",
+    });
+  }
+};
+
+// Controller to reject a tour
+exports.rejectTour = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    await rejectTour(id);
+    res.status(200).json({ message: "Tour rejected successfully" });
+  } catch (error) {
+    console.error("Error rejecting tour:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to reject tour",
+    });
   }
 };

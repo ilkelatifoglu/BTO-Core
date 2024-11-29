@@ -11,6 +11,7 @@ import OtpVerification from "../pages/OtpVerification";
 import GuideInfoPage from "../pages/GuideInfoPage";
 import PuantajPage from "../pages/PuantajPage";
 import TourAssignmentPage from "../pages/TourAssignment";
+import TourApprovalPage from "../pages/TourApproval";
 
 const AppRoutes = () => {
   return (
@@ -27,6 +28,7 @@ const AppRoutes = () => {
       <Route path="/guideInfo" element={<GuideInfoPage />} />
       <Route path="/puantaj-page" element={<PuantajPage />} />
       <Route path="/assign-tour" element={<TourAssignmentPage />} />
+      <Route path="/approve-tour" element={<TourApprovalPage />} />
     </Routes>
   );
 };

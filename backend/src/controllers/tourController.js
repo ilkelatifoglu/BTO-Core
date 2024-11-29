@@ -1,4 +1,5 @@
 // src/controllers/tourController.js
+
 const {
   doesTourExist,
   insertTour,
@@ -14,6 +15,8 @@ const {
 
 const { getSchoolId } = require("../queries/schoolQueries"); // Import from school queries
 const { query } = require("../config/database");
+
+// src/controllers/tourController.js
 
 exports.addTour = async (req, res) => {
   const {
@@ -55,6 +58,8 @@ exports.addTour = async (req, res) => {
 
     if (time_preferences && time_preferences.length > 0) {
       await insertTourTimes(tourId, time_preferences);
+    } else {
+      return res.status(400).json({ message: "At least one time preference is required." });
     }
 
     res.status(200).json({
@@ -70,9 +75,10 @@ exports.addTour = async (req, res) => {
 
 exports.assignGuideToTour = async (req, res) => {
   const { school_name, city, date } = req.body;
-  const guide_id = req.user.id;
+  const guide_id = req.user.id; // Ensure that req.user.id is correctly populated
 
   try {
+    // Query to find the tour based on school name, city, and date
     const tourQuery = await query(
       `
       SELECT t.id, t.guide_count
@@ -102,12 +108,14 @@ exports.assignGuideToTour = async (req, res) => {
     }
 
     // Check if there is room for another guide
-    const assignedCount = await query(
+    const assignedCountResult = await query(
       "SELECT COUNT(*) AS assigned_count FROM tour_guide WHERE tour_id = $1",
       [tour_id]
     );
 
-    if (parseInt(assignedCount.rows[0].assigned_count, 10) >= guide_count) {
+    const assignedCount = parseInt(assignedCountResult.rows[0].assigned_count, 10);
+
+    if (assignedCount >= guide_count) {
       return res.status(400).json({
         success: false,
         message: "Maximum number of guides already assigned!",

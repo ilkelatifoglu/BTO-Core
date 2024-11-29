@@ -18,7 +18,10 @@ exports.doesTourExist = async (school_id, date) => {
   return result.rows.length > 0;
 };
 
-// Insert a new tour
+
+
+// src/queries/tourQueries.js
+
 exports.insertTour = async ({
   school_id,
   date,
@@ -37,13 +40,50 @@ exports.insertTour = async ({
   return result.rows[0].id;
 };
 
+
+
 // Insert time preferences for a tour
+// src/queries/tourQueries.js
+
 exports.insertTourTimes = async (tour_id, time_preferences) => {
-  const timePrefQueries = time_preferences.map((time) =>
-    query("INSERT INTO tour_time (tour_id, time) VALUES ($1, $2)", [tour_id, time])
+  // Validate time preferences
+  const allowedTimes = ['09:00', '11:00', '13:30', '16:30'];
+  if (time_preferences.length < 1 || time_preferences.length > 4) {
+    throw new Error('You must provide between 1 and 4 time preferences.');
+  }
+
+  // Check for duplicates
+  if (new Set(time_preferences).size !== time_preferences.length) {
+    throw new Error('Time preferences cannot have duplicates.');
+  }
+
+  // Validate time preferences
+  time_preferences.forEach((time) => {
+    if (!allowedTimes.includes(time)) {
+      throw new Error(`Invalid time preference: ${time}`);
+    }
+  });
+
+  // Prepare columns and values
+  const columns = ['tour_id', 'timepref1', 'timepref2', 'timepref3', 'timepref4'];
+  const placeholders = columns.map((_, idx) => `$${idx + 1}`).join(', ');
+  const values = [tour_id, null, null, null, null];
+
+  // Assign time preferences to appropriate columns
+  time_preferences.forEach((time, index) => {
+    values[index + 1] = time; // timepref1 starts at index 1
+  });
+
+  const result = await query(
+    `INSERT INTO tour_time (${columns.join(', ')})
+     VALUES (${placeholders}) RETURNING id`,
+    values
   );
-  await Promise.all(timePrefQueries);
+
+  return result.rows[0].id;
 };
+
+
 
 // Check if a guide is already assigned to a tour
 exports.isGuideAssignedToTour = async (tour_id, guide_id) => {
@@ -73,12 +113,17 @@ exports.getGuideCountForTour = async (tour_id) => {
 };
 
 // Get all tours with status 'READY'
+// src/queries/tourQueries.js
+
 exports.getReadyTours = async () => {
   const result = await query(
     `SELECT 
         t.date,
         t.day,
-        tt.time,
+        tt.timepref1,
+        tt.timepref2,
+        tt.timepref3,
+        tt.timepref4,
         s.school_name,
         s.city,
         t.tour_size,
@@ -87,7 +132,7 @@ exports.getReadyTours = async () => {
      JOIN schools s ON t.school_id = s.id
      JOIN tour_time tt ON t.id = tt.tour_id
      WHERE t.tour_status = 'READY'
-     ORDER BY t.date, tt.time`
+     ORDER BY t.date`
   );
   return result.rows;
 };

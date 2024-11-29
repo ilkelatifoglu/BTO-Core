@@ -51,7 +51,7 @@ const Sidebar = ({ setCurrentPage }) => {
                         <i className="pi pi-check"></i>
                         {isExpanded && <span>Review Tour Request</span>}
                     </li>
-                    <li className="menu__item" onClick={() => handleNavigation('DataInsights')}>
+                    <li className="menu__item" onClick={() => handleNavigation('data-insight')}>
                         <i className="pi pi-chart-line"></i>
                         {isExpanded && <span>Data Insights</span>}
                     </li>

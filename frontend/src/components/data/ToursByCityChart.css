@@ -1,0 +1,56 @@
+/* Grafikler alanı */
+.chart {
+    flex: 1 1 100%;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    text-align: left;
+    overflow: hidden; /* Taşmaları önlemek için overflow gizlendi */
+  }
+  
+  /* Grafik başlık stili */
+  .chart-title {
+    margin-bottom: 15px;
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+
+  
+  /* Bar üzerinde hover */
+  .bar:hover {
+    transform: scaleY(1.05);
+  }
+  
+/* Bar grafik alanı */
+.bar-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
+  position: relative; /* Çubukları hizalamak için gerekli */
+  padding-left: 60px; /* Çubukların yazılardan uzak başlaması için */
+}
+
+/* Bar etiketi */
+.bar span {
+  position: absolute;
+  left: -60px; /* Etiketleri çubukların soluna kaydır */
+  font-size: 12px;
+  color: #000; /* Yazı rengini siyah yap */
+  white-space: nowrap; /* Yazıların yan yana kalması için */
+}
+
+/* Bar stili */
+.bar {
+  position: relative;
+  max-width: 100%; /* Bar genişliğinin container'i geçmemesi için */
+  height: 20px;
+  background: linear-gradient(90deg, #1d5add, #d31616);
+  border-radius: 5px;
+  transition: transform 0.3s, width 0.3s; /* Genişlik değişimlerini yumuşatmak için */
+}
+
+  

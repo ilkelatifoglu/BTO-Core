@@ -1,7 +1,6 @@
 const jwt = require("jsonwebtoken");
-const { Pool } = require("pg");
-const nodemailer = require("nodemailer");
 const { verifyToken } = require("../utils/jwt");
+const nodemailer = require("nodemailer");
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -13,17 +12,33 @@ const transporter = nodemailer.createTransport({
 
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers["authorization"];
+  
   const token = authHeader && authHeader.split(" ")[1];
 
-  if (token == null)
+  if (!token) {
     return res.status(401).json({ error: "No authentication token provided" });
+  }
 
   try {
     const decodedToken = verifyToken(token);
-    req.user = decodedToken;
-    next();
+    if (!decodedToken.userId || typeof decodedToken.user_type !== "number") {
+      return res.status(401).json({ error: "Malformed token" });
+    }
+    req.user = {
+      userId: decodedToken.userId,
+      user_type: decodedToken.user_type,
+      isTemp: decodedToken.isTemp, 
+    };
+    next(); 
   } catch (error) {
-    return res.status(401).json({ error: "Invalid token" });
+    if (error.name === "TokenExpiredError") {
+      return res.status(401).json({ error: "Token has expired" });
+    } else if (error.name === "JsonWebTokenError") {
+      return res.status(401).json({ error: "Invalid token" });
+    } else {
+      console.error("Authentication error:", error);
+      return res.status(500).json({ error: "Internal server error" });
+    }
   }
 };
 

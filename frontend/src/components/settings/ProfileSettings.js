@@ -1,41 +1,78 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import axios from 'axios';
 import './ProfileSettings.css';
+import { AuthContext } from '../../context/AuthContext';
 
-const ProfileSettings = ({ userEmail, userType }) => {
-    const [photo, setPhoto] = useState(null);
+axios.defaults.baseURL = 'http://localhost:3001'; // Set base URL for Axios
 
-    const handlePhotoUpload = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = () => {
-                setPhoto(reader.result);
-            };
-            reader.readAsDataURL(file);
+const ProfileSettings = () => {
+    const { token } = useContext(AuthContext);
+
+    const [photo, setPhoto] = useState('/default-profile.png'); // Default photo
+    const [userData, setUserData] = useState({
+        firstName: 'Name',
+        lastName: 'Surname',
+        email: 'No email provided',
+        phone: '1234',
+        iban: '1234',
+        userType: 'Unknown',
+    });
+
+    const fetchProfileData = async () => {
+        if (!token) return; // Ensure token is available
+        try {
+            const response = await axios.get('/profile', {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            const data = response.data;
+            setPhoto(data.photo_url || '/default-profile.png');
+            setUserData({
+                firstName: data.firstName || 'Name',
+                lastName: data.lastName || 'Surname',
+                email: data.email || 'No email provided',
+                phone: data.phone || '1234',
+                iban: data.iban || '1234',
+                userType: data.userType || 'Unknown',
+            });
+        } catch (error) {
+            console.error('Error fetching profile data:', error);
         }
     };
 
-    const getUserTypeLabel = () => {
-        switch (userType) {
-            case 1:
-                return 'Candidate Guide';
-            case 2:
-                return 'Guide';
-            case 3:
-                return 'Advisor';
-            case 4:
-                return 'Coordinator';
-            default:
-                return 'Unknown';
+    // Fetch user's profile data on component mount
+    useEffect(() => {
+        fetchProfileData();
+    }, [token]);
+
+    const handlePhotoUpload = async (e) => {
+        const file = e.target.files[0];
+        if (file ) {
+            const formData = new FormData();
+            formData.append('photo', file);
+
+            try {
+                await axios.post('/profile/upload-photo', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                await fetchProfileData(); // Refresh profile data after upload
+            } catch (error) {
+                console.error('Error uploading photo:', error);
+            }
         }
     };
 
     return (
         <div className="profile-settings-container">
             <div className="profile-settings-card">
+                {/* Profile Photo Section */}
                 <div className="profile-photo-section">
                     <img
-                        src={photo || '/default-profile.png'}
+                        src={photo}
                         alt="Profile"
                         className="profile-photo"
                     />
@@ -49,32 +86,36 @@ const ProfileSettings = ({ userEmail, userType }) => {
                         />
                     </label>
                 </div>
+
+                {/* User Details Section */}
                 <div className="profile-details-section">
                     <div>
                         <label>First Name:</label>
-                        <span>Name</span>
+                        <span>{userData.firstName}</span>
                     </div>
                     <div>
                         <label>Last Name:</label>
-                        <span>Surname</span>
+                        <span>{userData.lastName}</span>
                     </div>
                     <div>
                         <label>Email Address:</label>
-                        <span>{userEmail || 'ekin.koylu@ug.bilkent.edu.tr'}</span>
+                        <span>{userData.email}</span>
                     </div>
                     <div>
                         <label>Phone:</label>
-                        <span>1234</span>
+                        <span>{userData.phone}</span>
                     </div>
                     <div>
                         <label>IBAN:</label>
-                        <span>1234</span>
+                        <span>{userData.iban}</span>
                     </div>
                     <div>
                         <label>User Type:</label>
-                        <span>{getUserTypeLabel()}</span>
+                        <span>{userData.userType}</span>
                     </div>
                 </div>
+
+                {/* Edit Button */}
                 <button className="edit-button">Edit</button>
             </div>
         </div>

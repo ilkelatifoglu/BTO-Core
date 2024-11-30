@@ -4,6 +4,7 @@ import ProfileSettings from '../components/settings/ProfileSettings';
 import ChangePassword from '../components/settings/ChangePassword';
 import About from '../components/settings/About';
 import HelpSupport from '../components/settings/HelpSupport';
+import Appearance from '../components/settings/Appearance';
 
 import { AuthContext } from '../context/AuthContext';
 import './SettingsPage.css';
@@ -21,8 +22,8 @@ const SettingsPage = () => {
                 return <ProfileSettings userEmail={userEmail} userType={userType} />;
             case 'changePassword':
                 return <ChangePassword userEmail={userEmail} />;
-            case 'appearance':
-                return <div>Appearance settings coming soon...</div>;
+                case 'appearance':
+                    return <Appearance />;
             case 'helpSupport':
                 return <HelpSupport />;
             case 'about':

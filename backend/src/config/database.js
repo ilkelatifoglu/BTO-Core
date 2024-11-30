@@ -9,7 +9,6 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false },
 });
 
-// Test the connection on startup
 pool.connect((err, client, release) => {
   if (err) {
     console.error("Error acquiring client", err.stack);

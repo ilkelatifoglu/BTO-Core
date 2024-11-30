@@ -11,17 +11,24 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(null);
+  const [useOtp, setUseOTP] = useState(true);
 
   const handleLogin = async (email, password) => {
     try {
+      localStorage.clear();
       const response = await login(email, password);
       if (response) {
         localStorage.setItem("tempToken", response.token);
         localStorage.setItem("userType", response.user_type);
+        localStorage.setItem("userId", response.user_id);
         localStorage.setItem("email", email);
-        localStorage.setItem("password", email);
+        localStorage.setItem("password", password);
 
-        navigate("/verify-otp");
+        if (useOtp) {
+          navigate("/verify-otp");
+        } else {
+          navigate("/dashboard");
+        }
       } else {
         setError("Login failed");
       }
@@ -48,6 +55,15 @@ const LoginPage = () => {
           isLoading={isLoading}
           onForgotPassword={handleForgotPassword}
         />
+        <div className="otp-toggle">
+          <input
+            type="checkbox"
+            id="otpToggle"
+            checked={useOtp}
+            onChange={(e) => setUseOTP(e.target.checked)}
+          />
+          <label htmlFor="otpToggle">Enable OTP Verification</label>
+        </div>
         {error && <p className="error-message">{error}</p>}
       </div>
       <div className="right-side">

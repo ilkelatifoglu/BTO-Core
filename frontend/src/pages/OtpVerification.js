@@ -3,7 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "./OtpVerification.css";
 
-export default function EmailVerification() {
+export default function OtpVerification() {
   const [otp, setOtp] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -48,7 +48,8 @@ export default function EmailVerification() {
       navigate("/dashboard");
     } catch (err) {
       setError(
-        err.response?.data?.message || "Verification failed. Please try again."
+        err.response?.data?.message + " error" ||
+          "Verification failed. Please try again."
       );
     } finally {
       setIsLoading(false);
@@ -62,15 +63,14 @@ export default function EmailVerification() {
     try {
       const email = localStorage.getItem("email");
       const password = localStorage.getItem("password");
-
+      const credentials = { email, password };
       const response = await axios.post(
-        `http://localhost:3000/auth/login`,
-        email,
-        password
+        `http://localhost:3001/auth/login`,
+        credentials
       );
 
-      if (response.data.tempToken) {
-        localStorage.setItem("tempToken", response.data.tempToken);
+      if (response.data.token) {
+        localStorage.setItem("tempToken", response.data.token);
         setTimeLeft(300);
       }
     } catch (err) {

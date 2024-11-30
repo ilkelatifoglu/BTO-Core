@@ -1,0 +1,146 @@
+.user-management-page {
+    font-family: 'Roboto', sans-serif;
+    max-width: 700px;
+    margin: auto;
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.user-management-page h1 {
+    text-align: center;
+    color: #2c3e50;
+    font-size: 28px;
+    margin-bottom: 20px;
+}
+
+.user-management-page .action-selector {
+    margin-bottom: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+}
+
+.user-management-page .action-selector label {
+    font-size: 16px;
+    color: #555;
+}
+
+.user-management-page .action-selector select {
+    width: 60%;
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #f5f5f5;
+    transition: border-color 0.3s ease;
+}
+
+.user-management-page .action-selector select:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+.user-management-page .form-container {
+    padding: 20px;
+    background-color: #f8f9fa;
+    border: 1px solid #eaeaea;
+    border-radius: 8px;
+}
+
+.user-management-page .form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+.user-management-page .form-group label {
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #34495e;
+}
+
+.user-management-page .form-group input,
+.user-management-page .form-group select {
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #ffffff;
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.user-management-page .form-group input:focus,
+.user-management-page .form-group select:focus {
+    border-color: #007bff;
+    box-shadow: 0px 0px 8px rgba(0, 123, 255, 0.3);
+    outline: none;
+}
+
+.user-management-page button {
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.user-management-page button:hover {
+    background-color: #218838;
+    transform: scale(1.05);
+}
+
+.user-management-page button:active {
+    background-color: #1e7e34;
+}
+
+.user-management-page .form-group input::placeholder {
+    font-size: 12px;
+    color: #aaa;
+}
+
+.user-management-page .form-group input[type="email"] {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M2.5 4a2.5 2.5 0 0 0-2.5 2.5v9a2.5 2.5 0 0 0 2.5 2.5h15a2.5 2.5 0 0 0 2.5-2.5v-9a2.5 2.5 0 0 0-2.5-2.5h-15zm0 1h15a1.5 1.5 0 0 1 1.493 1.356l-8.043 4.701-8.043-4.701a1.5 1.5 0 0 1 1.493-1.356zm15 11h-15a1.5 1.5 0 0 1-1.493-1.356l5.927-3.488 2.564 1.5a1.5 1.5 0 0 0 1.544 0l2.564-1.5 5.927 3.488a1.5 1.5 0 0 1-1.493 1.356z'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: 1.2em;
+    background-position: right 10px center;
+    padding-right: 2em;
+}
+
+.user-management-page .form-container h2 {
+    color: #2c3e50;
+    font-size: 22px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.user-management-page .form-group select {
+    appearance: none;
+}
+
+.user-management-page select {
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+
+@media (max-width: 768px) {
+    .user-management-page {
+        padding: 15px;
+    }
+
+    .user-management-page .action-selector select {
+        width: 100%;
+    }
+
+    .user-management-page .form-container {
+        padding: 15px;
+    }
+}

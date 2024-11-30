@@ -2,7 +2,7 @@ import React from 'react';
 import './HomePage.css';
 import Header from '../components/homepage/Header';
 import CoreValues from '../components/homepage/CoreValues';
-import TourForm from '../components/homepage/TourForm';
+import TourForm from '../components/homepage/tourform-components/TourForm';
 import Contact from '../components/homepage/Contact';
 import Home from '../components/homepage/Home';
 import HorizontalDivider from '../components/homepage/HorizontalDivider80';

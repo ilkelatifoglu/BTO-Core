@@ -2,10 +2,12 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const authRoutes = require("./src/routes/authRoutes");
-const guideInfoRoutes = require('./src/routes/guideInfoRoutes'); // Import the new route
-const workRoutes = require("./src/routes/workRoutes"); // Import work routes
-const dataRoutes = require("./src/routes/dataRoutes"); 
-const profileRoutes = require('./src/routes/profileRoutes'); // profil foto için eklendi
+const guideInfoRoutes = require("./src/routes/guideInfoRoutes");
+const workRoutes = require("./src/routes/workRoutes");
+const tourRoutes = require("./src/routes/tourRoutes");
+const schoolRoutes = require("./src/routes/schoolRoutes");
+const advisorRoutes = require("./src/routes/advisorRoutes");
+const userManagementRoutes = require("./src/routes/userManagementRoutes");
 
 const app = express();
 
@@ -21,10 +23,12 @@ app.use(express.json());
 app.use('/uploads', express.static('uploads')); // profil foto için eklendi
 
 app.use("/auth", authRoutes);
-app.use('/guideInfo', guideInfoRoutes); // Register the new route
+app.use("/guideInfo", guideInfoRoutes);
 app.use("/work", workRoutes);
-app.use("/data", dataRoutes);
-app.use('/profile', profileRoutes);  // profil foto için eklendi
+app.use("/tour", tourRoutes);
+app.use("/school", schoolRoutes);
+app.use("/advisors", advisorRoutes);
+app.use("/user-management", userManagementRoutes);
 
 const PORT = process.env.PORT || 3001;
 

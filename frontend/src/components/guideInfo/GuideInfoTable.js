@@ -4,16 +4,16 @@ import { Column } from 'primereact/column';
 import './GuideInfoTable.css'; 
 
 const GuideInfoTable = ({ guides, loading }) => {
-   /* const renderScheduleLink = (rowData) => {
+    const renderScheduleLink = (rowData) => {
         if (rowData.schedule_url) {
             return (
                 <a href={rowData.schedule_url} target="_blank" rel="noopener noreferrer">
-                    View Schedule
+                    <i className="pi pi-calendar" style={{ fontSize: '1.5rem', color: '#007bff', cursor: 'pointer' }}></i>
                 </a>
             );
         }
-        return 'N/A'; // Handle cases where no schedule exists.
-    };*/
+        return 'N/A';
+    };
     return (
         <div className="guide-info-table">
             <DataTable value={guides} paginator rows={5} loading={loading} responsiveLayout="scroll">
@@ -27,7 +27,7 @@ const GuideInfoTable = ({ guides, loading }) => {
                 <Column field="role" header="Role" sortable style={{ width: '15%' }} />
                 <Column field="department" header="Department" sortable style={{ width: '15%' }} />
                 <Column field="phone_number" header="Phone" style={{ width: '20%' }} />
-                <Column field="schedule_file" header="Schedule" style={{ width: '25%' }} />
+                <Column field="schedule_url" header="View Schedule" body={renderScheduleLink} />
             </DataTable>
         </div>
     );

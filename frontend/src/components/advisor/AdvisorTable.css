@@ -1,0 +1,41 @@
+.advisor-table-container {
+    width: 100%;
+    text-align: center;
+    margin: 10px auto;
+}
+
+.advisor-table {
+    width: 100%;
+    text-align: center;
+    border-collapse: collapse;
+}
+
+.advisor-table th,
+.advisor-table td {
+    padding: 10px;
+    border: 1px solid #ccc;
+}
+
+.advisor-table thead th {
+    background-color: #e0e0ff;
+}
+
+.advisor-table p {
+    margin: 5px 0;
+    cursor: pointer;
+    color: #007bff;
+}
+
+.advisor-table p:hover {
+    text-decoration: underline;
+}
+
+.advisor-table ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.advisor-table ul li {
+    margin: 5px 0;
+}

@@ -2,6 +2,9 @@ import React, { useState, useContext } from 'react';
 import Sidebar from '../components/common/Sidebar'; // Main application sidebar
 import ProfileSettings from '../components/settings/ProfileSettings';
 import ChangePassword from '../components/settings/ChangePassword';
+import About from '../components/settings/About';
+import HelpSupport from '../components/settings/HelpSupport';
+
 import { AuthContext } from '../context/AuthContext';
 import './SettingsPage.css';
 
@@ -21,9 +24,9 @@ const SettingsPage = () => {
             case 'appearance':
                 return <div>Appearance settings coming soon...</div>;
             case 'helpSupport':
-                return <div>Help and Support details here...</div>;
+                return <HelpSupport />;
             case 'about':
-                return <div>About the application...</div>;
+                return <About />;
             default:
                 return <div>Select a settings option</div>;
         }
@@ -38,7 +41,7 @@ const SettingsPage = () => {
             <div className="settings-page-container">
                 {/* Settings Sidebar */}
                 <div className="settings-sidebar">
-                    <h2>Settings</h2>
+                    <h2 className="settings-header">Settings</h2>
                     <button
                         className={activeTab === 'account' ? 'active-tab' : ''}
                         onClick={() => setActiveTab('account')}

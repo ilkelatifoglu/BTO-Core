@@ -163,14 +163,22 @@ exports.getAllTours = async () => {
   return result.rows;
 };
 exports.approveTour = async (tourId, selectedTime) => {
-  await query(
-    `UPDATE tours SET time = $1, tour_status = 'APPROVED' WHERE id = $2`,
+  const result = await query(
+    `UPDATE tours 
+     SET time = $1, tour_status = 'APPROVED'
+     WHERE id = $2
+     RETURNING teacher_email, teacher_name`,
     [selectedTime, tourId]
   );
+  return result.rows[0];
 };
 exports.rejectTour = async (tourId) => {
-  await query(
-    `UPDATE tours SET time = NULL, tour_status = 'REJECTED' WHERE id = $1`,
+  const result = await query(
+    `UPDATE tours 
+     SET time = NULL, tour_status = 'REJECTED'
+     WHERE id = $1
+     RETURNING teacher_email, teacher_name`,
     [tourId]
   );
+  return result.rows[0];
 };

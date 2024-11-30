@@ -48,27 +48,31 @@ const ProfileSettings = () => {
 
     const handlePhotoUpload = async (e) => {
         const file = e.target.files[0];
-        if (file ) {
+        if (file) {
             const formData = new FormData();
-            formData.append('photo', file);
-
+            formData.append('photo', file);  // Fotoğrafı formData'ya ekliyoruz
+    
             try {
-                await axios.post('/profile/upload-photo', formData, {
+                // Fotoğrafı sunucuya yüklerken Bearer token'ı header'a ekliyoruz
+                const response = await axios.post('/profile/upload-photo', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
-                        Authorization: `Bearer ${token}`,
+                        Authorization: `Bearer ${token}`,  // Bearer token ekleyin
                     },
                 });
-                await fetchProfileData(); // Refresh profile data after upload
+                console.log(response.data);
+                await fetchProfileData();  // Fotoğraf yüklendikten sonra profile verilerini güncelle
             } catch (error) {
                 console.error('Error uploading photo:', error);
             }
         }
     };
+    
 
     return (
-        <div className="profile-settings-container">
-            <div className="profile-settings-card">
+        <div className="profile-settings-card">
+            <h1 className="profile-settings-title">Account</h1> {/* Account Title */}
+            
                 {/* Profile Photo Section */}
                 <div className="profile-photo-section">
                     <img
@@ -81,7 +85,6 @@ const ProfileSettings = () => {
                         <input
                             type="file"
                             accept="image/*"
-                            style={{ display: 'none' }}
                             onChange={handlePhotoUpload}
                         />
                     </label>
@@ -106,18 +109,19 @@ const ProfileSettings = () => {
                         <span>{userData.phone}</span>
                     </div>
                     <div>
-                        <label>IBAN:</label>
-                        <span>{userData.iban}</span>
-                    </div>
-                    <div>
                         <label>User Type:</label>
                         <span>{userData.userType}</span>
                     </div>
+                    <div>
+                        <label>IBAN:</label>
+                        <span>{userData.iban}</span>
+                    </div>
+                  
                 </div>
 
                 {/* Edit Button */}
                 <button className="edit-button">Edit</button>
-            </div>
+            
         </div>
     );
 };

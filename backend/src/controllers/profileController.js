@@ -1,6 +1,4 @@
-// profileController.js
 const db = require('../config/database');
-
 // Controller to handle profile photo upload
 exports.uploadProfilePhoto = async (req, res) => {
     try {

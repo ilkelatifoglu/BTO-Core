@@ -5,7 +5,7 @@ import "./UserManagementPage.css"; // Include CSS for styling
 const UserManagementPage = () => {
     const [action, setAction] = useState(""); // Selected action
     const [formData, setFormData] = useState({
-        user_id: "",
+       // user_id: "",
         full_name: "", // Combined First and Last Name
         email: "",
         department: "",
@@ -21,7 +21,7 @@ const UserManagementPage = () => {
     const handleActionChange = (e) => {
         setAction(e.target.value);
         setFormData({
-            user_id: "",
+           // user_id: "",
             full_name: "",
             email: "",
             department: "",
@@ -74,7 +74,7 @@ const UserManagementPage = () => {
                 first_name: formData.first_name,
                 last_name: formData.last_name,
                 email: formData.email,
-                user_id: formData.user_id,
+               // user_id: formData.user_id,
                 department: formData.department,
                 role: formData.role,
                 phone_number: formData.phone_number,
@@ -185,17 +185,7 @@ const UserManagementPage = () => {
                     onChange={handleChange}
                     required
                 />
-            </div>
-            <div className="form-group">
-                <label>User ID:</label>
-                <input
-                    type="text"
-                    name="user_id"
-                    value={formData.user_id}
-                    onChange={handleChange}
-                    required
-                />
-            </div>
+            </div>            
             <div className="form-group">
                 <label>Department:</label>
                 <input

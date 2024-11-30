@@ -14,6 +14,8 @@ import TourAssignmentPage from "../pages/TourAssignment";
 import AdvisorPage from "../pages/AdvisorPage"; // Adjust path if necessary
 import RegisterPage from "../pages/RegisterPage";
 import UserManagementPage from "../pages/UserManagementPage";
+import TourApprovalPage from "../pages/TourApproval";
+
 const AppRoutes = () => {
   return (
     <Routes>
@@ -32,8 +34,7 @@ const AppRoutes = () => {
       <Route path="/advisors" element={<AdvisorPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/manageUser" element={<UserManagementPage />} />
-
-
+      <Route path="/approve-tour" element={<TourApprovalPage />} />
     </Routes>
   );
 };

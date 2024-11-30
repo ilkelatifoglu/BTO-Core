@@ -102,9 +102,14 @@ exports.register = async (req, res) => {
       to: email,
       subject: "Account Details",
       html: `
-      <p>Your account has been created:</p>
-      <p>Email: ${email}</p>
-      <p>Password: ${originalPassword}</p>`,
+        <h1>Welcome to Our Platform</h1>
+        <p>Your account has been created by an administrator. Here are your login details:</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Password:</strong> ${password}</p>
+        <p>For security reasons, we recommend changing your password after your first login.</p>
+        <p>You can log in using the link below:</p>
+        <a href="${process.env.FRONTEND_URL}/login">Login to Your Account</a>
+      `,
     });
 
     res.status(200).json({ success: true, message: "User registered successfully." });

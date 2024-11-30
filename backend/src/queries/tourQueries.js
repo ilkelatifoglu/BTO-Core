@@ -136,4 +136,49 @@ exports.getReadyTours = async () => {
   );
   return result.rows;
 };
-
+// Get all tours with all attributes and associated school details
+exports.getAllTours = async () => {
+  const result = await query(
+    `SELECT 
+        t.id AS tour_id,
+        t.tour_status,
+        s.school_name,
+        s.city,
+        t.date,
+        t.day,
+        t.tour_size,
+        t.teacher_name,
+        t.teacher_phone,
+        t.time,
+        t.classroom,
+        tt.timepref1,
+        tt.timepref2,
+        tt.timepref3,
+        tt.timepref4
+     FROM tours t
+     JOIN schools s ON t.school_id = s.id
+     LEFT JOIN tour_time tt ON t.id = tt.tour_id
+     ORDER BY t.id DESC` // Ordering by tour_id in descending order
+  );
+  return result.rows;
+};
+exports.approveTour = async (tourId, selectedTime) => {
+  const result = await query(
+    `UPDATE tours 
+     SET time = $1, tour_status = 'APPROVED'
+     WHERE id = $2
+     RETURNING teacher_email, teacher_name`,
+    [selectedTime, tourId]
+  );
+  return result.rows[0];
+};
+exports.rejectTour = async (tourId) => {
+  const result = await query(
+    `UPDATE tours 
+     SET time = NULL, tour_status = 'REJECTED'
+     WHERE id = $1
+     RETURNING teacher_email, teacher_name`,
+    [tourId]
+  );
+  return result.rows[0];
+};

@@ -48,7 +48,7 @@
   position: relative;
   max-width: 100%; /* Bar genişliğinin container'i geçmemesi için */
   height: 20px;
-  background: linear-gradient(90deg, #1d5add, #d31616);
+  background: linear-gradient(90deg, blue, #d31616);
   border-radius: 5px;
   transition: transform 0.3s, width 0.3s; /* Genişlik değişimlerini yumuşatmak için */
 }

@@ -67,6 +67,10 @@ const Sidebar = ({ setCurrentPage }) => {
                         <i className="pi pi-comments"></i>
                         {isExpanded && <span>Feedback Page</span>}
                     </li>
+                    <li className="menu__item" onClick={() => handleNavigation('advisors')}>
+                        <i className="pi pi-briefcase"></i>
+                        {isExpanded && <span>Advisors</span>}
+                    </li>
                 </ul>
                 <div className="sidebar__footer">
                     <button className="menu__item" onClick={() => handleNavigation('Settings')}>

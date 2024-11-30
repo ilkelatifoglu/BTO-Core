@@ -47,7 +47,7 @@ exports.insertTour = async ({
 
 exports.insertTourTimes = async (tour_id, time_preferences) => {
   // Validate time preferences
-  const allowedTimes = ['09:00', '11:00', '13:30', '16:30'];
+  const allowedTimes = ['09:00', '11:00', '13:30', '16:00'];
   if (time_preferences.length < 1 || time_preferences.length > 4) {
     throw new Error('You must provide between 1 and 4 time preferences.');
   }
@@ -120,6 +120,8 @@ exports.getReadyTours = async () => {
     `SELECT 
         t.date,
         t.day,
+        t.time,
+        t.classRoom,
         tt.timepref1,
         tt.timepref2,
         tt.timepref3,
@@ -136,6 +138,7 @@ exports.getReadyTours = async () => {
   );
   return result.rows;
 };
+
 // Get all tours with all attributes and associated school details
 exports.getAllTours = async () => {
   const result = await query(
@@ -150,7 +153,7 @@ exports.getAllTours = async () => {
         t.teacher_name,
         t.teacher_phone,
         t.time,
-        t.classroom,
+        t.classRoom, 
         tt.timepref1,
         tt.timepref2,
         tt.timepref3,
@@ -158,11 +161,17 @@ exports.getAllTours = async () => {
      FROM tours t
      JOIN schools s ON t.school_id = s.id
      LEFT JOIN tour_time tt ON t.id = tt.tour_id
-     ORDER BY t.id DESC` // Ordering by tour_id in descending order
+     ORDER BY t.id DESC`
   );
   return result.rows;
 };
+
 exports.approveTour = async (tourId, selectedTime) => {
+  const allowedTimes = ['09:00', '11:00', '13:30', '16:00'];
+  if (!allowedTimes.includes(selectedTime)) {
+    throw new Error('Invalid time preference');
+  }
+
   await query(
     `UPDATE tours SET time = $1, tour_status = 'APPROVED' WHERE id = $2`,
     [selectedTime, tourId]
@@ -172,5 +181,27 @@ exports.rejectTour = async (tourId) => {
   await query(
     `UPDATE tours SET time = NULL, tour_status = 'REJECTED' WHERE id = $1`,
     [tourId]
+  );
+};
+
+exports.updateClassRoom = async (tourId, classRoom) => {
+  await query(
+    `UPDATE tours SET classRoom = $1 WHERE id = $2`,
+    [classRoom, tourId]
+  );
+};
+
+exports.updateTime = async (tourId, selectedTime) => {
+  const allowedTimes = ['09:00', '11:00', '13:30', '16:00'];
+  
+  // Validate the selected time
+  if (!allowedTimes.includes(selectedTime)) {
+    throw new Error('Invalid time preference. Allowed values are 09:00, 11:00, 13:30, or 16:00.');
+  }
+
+  // Update the time column in the database
+  await query(
+    `UPDATE tours SET time = $1 WHERE id = $2`,
+    [selectedTime, tourId]
   );
 };

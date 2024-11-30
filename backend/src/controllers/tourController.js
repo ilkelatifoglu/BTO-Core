@@ -10,7 +10,9 @@ const {
   getReadyTours,
   getAllTours,
   approveTour,
-  rejectTour
+  rejectTour,
+  updateTime,
+  updateClassRoom,
 } = require("../queries/tourQueries");
 
 const { getSchoolId } = require("../queries/schoolQueries"); // Import from school queries
@@ -187,6 +189,11 @@ exports.approveTour = async (req, res) => {
     return res.status(400).json({ message: "Time preference is required" });
   }
 
+  const allowedTimes = ['09:00', '11:00', '13:30', '16:00'];
+  if (!allowedTimes.includes(selectedTime)) {
+    return res.status(400).json({ message: "Invalid time preference" });
+  }
+
   try {
     await approveTour(id, selectedTime);
     res.status(200).json({ message: "Tour approved successfully" });
@@ -198,6 +205,7 @@ exports.approveTour = async (req, res) => {
     });
   }
 };
+
 
 // Controller to reject a tour
 exports.rejectTour = async (req, res) => {
@@ -211,6 +219,47 @@ exports.rejectTour = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Failed to reject tour",
+    });
+  }
+};
+
+
+exports.updateClassRoom = async (req, res) => {
+  const { id } = req.params;
+  const { classRoom } = req.body;
+
+  if (!classRoom) {
+    return res.status(400).json({ message: "Classroom is required" });
+  }
+
+  try {
+    await updateClassRoom(id, classRoom);
+    res.status(200).json({ message: "Classroom updated successfully" });
+  } catch (error) {
+    console.error("Error updating classroom:", error.message || error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to update classroom",
+    });
+  }
+};
+
+exports.updateTime = async (req, res) => {
+  const { id } = req.params; // Tour ID
+  const { selectedTime } = req.body; // New time value
+
+  if (!selectedTime) {
+    return res.status(400).json({ message: "Time preference is required." });
+  }
+
+  try {
+    await updateTime(id, selectedTime); // Call the query method
+    res.status(200).json({ message: "Time updated successfully." });
+  } catch (error) {
+    console.error("Error updating time:", error.message || error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to update time.",
     });
   }
 };

@@ -55,9 +55,9 @@ const Sidebar = ({ setCurrentPage }) => {
                         <i className="pi pi-chart-line"></i>
                         {isExpanded && <span>Data Insights</span>}
                     </li>
-                    <li className="menu__item" onClick={() => handleNavigation('RegisterUser')}>
+                    <li className="menu__item" onClick={() => handleNavigation('manageUser')}>
                         <i className="pi pi-user-plus"></i>
-                        {isExpanded && <span>Register User</span>}
+                        {isExpanded && <span>User Management</span>}
                     </li>
                     <li className="menu__item" onClick={() => handleNavigation('RealTimeStatus')}>
                         <i className="pi pi-clock"></i>

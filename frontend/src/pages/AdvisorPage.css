@@ -14,14 +14,17 @@
     margin-bottom: 30px;
 }
 
+.advisor-day-column {
+    display: flex;
+    flex-direction: column;
+}
+
 /* Button Styling */
 .advisor-button {
-    display: inline-block;
-    margin: 8px 0;
-    padding: 5px 10px;
-    color: #007bff;
+    margin: 5px 0;
     cursor: pointer;
     text-decoration: underline;
+    color: blue;
 }
 
 .advisor-button:hover {

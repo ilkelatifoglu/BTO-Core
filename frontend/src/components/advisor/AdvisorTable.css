@@ -1,37 +1,41 @@
-table {
+.advisor-table-container {
+    width: 100%;
+    text-align: center;
+    margin: 10px auto;
+}
+
+.advisor-table {
     width: 100%;
     text-align: center;
     border-collapse: collapse;
 }
 
-th, td {
+.advisor-table th,
+.advisor-table td {
     padding: 10px;
     border: 1px solid #ccc;
 }
 
-thead th {
+.advisor-table thead th {
     background-color: #e0e0ff;
 }
 
-p {
+.advisor-table p {
     margin: 5px 0;
     cursor: pointer;
     color: #007bff;
 }
 
-p:hover {
+.advisor-table p:hover {
     text-decoration: underline;
 }
 
-div {
-    margin: 10px;
-}
-
-ul {
+.advisor-table ul {
     list-style-type: none;
     padding: 0;
+    margin: 0;
 }
 
-ul li {
+.advisor-table ul li {
     margin: 5px 0;
 }

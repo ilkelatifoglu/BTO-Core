@@ -13,6 +13,7 @@ import PuantajPage from "../pages/PuantajPage";
 import TourAssignmentPage from "../pages/TourAssignment";
 import AdvisorPage from "../pages/AdvisorPage"; // Adjust path if necessary
 import RegisterPage from "../pages/RegisterPage";
+import UserManagementPage from "../pages/UserManagementPage";
 const AppRoutes = () => {
   return (
     <Routes>
@@ -30,6 +31,8 @@ const AppRoutes = () => {
       <Route path="/assign-tour" element={<TourAssignmentPage />} />
       <Route path="/advisors" element={<AdvisorPage />} />
       <Route path="/register" element={<RegisterPage />} />
+      <Route path="/manageUser" element={<UserManagementPage />} />
+
 
     </Routes>
   );

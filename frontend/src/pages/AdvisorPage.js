@@ -38,16 +38,27 @@ const AdvisorPage = () => {
     };
 
     const renderDayColumn = (day) => {
-        return groupedAdvisors[day]?.map((advisor) => (
-            <div
-                key={advisor.advisor_id}
-                className="advisor-button"
-                onClick={() => scrollToAdvisor(advisor.advisor_id)}
-            >
-                {advisor.advisor_name}
+        return (
+            <div style={{ display: "flex", flexDirection: "column" }}>
+                {groupedAdvisors[day]?.map((advisor) => (
+                    <div
+                        key={advisor.advisor_id}
+                        className="advisor-button"
+                        onClick={() => scrollToAdvisor(advisor.advisor_id)}
+                        style={{
+                            margin: "5px 0", // Adds spacing between advisors
+                            cursor: "pointer",
+                            textDecoration: "underline",
+                            color: "blue",
+                        }}
+                    >
+                        {advisor.advisor_name}
+                    </div>
+                ))}
             </div>
-        ));
+        );
     };
+    
 
     return (
         <div className="advisor-page-container">

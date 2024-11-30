@@ -11,11 +11,9 @@ import OtpVerification from "../pages/OtpVerification";
 import GuideInfoPage from "../pages/GuideInfoPage";
 import PuantajPage from "../pages/PuantajPage";
 import TourAssignmentPage from "../pages/TourAssignment";
-import AdvisorPage from "../pages/AdvisorPage"; // Adjust path if necessary
-import RegisterPage from "../pages/RegisterPage";
+import AdvisorPage from "../pages/AdvisorPage"; // Adjust path if necessar
 import UserManagementPage from "../pages/UserManagementPage";
 import TourApprovalPage from "../pages/TourApproval";
-
 const AppRoutes = () => {
   return (
     <Routes>
@@ -32,9 +30,11 @@ const AppRoutes = () => {
       <Route path="/puantaj-page" element={<PuantajPage />} />
       <Route path="/assign-tour" element={<TourAssignmentPage />} />
       <Route path="/advisors" element={<AdvisorPage />} />
-      <Route path="/register" element={<RegisterPage />} />
       <Route path="/manageUser" element={<UserManagementPage />} />
       <Route path="/approve-tour" element={<TourApprovalPage />} />
+
+
+
     </Routes>
   );
 };

@@ -12,7 +12,7 @@ exports.register = async (req, res) => {
     first_name,
     last_name,
     email,
-    user_id, // This is the user-provided user_id
+   // user_id, // This is the user-provided user_id
     department,
     role,
     phone_number,
@@ -36,9 +36,9 @@ exports.register = async (req, res) => {
     // Define user type mapping based on role
     const roleToUserType = {
       "candidate guide": 1,
-      "guide": 2,
-      "advisor": 3,
-      "coordinator": 4,
+      guide: 2,
+      advisor: 3,
+      coordinator: 4,
     };
 
     const userType = roleToUserType[role];
@@ -52,13 +52,13 @@ exports.register = async (req, res) => {
     const hashedPassword = await bcrypt.hash(originalPassword, salt);
 
     const newUser = await query(
-      `INSERT INTO users (first_name, last_name, email, password, user_id, department, role, phone_number, crew_no, user_type) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id`,
+      `INSERT INTO users (first_name, last_name, email, password, department, role, phone_number, crew_no, user_type) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id`,
       [
         first_name,
         last_name,
         email,
         hashedPassword,
-        user_id,
+        //user_id,
         department,
         role,
         phone_number,
@@ -67,7 +67,7 @@ exports.register = async (req, res) => {
       ]
     );
 
-    const newUserId = newUser.rows[0].id;
+    const userId = newUser.rows[0].id;
 
     // Handle role-specific logic
     if (role === "advisor") {
@@ -78,7 +78,7 @@ exports.register = async (req, res) => {
       await query(
         ` INSERT INTO advisors (user_id, full_name, day, candidate_guides_count, created_at, updated_at) 
          VALUES ($1, $2, $3, 0, NOW(), NOW())`,
-        [user_id, `${first_name} ${last_name}`, days]
+        [userId, `${first_name} ${last_name}`, days]
       );
     } else if (role === "candidate guide") {
       const advisor = await query(`SELECT * FROM advisors WHERE full_name = $1`, [advisor_name]);
@@ -90,7 +90,7 @@ exports.register = async (req, res) => {
       await query(
         `INSERT INTO candidate_guides (user_id, advisor_user_id, advisor_name, full_name, department, created_at, updated_at) 
          VALUES ($1, $2, $3, $4, $5,  NOW(), NOW())`,
-        [user_id, advisorUserId, advisor_name, `${first_name} ${last_name}`, department]
+        [userId, advisorUserId, advisor_name, `${first_name} ${last_name}`, department]
       );
 
       await query(`UPDATE advisors SET candidate_guides_count = candidate_guides_count + 1 WHERE user_id = $1`, [

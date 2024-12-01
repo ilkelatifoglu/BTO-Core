@@ -1,0 +1,57 @@
+.help-support-container {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: -60px; /* Pull the container upwards */
+    max-width: 900px;
+    margin-left: auto; /* Center horizontally within the container */
+    margin-right: auto;
+}
+
+.help-support-header {
+    font-size: 25px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #000000;
+}
+
+.help-support-section {
+    background: #fff;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.help-support-section h2 {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.help-icon {
+    font-size: 22px;
+    color: #333;
+    font-weight: bold;
+}
+
+.help-support-section p {
+    font-size: 15px;
+    line-height: 1.5;
+    color: #000000;
+}
+
+.help-support-section a {
+    color: #040080;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.help-support-section a:hover {
+    text-decoration: underline;
+}

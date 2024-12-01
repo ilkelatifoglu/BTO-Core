@@ -1,4 +1,6 @@
 import axios from "axios";
+import { formatDate } from "../components/common/dateUtils";
+
 
 const API_BASE_URL = "http://localhost:3001";
 
@@ -12,6 +14,7 @@ const AssignTourService = {
       throw new Error("Unable to fetch tours");
     }
   },
+
   getAssignedGuides: async (tourId) => {
     try {
       const response = await axios.get(`${API_BASE_URL}/tour/${tourId}/guideCount`);
@@ -21,19 +24,53 @@ const AssignTourService = {
       return 0; 
     }
   },
-  assignGuideToTour: async ({ school_name, city, date }) => {
+  
+  getCandidateGuides: async () => {  
     try {
-      const response = await axios.post(`${API_BASE_URL}/tour/assignGuide`, {
-        school_name,
-        city,
-        date,
-      });
-      return response.data; // Return success message
+      const response = await axios.get(`${API_BASE_URL}/tour/candidateGuides`);
+      return response.data;
     } catch (error) {
-      console.error("Error assigning guide to tour:", error.response?.data || error);
-      throw new Error(error.response?.data?.message || "Unable to assign guide to tour");
+      console.error("Error fetching candidate guides:", error);
+      throw new Error("Unable to fetch candidate guides");
     }
-  },
-};
+  },  
+
+  assignGuideToTour: async ({ school_name, city, date, time }) => {
+    const userId = localStorage.getItem("userId");
+    const tempToken = localStorage.getItem("tempToken"); // Authorization token
+    const formattedDate = formatDate(date); // Format the date
+    const userType = localStorage.getItem("userType");
+  
+    try {
+      const response = await axios.post(
+        `${API_BASE_URL}/tour/assignGuide`,
+        { school_name, city, date: formattedDate, time, user_id: userId, user_type: userType },
+        { headers: { Authorization: `Bearer ${tempToken}` } }
+      );
+      return response.data; // Return the server's response
+    } catch (error) {
+      console.error("Error assigning guide:", error.response?.data || error);
+      throw new Error(error.response?.data?.message || "Unable to assign guide");
+    }
+  },  
+
+  assignCandidateGuidesToTour: async ({ school_name, city, date, time, user_ids }) => {
+    const tempToken = localStorage.getItem("tempToken");
+    const formattedDate = formatDate(date); // Format the date
+  
+    try {
+      const response = await axios.post(
+        `${API_BASE_URL}/tour/assignCandidate`,
+        { school_name, city, date: formattedDate, time, user_ids }, // Pass user_ids here
+        { headers: { Authorization: `Bearer ${tempToken}` } }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error assigning candidate guides:", error.response?.data || error);
+      throw new Error(error.response?.data?.message || "Unable to assign candidate guides");
+    }
+  },  
+
+ };
 
 export default AssignTourService;

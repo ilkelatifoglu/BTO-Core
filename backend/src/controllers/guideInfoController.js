@@ -9,12 +9,24 @@ exports.getGuideInfo = async (req, res) => {
 
         // Base query to fetch guide info
         let query = `
-            SELECT u.id, u.first_name, u.last_name, u.email, u.role, u.department,
-                   u.phone_number, s.schedule_file
-            FROM users u
-            LEFT JOIN schedules s ON u.id = s.user_id
-            WHERE u.role IN ('guide', 'advisor', 'coordinator')
+            SELECT 
+                u.first_name, 
+                u.last_name, 
+                u.email, 
+                u.role, 
+                u.department, 
+                u.phone_number, 
+                s.schedule_file
+            FROM 
+                users u
+            LEFT JOIN 
+                schedules s 
+            ON 
+                u.id = s.user_id
+            WHERE 
+                u.role IN ('guide', 'advisor', 'coordinator')
         `;
+
 
         // Initialize query parameters array
         const queryParams = [];
@@ -52,7 +64,7 @@ exports.getGuideInfo = async (req, res) => {
          // Map the result to add a URL for the schedule
          const formattedResult = result.rows.map(row => {
             if (row.schedule_file) {
-                row.schedule_url = `http://your-server-domain/schedules/${row.schedule_file}`;
+                row.schedule_url = `http://localhost:3001/schedules/${row.schedule_file}`;
             } else {
                 row.schedule_url = null;
             }
@@ -60,10 +72,10 @@ exports.getGuideInfo = async (req, res) => {
         });
         
         // Send the result as JSON
-        return res.status(200).json(result.rows);
-
+        // Send the result as JSON
+        return res.status(200).json(formattedResult);
     } catch (err) {
-        // Log the error for debugging purposes
+        // Log the error for debugging
         console.error('Error in getGuideInfo:', err.message);
 
         // Send a generic error response

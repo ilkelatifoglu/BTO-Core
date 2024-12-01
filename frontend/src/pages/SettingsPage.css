@@ -1,35 +1,29 @@
 .settings-page-container {
     display: flex;
     flex-grow: 1;
-    background-color: #f9f9f9;
-    padding: 20px;
+    background-color: #f9f9f9; /* Match sidebar background color */
+    padding: 20px; /* Add spacing around the container */
     height: 100%;
-    transition: margin-left 0.3s ease; /* Smooth transition for page adjustment */
-    margin-left: 240px; /* Default sidebar width */
-}
-
-.settings-page-container.collapsed {
-    margin-left: 70px; /* Adjust for collapsed sidebar */
+    margin-left: 230px; /* Push settings content to the right, leaving space for the sidebar */
+    transition: margin-left 0.3s ease; /* Smooth transition for animations or adjustments */
 }
 
 .settings-sidebar {
-    width: 240px;
-    background-color: #ffffff;
+    width: 240px; /* Keep the sidebar at a fixed width */
+    background-color: #f9f9f9; /* Match the background color of the settings */
     border-right: 1px solid #ddd;
     padding: 20px;
     display: flex;
     flex-direction: column;
-    transition: width 0.3s ease; /* Smooth transition for collapsing sidebar */
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.settings-sidebar.collapsed {
-    width: 70px; /* Width of the collapsed sidebar */
-}
-
-.settings-sidebar h2 {
+.settings-header {
     margin-bottom: 20px;
     font-size: 1.5em;
-    display: none; /* Hide heading in collapsed state */
+    font-weight: bold;
+    color: #000000;
 }
 
 .settings-sidebar button {
@@ -44,19 +38,36 @@
     display: flex;
     align-items: center;
     gap: 10px;
+    border-radius: 8px;
     transition: all 0.3s;
+}
+.settings-sidebar button i {
+    font-weight: bold; /* Makes the icons bold */
+    font-size: 1.2em; /* Adjust size slightly for better visibility */
 }
 
 .settings-sidebar button:hover,
 .settings-sidebar button.active-tab {
     background-color: #ddd;
     color: #000000;
-    border-radius: 4px;
 }
 
 .settings-content {
     flex-grow: 1;
     padding: 40px;
-    background-color: #f9f9f9;
+    background-color: #f9f9f9; /* Keep this white for distinction */
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     overflow-y: auto;
+}
+/* Add a pseudo-element for the left background extension */
+.settings-page-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 250px; /* Match sidebar + gap width */
+    height: 100%;
+    background-color: #f9f9f9; /* Match the settings sidebar color */
+    z-index: -1; /* Place it behind the content */
 }

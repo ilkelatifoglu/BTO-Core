@@ -25,7 +25,7 @@ const LeftForm = () => {
   const [city, setCity] = useState({ value: 'Ankara', label: 'Ankara' });
   const [schoolName, setSchoolName] = useState('');
   const [numberOfStudents, setNumberOfStudents] = useState('');
-  const [preferredDate, setPreferredDate] = useState('Monday');
+  const [tourDate, setTourDate] = useState(''); // Initialize as empty string
   const [availableTimes, setAvailableTimes] = useState(timeOptions);
   const [selectedTimes, setSelectedTimes] = useState([]);
 
@@ -116,24 +116,18 @@ const LeftForm = () => {
         />
       </div>
 
-      {/* Preferred Date */}
+      {/* Preferred Tour Date */}
       <div className="form-group">
-        <label htmlFor="preferredDate">Preferred Date for the Tour</label>
-        <select
-          id="preferredDate"
-          name="preferredDate"
+        <label htmlFor="tourDate">Preferred Date for the Tour</label>
+        <input
+          type="date"
+          id="tourDate"
+          name="tourDate"
           className="form-control"
-          value={preferredDate}
-          onChange={(e) => setPreferredDate(e.target.value)}
-        >
-          <option value="Monday">Monday</option>
-          <option value="Tuesday">Tuesday</option>
-          <option value="Wednesday">Wednesday</option>
-          <option value="Thursday">Thursday</option>
-          <option value="Friday">Friday</option>
-          <option value="Saturday">Saturday</option>
-          <option value="Sunday">Sunday</option>
-        </select>
+          value={tourDate}
+          onChange={(e) => setTourDate(e.target.value)}
+          min={new Date().toISOString().split('T')[0]} // Set min date to today
+        />
       </div>
 
       {/* Tour Start Time Preferences */}
@@ -149,13 +143,13 @@ const LeftForm = () => {
               <option value="" disabled>
                 Select Time
               </option>
-              {timeOptions.map((availableTime) => (
+              {timeOptions.map((availableTime) =>
                 !selectedTimes.includes(availableTime) || availableTime === time ? (
                   <option key={availableTime} value={availableTime}>
                     {availableTime}
                   </option>
                 ) : null
-              ))}
+              )}
             </select>
             <button
               type="button"

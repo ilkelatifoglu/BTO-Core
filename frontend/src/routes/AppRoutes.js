@@ -14,6 +14,7 @@ import TourAssignmentPage from "../pages/TourAssignment";
 import AdvisorPage from "../pages/AdvisorPage"; // Adjust path if necessar
 import UserManagementPage from "../pages/UserManagementPage";
 import TourApprovalPage from "../pages/TourApproval";
+import DataInsightPage from "../pages/DataInsightPage";
 const AppRoutes = () => {
   return (
     <Routes>
@@ -31,10 +32,9 @@ const AppRoutes = () => {
       <Route path="/assign-tour" element={<TourAssignmentPage />} />
       <Route path="/advisors" element={<AdvisorPage />} />
       <Route path="/manageUser" element={<UserManagementPage />} />
+      <Route path="/data-insight" element={<DataInsightPage />} />
       <Route path="/approve-tour" element={<TourApprovalPage />} />
-
-
-
+     
     </Routes>
   );
 };

@@ -1,0 +1,60 @@
+.chart {
+    flex: 1 1 100%;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .chart-title {
+    margin-bottom: 15px;
+    font-size: 16px;
+    font-weight: bold;
+  }
+  
+  /* Pie Chart Container */
+  .pie-chart {
+    position: relative;
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    margin: 0 auto;
+    background: conic-gradient(
+      var(--color-completed) var(--start-completed) calc(var(--start-completed) + var(--value-completed)),
+      var(--color-cancelled) calc(var(--start-completed) + var(--value-completed)) 100%
+    );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  
+  .pie-segment {
+    position: absolute;
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    background: conic-gradient(
+      var(--color, transparent) var(--start, 0%) calc(var(--start, 0%) + var(--value, 0%)),
+      transparent calc(var(--start, 0%) + var(--value, 0%)) 100%
+    );
+    clip-path: circle(50%);
+  }
+  
+  /* Optional Tooltip Styling */
+  .pie-segment:hover::after {
+    content: attr(title);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+  

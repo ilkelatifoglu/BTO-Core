@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import "./UserManagementPage.css"; // Include CSS for styling
+import Sidebar from '../components/common/Sidebar'; 
 
 const UserManagementPage = () => {
     const [action, setAction] = useState(""); // Selected action
@@ -139,6 +140,8 @@ const UserManagementPage = () => {
     
 
     return (
+        <div >
+        <Sidebar />
         <div className="user-management-page">
             <h1>User Management</h1>
             <div className="action-selector">
@@ -351,6 +354,7 @@ const UserManagementPage = () => {
                     </form>
                 </div>
             )}
+        </div>
         </div>
     );
 };

@@ -1,16 +1,17 @@
-/* Container Styling */
 .advisor-page-container {
-    padding: 20px;
+    padding: 10px 20px;
     max-width: 1200px;
     margin: auto;
     font-family: Arial, sans-serif;
+    margin-left: 260px;
 }
 
 /* Title */
 .advisor-page-title {
     text-align: center;
     font-size: 2rem;
-    color: #4caf50;
+    color: black;
+    margin-top: 10px;
     margin-bottom: 30px;
 }
 
@@ -33,7 +34,7 @@
 
 /* Advisor Card Styling */
 .advisor-details-section {
-    margin-top: 40px;
+    margin-top: 20px;
 }
 
 .advisor-card {

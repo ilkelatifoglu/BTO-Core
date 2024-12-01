@@ -8,7 +8,7 @@ const tourRoutes = require("./src/routes/tourRoutes");
 const schoolRoutes = require("./src/routes/schoolRoutes");
 const advisorRoutes = require("./src/routes/advisorRoutes");
 const userManagementRoutes = require("./src/routes/userManagementRoutes");
-
+const dataRoutes = require("./src/routes/dataRoutes");
 const app = express();
 
 app.use(
@@ -20,6 +20,7 @@ app.use(
 );
 
 app.use(express.json());
+app.use('/uploads', express.static('uploads')); // profil foto için eklendi
 
 app.use("/auth", authRoutes);
 app.use("/guideInfo", guideInfoRoutes);
@@ -28,6 +29,7 @@ app.use("/tour", tourRoutes);
 app.use("/school", schoolRoutes);
 app.use("/advisors", advisorRoutes);
 app.use("/user-management", userManagementRoutes);
+app.use("/", dataRoutes);
 
 const PORT = process.env.PORT || 3001;
 

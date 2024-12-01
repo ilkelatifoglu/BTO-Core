@@ -1,31 +1,41 @@
-import React, { useState } from 'react';
+// src/components/homepage/tourform-components/RightForm.js
+
+import React from 'react';
 import './RightForm.css';
+import PropTypes from 'prop-types';
 
-const RightForm = () => {
-  const [responsibleName, setResponsibleName] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [email, setEmail] = useState('');
-  const [visitorNotes, setVisitorNotes] = useState('');
-
+const RightForm = ({
+  responsibleName,
+  setResponsibleName,
+  phoneNumber,
+  setPhoneNumber,
+  email,
+  setEmail,
+  visitorNotes,
+  setVisitorNotes,
+}) => {
+  // Handler for phone number input with formatting (e.g., 0 XXX XXX XX XX)
   const handlePhoneNumberChange = (e) => {
+    // Remove all non-digit characters
     let input = e.target.value.replace(/\D/g, '').substring(0, 11); // Limit to 11 digits
+
+    // Format the phone number as 0 XXX XXX XX XX
     let formattedNumber = '';
-  
     if (input.length > 0) {
-      formattedNumber = `0`;
+      formattedNumber = '0';
     }
     if (input.length > 1 && input.length <= 4) {
-      formattedNumber = `0 ${input.substring(1)}`;
+      formattedNumber += ` ${input.substring(1)}`;
     } else if (input.length > 4 && input.length <= 7) {
-      formattedNumber = `0 ${input.substring(1, 4)} ${input.substring(4)}`;
+      formattedNumber += ` ${input.substring(1, 4)} ${input.substring(4)}`;
     } else if (input.length > 7 && input.length <= 9) {
-      formattedNumber = `0 ${input.substring(1, 4)} ${input.substring(4, 7)} ${input.substring(7)}`;
+      formattedNumber += ` ${input.substring(1, 4)} ${input.substring(4, 7)} ${input.substring(7)}`;
     } else if (input.length > 9) {
-      formattedNumber = `0 ${input.substring(1, 4)} ${input.substring(4, 7)} ${input.substring(7, 9)} ${input.substring(9)}`;
+      formattedNumber += ` ${input.substring(1, 4)} ${input.substring(4, 7)} ${input.substring(7, 9)} ${input.substring(9)}`;
     }
+
     setPhoneNumber(formattedNumber);
   };
-  
 
   return (
     <div className="right-form">
@@ -40,6 +50,7 @@ const RightForm = () => {
           placeholder="Fatma"
           value={responsibleName}
           onChange={(e) => setResponsibleName(e.target.value)}
+          required
         />
       </div>
 
@@ -54,6 +65,7 @@ const RightForm = () => {
           placeholder="0 XXX XXX XX XX"
           value={phoneNumber}
           onChange={handlePhoneNumberChange}
+          required
         />
       </div>
 
@@ -68,6 +80,7 @@ const RightForm = () => {
           placeholder="example@gmail.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          required
         />
       </div>
 
@@ -85,6 +98,18 @@ const RightForm = () => {
       </div>
     </div>
   );
+};
+
+// PropTypes for type checking and ensuring required props are passed
+RightForm.propTypes = {
+  responsibleName: PropTypes.string.isRequired,
+  setResponsibleName: PropTypes.func.isRequired,
+  phoneNumber: PropTypes.string.isRequired,
+  setPhoneNumber: PropTypes.func.isRequired,
+  email: PropTypes.string.isRequired,
+  setEmail: PropTypes.func.isRequired,
+  visitorNotes: PropTypes.string.isRequired,
+  setVisitorNotes: PropTypes.func.isRequired,
 };
 
 export default RightForm;

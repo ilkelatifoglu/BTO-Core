@@ -31,11 +31,32 @@ exports.insertTour = async ({
   teacher_name,
   teacher_phone,
   teacher_email,
+  visitor_notes, // Added visitor_notes
 }) => {
   const result = await query(
-    `INSERT INTO tours (school_id, date, day, tour_size, guide_count, teacher_name, teacher_phone, teacher_email)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id`,
-    [school_id, date, day, tour_size, guide_count, teacher_name, teacher_phone, teacher_email]
+    `INSERT INTO tours (
+        school_id,
+        date,
+        day,
+        tour_size,
+        guide_count,
+        teacher_name,
+        teacher_phone,
+        teacher_email,
+        visitor_notes
+      )
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id`,
+    [
+      school_id,
+      date,
+      day,
+      tour_size,
+      guide_count,
+      teacher_name,
+      teacher_phone,
+      teacher_email,
+      visitor_notes, // Added visitor_notes to values
+    ]
   );
   return result.rows[0].id;
 };
@@ -154,6 +175,7 @@ exports.getAllTours = async () => {
         t.teacher_phone,
         t.time,
         t.classRoom, 
+        t.visitor_notes,
         tt.timepref1,
         tt.timepref2,
         tt.timepref3,

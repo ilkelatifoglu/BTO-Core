@@ -16,6 +16,7 @@ const {
 } = require("../queries/tourQueries");
 
 const { getSchoolId } = require("../queries/schoolQueries"); // Import from school queries
+const { sendConfirmationEmail } = require('../utils/email'); // Import the function
 const { query } = require("../config/database");
 
 // src/controllers/tourController.js
@@ -31,6 +32,7 @@ exports.addTour = async (req, res) => {
     teacher_phone,
     teacher_email,
     time_preferences,
+    visitor_notes,
   } = req.body;
 
   try {
@@ -56,6 +58,7 @@ exports.addTour = async (req, res) => {
       teacher_name,
       teacher_phone,
       teacher_email,
+      visitor_notes,
     });
 
     if (time_preferences && time_preferences.length > 0) {
@@ -63,6 +66,13 @@ exports.addTour = async (req, res) => {
     } else {
       return res.status(400).json({ message: "At least one time preference is required." });
     }
+
+    await sendConfirmationEmail(teacher_email, {
+      teacher_name,
+      tour_date: date,
+      school_name,
+      time_preferences,
+    });
 
     res.status(200).json({
       success: true,

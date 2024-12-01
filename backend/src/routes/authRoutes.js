@@ -12,7 +12,7 @@ const authController = require("../controllers/authController");
 
 const router = express.Router();
 
-router.post("/register", register);
+router.post("/register", authController.register);
 router.post("/login", login);
 router.delete("/delete-user", deleteUserByEmail);
 router.put("/update-password", updatePassword);

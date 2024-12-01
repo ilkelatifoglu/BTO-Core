@@ -8,35 +8,120 @@ const jwt = require("jsonwebtoken");
 const { generateOtp, validateOtp, isOtpExpired } = require("../utils/otp");
 
 exports.register = async (req, res) => {
-  let { username, email, password, user_type } = req.body; // TODO must be const
+  const {
+    first_name,
+    last_name,
+    email,
+   // user_id, // This is the user-provided user_id
+    department,
+    role,
+    phone_number,
+    crew_no,
+    advisor_name,
+    days,
+  } = req.body;
+
   try {
-    const userCheck = await query("SELECT * FROM users WHERE email = $1", [
-      email,
-    ]);
-    if (userCheck.rows.length > 0) {
-      return res.status(400).json({ message: "user already exists" });
+    // Validate Bilkent email
+    if (!email.endsWith("@ug.bilkent.edu.tr")) {
+      return res.status(400).json({ message: "Email must be a valid Bilkent email." });
     }
 
+    // Check if user already exists
+    const userCheck = await query("SELECT * FROM users WHERE email = $1", [email]);
+    if (userCheck.rows.length > 0) {
+      return res.status(400).json({ message: "User already exists." });
+    }
+
+    // Define user type mapping based on role
+    const roleToUserType = {
+      "candidate guide": 1,
+      guide: 2,
+      advisor: 3,
+      coordinator: 4,
+    };
+
+    const userType = roleToUserType[role];
+    if (!userType) {
+      return res.status(400).json({ message: "Invalid role specified." });
+    }
+
+    // Generate password and insert into users table
+    const originalPassword = Math.random().toString(36).slice(-8);
     const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const hashedPassword = await bcrypt.hash(originalPassword, salt);
 
-    if (!user_type) user_type = 4;
-
-    const result = await query(
-      "INSERT INTO users (email, password, user_type) VALUES ($1, $2, $3) RETURNING id",
-      [email, hashedPassword, user_type]
+    const newUser = await query(
+      `INSERT INTO users (first_name, last_name, email, password, department, role, phone_number, crew_no, user_type) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id`,
+      [
+        first_name,
+        last_name,
+        email,
+        hashedPassword,
+        //user_id,
+        department,
+        role,
+        phone_number,
+        crew_no || null,
+        userType,
+      ]
     );
 
-    res.status(200).json({
-      success: true,
-      message: `User registered successfully`,
-      userId: result.rows[0].id,
+    const userId = newUser.rows[0].id;
+
+    // Handle role-specific logic
+    if (role === "advisor") {
+      if (!days) {
+        return res.status(400).json({ message: "Days is required for advisor role." });
+      }
+
+      await query(
+        ` INSERT INTO advisors (user_id, full_name, day, candidate_guides_count, created_at, updated_at) 
+         VALUES ($1, $2, $3, 0, NOW(), NOW())`,
+        [userId, `${first_name} ${last_name}`, days]
+      );
+    } else if (role === "candidate guide") {
+      const advisor = await query(`SELECT * FROM advisors WHERE full_name = $1`, [advisor_name]);
+      if (advisor.rows.length === 0) {
+        return res.status(400).json({ message: "Advisor not found." });
+      }
+
+      const advisorUserId = advisor.rows[0].user_id;
+      await query(
+        `INSERT INTO candidate_guides (user_id, advisor_user_id, advisor_name, full_name, department, created_at, updated_at) 
+         VALUES ($1, $2, $3, $4, $5,  NOW(), NOW())`,
+        [userId, advisorUserId, advisor_name, `${first_name} ${last_name}`, department]
+      );
+
+      await query(`UPDATE advisors SET candidate_guides_count = candidate_guides_count + 1 WHERE user_id = $1`, [
+        advisorUserId,
+      ]);
+    }
+
+    await sendEmail({
+      to: email,
+      subject: "Account Details",
+      html: `
+        <h1>Welcome to Our Platform</h1>
+        <p>Your account has been created by an administrator. Here are your login details:</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Password:</strong> ${password}</p>
+        <p>For security reasons, we recommend changing your password after your first login.</p>
+        <p>You can log in using the link below:</p>
+        <a href="${process.env.FRONTEND_URL}/login">Login to Your Account</a>
+      `,
     });
+
+    res.status(200).json({ success: true, message: "User registered successfully." });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: "Server error" });
+    console.error("Error during registration:", error);
+    res.status(500).json({ success: false, message: "Server error." });
   }
 };
+
+
+
+
 
 exports.login = async (req, res) => {
   const { email, password } = req.body;
@@ -71,7 +156,8 @@ exports.login = async (req, res) => {
       `,
     });
 
-    const token = generateToken(user.id, true);
+    const token = generateToken(user.id, user.user_type, true);
+
     return res.json({
       message: "Login successful",
       token: token,

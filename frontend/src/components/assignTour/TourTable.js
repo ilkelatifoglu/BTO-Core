@@ -26,8 +26,7 @@ export default function ReadyToursTable() {
       } catch (error) {
         console.error("Error fetching tours:", error);
       }
-    };
-    
+    };    
 
     fetchTours();
 
@@ -184,6 +183,7 @@ export default function ReadyToursTable() {
   
   
 
+
   return (
     <div className="assign-tour-container">
       <h1 className="table-title">Tour Assignment</h1>
@@ -303,5 +303,4 @@ export default function ReadyToursTable() {
       </div>
     </div>
   );
-  
 }

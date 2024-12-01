@@ -3,19 +3,26 @@ const {
   doesTourExist,
   insertTour,
   insertTourTimes,
-  getAssignedGuideCount,
-  getGuideCountForTour,
   fetchTourDetails,
   isUserAssignedToTour,
   hasSchedulingConflict,
   fetchAssignmentCounts,
   validateQuota,
-  getReadyTours,
   fetchCandidateGuides,
+  isGuideAssignedToTour,
+  getAssignedGuideCount,
+  getGuideCountForTour,
+  getReadyTours,
+  getAllTours,
+  approveTour,
+  rejectTour
 } = require("../queries/tourQueries");
 
 const { getSchoolId } = require("../queries/schoolQueries"); // Import from school queries
 const { query } = require("../config/database");
+
+const { sendEmail } = require("../utils/email");
+// src/controllers/tourController.js
 
 exports.addTour = async (req, res) => {
   const {
@@ -54,6 +61,12 @@ exports.addTour = async (req, res) => {
       teacher_phone,
       teacher_email,
     });
+
+    if (time_preferences && time_preferences.length > 0) {
+      await insertTourTimes(tourId, time_preferences);
+    } else {
+      return res.status(400).json({ message: "At least one time preference is required." });
+    }
 
     res.status(200).json({
       success: true,
@@ -114,7 +127,6 @@ exports.assignGuideToTour = async (req, res) => {
       assignedGuides: assigned_guides + 1,  
     });
 
-    // Respond to the client with success
     res.status(200).json({
       success: true,
       message: "Guide successfully assigned to the tour!",
@@ -236,3 +248,76 @@ exports.getCandidateGuides = async (req, res) => {
   }
 };
 
+exports.getAllTours = async (req, res) => {
+  try {
+    const tours = await getAllTours();
+    res.status(200).json({
+      success: true,
+      data: tours,
+    });
+  } catch (error) {
+    console.error("Error fetching all tours:", error.message || error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+exports.approveTour = async (req, res) => {
+  const { id } = req.params;
+  const { selectedTime } = req.body;
+
+  if (!selectedTime) {
+    return res.status(400).json({ message: "Time preference is required" });
+  }
+
+  try {
+    // Update the tour in the database
+    const tour = await approveTour(id, selectedTime); // Ensure this query returns teacher_email and other relevant fields
+
+    // Send an email to the teacher
+    const emailContent = `
+      <p>Dear ${tour.teacher_name},</p>
+      <p>We are pleased to inform you that your tour has been approved with the selected time: <b>${selectedTime}</b>.</p>
+      <p>Thank you for your patience.</p>
+      <p>Best regards,<br/>BTO Core Team</p>
+    `;
+
+    await sendEmail({
+      to: tour.teacher_email,
+      subject: "Tour Approved",
+      html: emailContent,
+    });
+
+    res.status(200).json({ message: "Tour approved and email sent" });
+  } catch (error) {
+    console.error("Error approving tour:", error);
+    res.status(500).json({ message: "Failed to approve tour" });
+  }
+};
+
+// Controller to reject a tour
+exports.rejectTour = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // Update the tour in the database
+    const tour = await rejectTour(id); // Ensure this query returns teacher_email and other relevant fields
+
+    // Send an email to the teacher
+    const emailContent = `
+      <p>Dear ${tour.teacher_name},</p>
+      <p>We regret to inform you that your tour request has been rejected.</p>
+      <p>If you have any questions, please feel free to contact us.</p>
+      <p>Best regards,<br/>BTO Core Team</p>
+    `;
+
+    await sendEmail({
+      to: tour.teacher_email,
+      subject: "Tour Rejected",
+      html: emailContent,
+    });
+
+    res.status(200).json({ message: "Tour rejected and email sent" });
+  } catch (error) {
+    console.error("Error rejecting tour:", error);
+    res.status(500).json({ message: "Failed to reject tour" });
+  }
+};

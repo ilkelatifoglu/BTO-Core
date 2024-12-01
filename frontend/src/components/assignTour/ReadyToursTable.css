@@ -15,8 +15,7 @@
     font-weight: bold;
     margin-bottom: 1.5rem;
     text-align: center;
-}
-  
+}  
   .action-buttons {
     display: flex;
     align-items: center;
@@ -83,6 +82,7 @@
     display: inline-block; /* Prevent items from wrapping */
     min-width: 200px; /* Ensure dropdown width fits content */
 }
+
 
 /* Styling for the action buttons */
 .p-button-rounded.p-button-success {

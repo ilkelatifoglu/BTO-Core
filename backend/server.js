@@ -5,10 +5,14 @@ const socketIo = require("socket.io");
 const cors = require("cors");
 
 const authRoutes = require("./src/routes/authRoutes");
-const guideInfoRoutes = require('./src/routes/guideInfoRoutes'); // Import the new route
-const workRoutes = require("./src/routes/workRoutes"); // Import work routes
-const tourRoutes = require("./src/routes/tourRoutes"); 
-const schoolRoutes = require("./src/routes/schoolRoutes"); 
+
+const guideInfoRoutes = require("./src/routes/guideInfoRoutes");
+const workRoutes = require("./src/routes/workRoutes");
+const tourRoutes = require("./src/routes/tourRoutes");
+const schoolRoutes = require("./src/routes/schoolRoutes");
+const advisorRoutes = require("./src/routes/advisorRoutes");
+const userManagementRoutes = require("./src/routes/userManagementRoutes");
+const dataRoutes = require("./src/routes/dataRoutes");
 
 const app = express();
 const server = http.createServer(app);
@@ -24,12 +28,15 @@ app.use(cors());
 app.use(express.json());
 app.set("io", io);
 
+app.use('/uploads', express.static('uploads')); // profil foto için eklendi
 app.use("/auth", authRoutes);
 app.use("/guideInfo", guideInfoRoutes);
-
 app.use("/work", workRoutes);
 app.use("/tour", tourRoutes);
 app.use("/school", schoolRoutes);
+app.use("/advisors", advisorRoutes);
+app.use("/user-management", userManagementRoutes);
+app.use("/", dataRoutes);
 
 io.on("connection", (socket) => {
   console.log("New client connected:", socket.id);

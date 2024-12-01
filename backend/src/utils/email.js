@@ -1,6 +1,5 @@
 const nodemailer = require("nodemailer");
 
-// Create reusable transporter
 const createTransporter = () => {
   return nodemailer.createTransport({
     service: "gmail",
@@ -13,17 +12,14 @@ const createTransporter = () => {
 
 const sendEmail = async ({ to, subject, html }) => {
   try {
-    // Verify environment variables are set
     if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
       throw new Error("Email configuration is missing");
     }
 
     const transporter = createTransporter();
 
-    // Verify transporter configuration
     await transporter.verify();
 
-    // Send email
     const info = await transporter.sendMail({
       from: `"BTO Core" <${process.env.EMAIL_USER}>`,
       to,

@@ -1,7 +1,7 @@
 const speakeasy = require("speakeasy");
 const bcrypt = require("bcrypt");
 const { query } = require("../config/database");
-const { generateToken } = require("../utils/jwt");
+const { verifyToken, generateToken } = require("../utils/jwt");
 const pool = require("../config/database"); // TODO
 const { sendEmail } = require("../utils/email");
 const jwt = require("jsonwebtoken");
@@ -74,11 +74,12 @@ exports.login = async (req, res) => {
     const token = generateToken(user.id, true);
     return res.json({
       message: "Login successful",
-      token,
+      token: token,
       user_type: user.user_type,
+      user_id: user.id,
     });
   } catch (error) {
-    console.error("Error in login function:", error);
+    console.log("Error in login function:", error);
     return res.status(500).json({ message: "server error" });
   }
 };
@@ -86,13 +87,12 @@ exports.login = async (req, res) => {
 exports.verifyOtp = async (req, res) => {
   const { otp } = req.body;
   const tempToken = req.headers.authorization?.split(" ")[1];
-
   try {
-    const decoded = jwt.verify(tempToken, process.env.JWT_SECRET);
+    const decoded = verifyToken(tempToken);
 
-    // if (!decoded.isTemp) {
-    //   return res.status(401).json({ message: "Invalid token 1" });
-    // }
+    if (!decoded.isTemp) {
+      return res.status(401).json({ message: "Invalid token 1" });
+    }
 
     const result = await query(
       "SELECT * FROM users WHERE id = $1 AND two_factor_secret = $2 AND reset_token_expires > NOW()",
@@ -110,11 +110,7 @@ exports.verifyOtp = async (req, res) => {
       [decoded.userId]
     );
 
-    const accessToken = jwt.sign(
-      { userId: decoded.userId },
-      process.env.JWT_SECRET,
-      { expiresIn: "24h" }
-    );
+    const accessToken = generateToken(decoded.userId, false);
 
     res.json({
       message: "Verification successful",

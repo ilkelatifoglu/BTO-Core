@@ -3,10 +3,15 @@ const {
   doesTourExist,
   insertTour,
   insertTourTimes,
-  isGuideAssignedToTour,
   getAssignedGuideCount,
   getGuideCountForTour,
+  fetchTourDetails,
+  isUserAssignedToTour,
+  hasSchedulingConflict,
+  fetchAssignmentCounts,
+  validateQuota,
   getReadyTours,
+  fetchCandidateGuides,
 } = require("../queries/tourQueries");
 
 const { getSchoolId } = require("../queries/schoolQueries"); // Import from school queries
@@ -50,10 +55,6 @@ exports.addTour = async (req, res) => {
       teacher_email,
     });
 
-    if (time_preferences && time_preferences.length > 0) {
-      await insertTourTimes(tourId, time_preferences);
-    }
-
     res.status(200).json({
       success: true,
       message: "Tour and time preferences added successfully",
@@ -66,64 +67,128 @@ exports.addTour = async (req, res) => {
 };
 
 exports.assignGuideToTour = async (req, res) => {
-  const { school_name, city, date } = req.body;
-  const guide_id = req.user.id;
+  const { school_name, city, date, time, user_id, user_type } = req.body;
 
   try {
-    const tourQuery = await query(
-      `
-      SELECT t.id, t.guide_count
-      FROM tours t
-      JOIN schools s ON t.school_id = s.id
-      WHERE s.school_name = $1 AND s.city = $2 AND t.date = $3
-      `,
-      [school_name, city, date]
+    const { id: tour_id, guide_count } = await fetchTourDetails(
+      school_name,
+      city,
+      date,
+      time
     );
 
-    if (tourQuery.rows.length === 0) {
-      return res.status(404).json({ success: false, message: "Tour not found" });
-    }
-
-    const { id: tour_id, guide_count } = tourQuery.rows[0];
-
-    // Check if the guide is already assigned
-    const guideCheck = await query(
-      "SELECT * FROM tour_guide WHERE tour_id = $1 AND guide_id = $2",
-      [tour_id, guide_id]
-    );
-    if (guideCheck.rows.length > 0) {
+    if (await isUserAssignedToTour(tour_id, user_id)) {
       return res.status(400).json({
         success: false,
         message: "Guide is already assigned to this tour!",
       });
     }
 
-    // Check if there is room for another guide
-    const assignedCount = await query(
-      "SELECT COUNT(*) AS assigned_count FROM tour_guide WHERE tour_id = $1",
-      [tour_id]
-    );
-
-    if (parseInt(assignedCount.rows[0].assigned_count, 10) >= guide_count) {
+    if (await hasSchedulingConflict(user_id, date, time)) {
       return res.status(400).json({
         success: false,
-        message: "Maximum number of guides already assigned!",
+        message: "Guide is already assigned to another tour at the same time!",
       });
     }
 
-    // Assign the guide to the tour
+    const { assigned_guides, guide_names } = await fetchAssignmentCounts(tour_id);
+    validateQuota(assigned_guides, 1, guide_count, "guide");
+
     await query("INSERT INTO tour_guide (tour_id, guide_id) VALUES ($1, $2)", [
       tour_id,
-      guide_id,
+      user_id,
     ]);
+    const guide = await query(
+      "SELECT first_name, last_name FROM users WHERE id = $1",
+      [user_id]
+    );
+    const guideName = guide.rows[0].first_name + " " + guide.rows[0].last_name;
 
+    const updatedGuideNames = guide_names ? `${guide_names}, ${guideName}` : guideName;
+
+    // Emit the WebSocket event with updated guide names and count
+    const io = req.app.get("io");
+    io.emit("guideAssigned", {
+      tourId: tour_id,
+      guide_names: updatedGuideNames, 
+      assignedGuides: assigned_guides + 1,  
+    });
+
+    // Respond to the client with success
     res.status(200).json({
       success: true,
       message: "Guide successfully assigned to the tour!",
     });
   } catch (error) {
-    console.error("Error assigning guide to tour:", error.message || error);
-    res.status(500).json({ success: false, message: "Server error" });
+    console.error("Error assigning guide:", error.message || error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+exports.assignCandidateGuidesToTour = async (req, res) => {
+  const { school_name, city, date, time, user_ids } = req.body;
+  console.log("User IDs received:", user_ids); // Log incoming user IDs
+
+  try {
+    const { id: tour_id, guide_count } = await fetchTourDetails(school_name, city, date, time);
+    const { assigned_candidates, candidate_names } = await fetchAssignmentCounts(tour_id);
+    console.log("Fetched assigned candidates before insert:", assigned_candidates);
+    
+    const newAssignments = [];
+    for (const user_id of user_ids) {
+      if (
+        !(await isUserAssignedToTour(tour_id, user_id)) &&
+        !(await hasSchedulingConflict(user_id, date, time))
+      ) {
+        newAssignments.push(user_id);
+      }
+    }
+
+    console.log("Newassignment length: " + newAssignments.length);
+
+    // Validate the total candidate quota
+    validateQuota(assigned_candidates, newAssignments.length, guide_count, "candidate");
+
+    if (newAssignments.length > 0) {
+      // Prepare values for bulk insertion
+      const bulkInsertValues = newAssignments
+        .map((user_id) => `(${tour_id}, ${user_id})`)
+        .join(", ");
+      await query(`INSERT INTO tour_guide (tour_id, guide_id) VALUES ${bulkInsertValues}`);
+    }
+
+    const candidateNames = await Promise.all(
+      newAssignments.map(async (user_id) => {
+        const user = await query(
+          "SELECT first_name, last_name FROM users WHERE id = $1",
+          [user_id]
+        );
+        return `${user.rows[0].first_name} ${user.rows[0].last_name}`;
+      })
+    );
+
+    // Update the list of candidate names (comma-separated)
+    const updatedCandidateNames = candidate_names
+      ? `${candidate_names}, ${candidateNames.join(", ")}`
+      : candidateNames.join(", ");
+
+    const updatedCount = assigned_candidates + newAssignments.length;
+    const io = req.app.get("io");
+    io.emit("candidateAssigned", {
+      tourId: tour_id,
+      candidate_names: updatedCandidateNames,
+      assignedCandidates: updatedCount,
+    });
+
+
+    res.status(200).json({
+      success: true,
+      message: "Candidate guide(s) successfully assigned to the tour!",
+      assignedUsers: newAssignments,
+    });
+  } catch (error) {
+    console.error("Error assigning candidate guides:", error.message || error);
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
@@ -156,3 +221,18 @@ exports.getReadyTours = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
+exports.getCandidateGuides = async (req, res) => {
+  try {
+    const candidates = await fetchCandidateGuides();
+    const formattedCandidates = candidates.map(candidate => ({
+      id: candidate.id,
+      name: candidate.name,
+    }));
+    res.status(200).json(formattedCandidates);
+  } catch (error) {
+    console.error("Error fetching candidate guides:", error.message || error);
+    res.status(500).json({ message: "Failed to fetch candidate guides" });
+  }
+};
+

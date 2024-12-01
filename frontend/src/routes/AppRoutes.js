@@ -7,7 +7,7 @@ import ForgotPassword from "../pages/ForgotPassword";
 import DashboardPage from "../pages/DashboardPage";
 import SettingsPage from "../pages/SettingsPage";
 import ResetPassword from "../pages/ResetPassword";
-import EmailVerification from "../pages/OtpVerification";
+import OtpVerification from "../pages/OtpVerification";
 import GuideInfoPage from "../pages/GuideInfoPage";
 import PuantajPage from "../pages/PuantajPage";
 import TourAssignmentPage from "../pages/TourAssignment";
@@ -23,7 +23,7 @@ const AppRoutes = () => {
       <Route path="*" element={<NotFound />} />
       <Route path="/" element={<Navigate replace to="/home" />} />
       <Route path="/reset-password/:token" element={<ResetPassword />} />
-      <Route path="/verify-otp" element={<EmailVerification />} />
+      <Route path="/verify-otp" element={<OtpVerification />} />
       <Route path="/guideInfo" element={<GuideInfoPage />} />
       <Route path="/puantaj-page" element={<PuantajPage />} />
       <Route path="/assign-tour" element={<TourAssignmentPage />} />

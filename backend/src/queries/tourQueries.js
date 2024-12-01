@@ -209,27 +209,23 @@ exports.getReadyTours = async () => {
         tt.timepref3,
         tt.timepref4,
 
-        -- Aggregate guide names (user_type != 1)
         COALESCE(
           (SELECT STRING_AGG(u.first_name || ' ' || u.last_name, ', ') 
            FROM tour_guide tg
            JOIN users u ON tg.guide_id = u.id
            WHERE tg.tour_id = t.id AND u.user_type != 1), '') AS guide_names,
 
-        -- Aggregate candidate names (user_type = 1)
         COALESCE(
           (SELECT STRING_AGG(u.first_name || ' ' || u.last_name, ', ') 
            FROM tour_guide tg
            JOIN users u ON tg.guide_id = u.id
            WHERE tg.tour_id = t.id AND u.user_type = 1), '') AS candidate_names,
 
-        -- Count assigned candidates
         (SELECT COUNT(*) 
          FROM tour_guide tg 
          JOIN users u ON tg.guide_id = u.id 
          WHERE tg.tour_id = t.id AND u.user_type = 1) AS assigned_candidates,
          
-        -- Count assigned guides
         (SELECT COUNT(*) 
          FROM tour_guide tg 
          JOIN users u ON tg.guide_id = u.id 

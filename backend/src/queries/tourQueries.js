@@ -18,11 +18,32 @@ exports.insertTour = async ({
   teacher_name,
   teacher_phone,
   teacher_email,
+  visitor_notes, // Added visitor_notes
 }) => {
   const result = await query(
-    `INSERT INTO tours (school_id, date, day, tour_size, guide_count, teacher_name, teacher_phone, teacher_email)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id`,
-    [school_id, date, day, tour_size, guide_count, teacher_name, teacher_phone, teacher_email]
+    `INSERT INTO tours (
+        school_id,
+        date,
+        day,
+        tour_size,
+        guide_count,
+        teacher_name,
+        teacher_phone,
+        teacher_email,
+        visitor_notes
+      )
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id`,
+    [
+      school_id,
+      date,
+      day,
+      tour_size,
+      guide_count,
+      teacher_name,
+      teacher_phone,
+      teacher_email,
+      visitor_notes, // Added visitor_notes to values
+    ]
   );
   return result.rows[0].id;
 };
@@ -105,7 +126,7 @@ exports.validateQuota = (assigned_count, new_count, limit, type) => {
 
 exports.insertTourTimes = async (tour_id, time_preferences) => {
   // Validate time preferences
-  const allowedTimes = ['09:00', '11:00', '13:30', '16:30'];
+  const allowedTimes = ['09:00', '11:00', '13:30', '16:00'];
   if (time_preferences.length < 1 || time_preferences.length > 4) {
     throw new Error('You must provide between 1 and 4 time preferences.');
   }
@@ -174,45 +195,57 @@ exports.getGuideCountForTour = async (tour_id) => {
 exports.getReadyTours = async () => {
   const result = await query(
     `SELECT 
-      t.id,
-      t.date,
-      t.day,
-      t.time,
-      s.school_name,
-      s.city,
-      t.tour_size,
-      t.guide_count,
+        t.id,
+        t.date,
+        t.day,
+        t.time,
+        t.classRoom,
+        s.school_name,
+        s.city,
+        t.tour_size,
+        t.guide_count,
+        tt.timepref1,
+        tt.timepref2,
+        tt.timepref3,
+        tt.timepref4,
 
-      (SELECT STRING_AGG(u.first_name || ' ' || u.last_name, ', ') 
-       FROM tour_guide tg
-       JOIN users u ON tg.guide_id = u.id
-       WHERE tg.tour_id = t.id AND u.user_type != 1) AS guide_names,
+        -- Aggregate guide names (user_type != 1)
+        COALESCE(
+          (SELECT STRING_AGG(u.first_name || ' ' || u.last_name, ', ') 
+           FROM tour_guide tg
+           JOIN users u ON tg.guide_id = u.id
+           WHERE tg.tour_id = t.id AND u.user_type != 1), '') AS guide_names,
 
-      (SELECT STRING_AGG(u.first_name || ' ' || u.last_name, ', ') 
-       FROM tour_guide tg
-       JOIN users u ON tg.guide_id = u.id
-       WHERE tg.tour_id = t.id AND u.user_type = 1) AS candidate_names,
+        -- Aggregate candidate names (user_type = 1)
+        COALESCE(
+          (SELECT STRING_AGG(u.first_name || ' ' || u.last_name, ', ') 
+           FROM tour_guide tg
+           JOIN users u ON tg.guide_id = u.id
+           WHERE tg.tour_id = t.id AND u.user_type = 1), '') AS candidate_names,
 
-      (SELECT COUNT(*) 
-       FROM tour_guide tg 
-       JOIN users u ON tg.guide_id = u.id 
-       WHERE tg.tour_id = t.id AND u.user_type = 1) AS assigned_candidates,
-       
-      (SELECT COUNT(*) 
-       FROM tour_guide tg 
-       JOIN users u ON tg.guide_id = u.id 
-       WHERE tg.tour_id = t.id AND u.user_type != 1) AS assigned_guides
-    FROM tours t
-    JOIN schools s ON t.school_id = s.id
-    WHERE t.tour_status = 'READY'
-    ORDER BY t.date, t.time;`
+        -- Count assigned candidates
+        (SELECT COUNT(*) 
+         FROM tour_guide tg 
+         JOIN users u ON tg.guide_id = u.id 
+         WHERE tg.tour_id = t.id AND u.user_type = 1) AS assigned_candidates,
+         
+        -- Count assigned guides
+        (SELECT COUNT(*) 
+         FROM tour_guide tg 
+         JOIN users u ON tg.guide_id = u.id 
+         WHERE tg.tour_id = t.id AND u.user_type != 1) AS assigned_guides
+     FROM tours t
+     JOIN schools s ON t.school_id = s.id
+     LEFT JOIN tour_time tt ON t.id = tt.tour_id
+     WHERE t.tour_status = 'READY'
+     ORDER BY t.date, t.time;`
   );
 
   // Ensure that assigned_candidates and assigned_guides are integers
   return result.rows.map(row => ({
     ...row,
-    assigned_candidates: parseInt(row.assigned_candidates, 10),
-    assigned_guides: parseInt(row.assigned_guides, 10),
+    assigned_candidates: parseInt(row.assigned_candidates || '0', 10),
+    assigned_guides: parseInt(row.assigned_guides || '0', 10),
   }));
 };
 
@@ -227,7 +260,6 @@ exports.fetchCandidateGuides = async () => {
   );
   return result.rows;
 };
-
 
 const fetchGuidesAndCandidatesForTours = async (tourIds) => {
   // SQL query to fetch both guides and candidates in one batch
@@ -255,9 +287,9 @@ const fetchGuidesAndCandidatesForTours = async (tourIds) => {
     `,
     []
   );
-
   return queryResult.rows;  // List of guides and candidates for those tours
 };
+
 // Get all tours with all attributes and associated school details
 exports.getAllTours = async () => {
   const result = await query(
@@ -272,7 +304,8 @@ exports.getAllTours = async () => {
         t.teacher_name,
         t.teacher_phone,
         t.time,
-        t.classroom,
+        t.classRoom, 
+        t.visitor_notes,
         tt.timepref1,
         tt.timepref2,
         tt.timepref3,
@@ -280,11 +313,16 @@ exports.getAllTours = async () => {
      FROM tours t
      JOIN schools s ON t.school_id = s.id
      LEFT JOIN tour_time tt ON t.id = tt.tour_id
-     ORDER BY t.id DESC` // Ordering by tour_id in descending order
+     ORDER BY t.id DESC`
   );
   return result.rows;
 };
+
 exports.approveTour = async (tourId, selectedTime) => {
+  const allowedTimes = ['09:00', '11:00', '13:30', '16:00'];
+  if (!allowedTimes.includes(selectedTime)) {
+    throw new Error('Invalid time preference');
+  }
   const result = await query(
     `UPDATE tours 
      SET time = $1, tour_status = 'APPROVED'
@@ -292,8 +330,12 @@ exports.approveTour = async (tourId, selectedTime) => {
      RETURNING teacher_email, teacher_name`,
     [selectedTime, tourId]
   );
+  if (result.rows.length === 0) {
+    throw new Error('Tour not found or already approved');
+  }
   return result.rows[0];
 };
+
 exports.rejectTour = async (tourId) => {
   const result = await query(
     `UPDATE tours 
@@ -302,5 +344,32 @@ exports.rejectTour = async (tourId) => {
      RETURNING teacher_email, teacher_name`,
     [tourId]
   );
+  if (result.rows.length === 0) {
+    throw new Error('Tour not found or already rejected');
+  }
   return result.rows[0];
+};
+
+// Update Classroom Function
+exports.updateClassRoom = async (tourId, classRoom) => {
+  await query(
+    `UPDATE tours SET classRoom = $1 WHERE id = $2`,
+    [classRoom, tourId]
+  );
+};
+
+// Update Time Preference Function
+exports.updateTime = async (tourId, selectedTime) => {
+  const allowedTimes = ['09:00', '11:00', '13:30', '16:00'];
+  
+  // Validate the selected time
+  if (!allowedTimes.includes(selectedTime)) {
+    throw new Error('Invalid time preference. Allowed values are 09:00, 11:00, 13:30, or 16:00.');
+  }
+
+  // Update the time column in the database
+  await query(
+    `UPDATE tours SET time = $1 WHERE id = $2`,
+    [selectedTime, tourId]
+  );
 };

@@ -15,10 +15,13 @@ const {
   getReadyTours,
   getAllTours,
   approveTour,
-  rejectTour
+  rejectTour,
+  updateTime,
+  updateClassRoom,
 } = require("../queries/tourQueries");
 
 const { getSchoolId } = require("../queries/schoolQueries"); // Import from school queries
+const { sendConfirmationEmail } = require('../utils/email'); // Import the function
 const { query } = require("../config/database");
 
 const { sendEmail } = require("../utils/email");
@@ -35,6 +38,7 @@ exports.addTour = async (req, res) => {
     teacher_phone,
     teacher_email,
     time_preferences,
+    visitor_notes,
   } = req.body;
 
   try {
@@ -60,6 +64,7 @@ exports.addTour = async (req, res) => {
       teacher_name,
       teacher_phone,
       teacher_email,
+      visitor_notes,
     });
 
     if (time_preferences && time_preferences.length > 0) {
@@ -67,6 +72,13 @@ exports.addTour = async (req, res) => {
     } else {
       return res.status(400).json({ message: "At least one time preference is required." });
     }
+
+    await sendConfirmationEmail(teacher_email, {
+      teacher_name,
+      tour_date: date,
+      school_name,
+      time_preferences,
+    });
 
     res.status(200).json({
       success: true,
@@ -268,6 +280,11 @@ exports.approveTour = async (req, res) => {
     return res.status(400).json({ message: "Time preference is required" });
   }
 
+  const allowedTimes = ['09:00', '11:00', '13:30', '16:00'];
+  if (!allowedTimes.includes(selectedTime)) {
+    return res.status(400).json({ message: "Invalid time preference" });
+  }
+
   try {
     // Update the tour in the database
     const tour = await approveTour(id, selectedTime); // Ensure this query returns teacher_email and other relevant fields
@@ -292,6 +309,7 @@ exports.approveTour = async (req, res) => {
     res.status(500).json({ message: "Failed to approve tour" });
   }
 };
+
 
 // Controller to reject a tour
 exports.rejectTour = async (req, res) => {
@@ -319,5 +337,45 @@ exports.rejectTour = async (req, res) => {
   } catch (error) {
     console.error("Error rejecting tour:", error);
     res.status(500).json({ message: "Failed to reject tour" });
+  }
+};
+
+exports.updateClassRoom = async (req, res) => {
+  const { id } = req.params;
+  const { classRoom } = req.body;
+
+  if (!classRoom) {
+    return res.status(400).json({ message: "Classroom is required" });
+  }
+
+  try {
+    await updateClassRoom(id, classRoom);
+    res.status(200).json({ message: "Classroom updated successfully" });
+  } catch (error) {
+    console.error("Error updating classroom:", error.message || error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to update classroom",
+    });
+  }
+};
+
+exports.updateTime = async (req, res) => {
+  const { id } = req.params; // Tour ID
+  const { selectedTime } = req.body; // New time value
+
+  if (!selectedTime) {
+    return res.status(400).json({ message: "Time preference is required." });
+  }
+
+  try {
+    await updateTime(id, selectedTime); // Call the query method
+    res.status(200).json({ message: "Time updated successfully." });
+  } catch (error) {
+    console.error("Error updating time:", error.message || error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to update time.",
+    });
   }
 };

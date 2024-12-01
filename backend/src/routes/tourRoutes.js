@@ -8,7 +8,9 @@ const { addTour,
     getCandidateGuides,
     getAllTours,
     approveTour,
-    rejectTour
+    rejectTour,
+    updateClassRoom,
+    updateTime,
 } = require("../controllers/tourController");
 
 const router = express.Router();
@@ -22,4 +24,6 @@ router.get("/candidateGuides", getCandidateGuides);
 router.get("/allTours", getAllTours);
 router.put("/approve/:id", approveTour);
 router.put("/reject/:id", rejectTour);
+router.put("/updateClassRoom/:id", updateClassRoom);
+router.put("/updateTime/:id", updateTime);
 module.exports = router;

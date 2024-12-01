@@ -1,12 +1,28 @@
-import React from 'react';
+// src/components/homepage/tourform-components/Buttons.js
 
-const Buttons = () => {
+import React from 'react';
+import './Buttons.css';
+import PropTypes from 'prop-types';
+
+const Buttons = ({ handleClear }) => {
   return (
-    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
-      <button style={{ flex: 1, marginRight: '10px', padding: '10px' }}>Submit Your Application</button>
-      <button style={{ flex: 1, marginLeft: '10px', padding: '10px' }}>Clear the Form</button>
+    <div className="buttons-container">
+      {/* Submit Button */}
+      <button type="submit" className="submit-button">
+        Submit Your Application
+      </button>
+
+      {/* Clear Button */}
+      <button type="button" className="clear-button" onClick={handleClear}>
+        Clear the Form
+      </button>
     </div>
   );
+};
+
+// PropTypes for type checking and ensuring required props are passed
+Buttons.propTypes = {
+  handleClear: PropTypes.func.isRequired,
 };
 
 export default Buttons;

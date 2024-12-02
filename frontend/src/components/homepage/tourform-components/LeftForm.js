@@ -136,10 +136,15 @@ const LeftForm = ({
           className="form-control"
           value={tourDate}
           onChange={(e) => setTourDate(e.target.value)}
-          min={new Date().toISOString().split('T')[0]} // Set min date to today
+          min={(() => {
+            const today = new Date();
+            today.setDate(today.getDate() + 15); // Add 15 days to today
+            return today.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+          })()} // Immediately calculate and set the value
           required
         />
       </div>
+
 
       {/* Tour Start Time Preferences */}
       <div className="form-group">

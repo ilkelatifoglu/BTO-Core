@@ -1,6 +1,4 @@
-// src/components/homepage/tourform-components/LeftForm.js
-
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './LeftForm.css';
 import Select from 'react-select';
 import PropTypes from 'prop-types';
@@ -39,6 +37,40 @@ const LeftForm = ({
 
   // Predefined tour start times
   const timeOptions = ['09:00', '11:00', '13:30', '16:00'];
+
+  // State variables for school options, loading state, and error state
+  const [schoolOptions, setSchoolOptions] = useState([]);
+  const [loadingSchools, setLoadingSchools] = useState(true);
+  const [schoolFetchError, setSchoolFetchError] = useState(null);
+
+  // Fetch schools from backend when component mounts
+  useEffect(() => {
+    const fetchSchools = async () => {
+      try {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/school/getAllSchools`);
+        if (response.ok) {
+          const data = await response.json();
+          // Extract school names and convert to options
+          const options = data.data.map((school) => ({
+            value: school.school_name,
+            label: school.school_name,
+          }));
+          setSchoolOptions(options);
+          setLoadingSchools(false);
+        } else {
+          const errorData = await response.json();
+          setSchoolFetchError(errorData.message || 'Failed to fetch schools.');
+          setLoadingSchools(false);
+        }
+      } catch (error) {
+        console.error('Error fetching schools:', error);
+        setSchoolFetchError('Network error. Please try again later.');
+        setLoadingSchools(false);
+      }
+    };
+
+    fetchSchools();
+  }, []);
 
   // Handler to add a new time preference slot
   const addTimePreference = () => {
@@ -96,19 +128,32 @@ const LeftForm = ({
         />
       </div>
 
-      {/* School Name */}
+      {/* School Name Dropdown */}
       <div className="form-group">
         <label htmlFor="schoolName">School Name</label>
-        <input
-          type="text"
-          id="schoolName"
-          name="schoolName"
-          className="form-control"
-          placeholder="Ankara Atatürk Anatolian High School"
-          value={schoolName}
-          onChange={(e) => setSchoolName(e.target.value)}
-          required
-        />
+        {loadingSchools ? (
+          <p>Loading schools...</p>
+        ) : schoolFetchError ? (
+          <p className="error-message">{schoolFetchError}</p>
+        ) : (
+          <Select
+            id="schoolName"
+            name="schoolName"
+            className="react-select-container"
+            classNamePrefix="react-select"
+            options={schoolOptions}
+            value={schoolName}
+            onChange={(selectedOption) => setSchoolName(selectedOption)}
+            placeholder="Select School"
+            isSearchable
+            required
+            filterOption={(candidate, input) => {
+              const candidateLabel = candidate.label.toLocaleLowerCase('tr');
+              const inputValue = input.toLocaleLowerCase('tr');
+              return candidateLabel.includes(inputValue);
+            }}
+          />
+        )}
       </div>
 
       {/* Number of Students */}
@@ -144,7 +189,6 @@ const LeftForm = ({
           required
         />
       </div>
-
 
       {/* Tour Start Time Preferences */}
       <div className="form-group">
@@ -199,7 +243,10 @@ LeftForm.propTypes = {
     label: PropTypes.string.isRequired,
   }).isRequired,
   setCity: PropTypes.func.isRequired,
-  schoolName: PropTypes.string.isRequired,
+  schoolName: PropTypes.shape({
+    value: PropTypes.string.isRequired,
+    label: PropTypes.string.isRequired,
+  }).isRequired,
   setSchoolName: PropTypes.func.isRequired,
   numberOfStudents: PropTypes.string.isRequired,
   setNumberOfStudents: PropTypes.func.isRequired,

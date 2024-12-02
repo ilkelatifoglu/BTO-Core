@@ -12,7 +12,7 @@ const TourForm = () => {
   // ============================
 
   const [city, setCity] = useState({ value: 'Ankara', label: 'Ankara' });
-  const [schoolName, setSchoolName] = useState('');
+  const [schoolName, setSchoolName] = useState({ value: '', label: '' });
   const [numberOfStudents, setNumberOfStudents] = useState('');
   const [tourDate, setTourDate] = useState('');
   const [selectedTimes, setSelectedTimes] = useState([]);
@@ -58,7 +58,7 @@ const TourForm = () => {
     e.preventDefault(); // Prevent default form submission behavior
 
     const submissionData = {
-      school_name: schoolName,
+      school_name: schoolName.value,
       city: city.value,
       academic_year_start: new Date().getFullYear(),
       date: tourDate,

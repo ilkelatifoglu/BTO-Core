@@ -29,7 +29,7 @@ const Header = () => {
           <li className="nav__item"><a href="#home" onClick={(e) => { e.preventDefault(); scrollToSection('home'); }}>Home</a></li>
           <li className="nav__item"><a href="#core-values" onClick={(e) => { e.preventDefault(); scrollToSection('core-values'); }}>Core Values</a></li>
           <li className="nav__item"><a href="#tour-form" onClick={(e) => { e.preventDefault(); scrollToSection('tour-form'); }}>Tour Form</a></li>
-          <li className="nav__item"><a href="#contact" onClick={(e) => { e.preventDefault(); scrollToSection('contact'); }}>Contact</a></li>
+          <li className="nav__item"><a href="#homepage-footer" onClick={(e) => { e.preventDefault(); scrollToSection('homepage-footer'); }}>Contact Us</a></li>
         </ul>
       </nav>
       <div className="header__login">

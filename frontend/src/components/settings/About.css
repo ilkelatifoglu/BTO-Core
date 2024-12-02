@@ -1,0 +1,77 @@
+.about-container {
+    padding: 20px; /* Increase padding for better spacing */
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Adjust gap for sections */
+    margin-top: -60px; /* Slight upward adjustment */
+    max-width: 900px; /* Ensure about section has a maximum width */
+    margin-left: auto; /* Center horizontally within the container */
+    margin-right: auto;
+}
+.about-main-heading {
+    font-size: 25px; /* Make the main heading prominent */
+    font-weight: bold;
+    margin-bottom: -10px; /* Space below the heading */
+    color: #000000; /* Match the theme color */
+}
+
+.about-section {
+    background: #fff;
+    padding: 15px; /* Reduce padding for smaller sections */
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.about-section h2 {
+    margin-bottom: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.about-icon {
+    font-size: 22px; /* Adjust icon size */
+    color: #333;
+    font-weight: bold;
+}
+
+.about-section p {
+    font-size: 15px; /* Smaller font size for paragraphs */
+    line-height: 1.5; /* Adjust line spacing */
+    color: #000000;
+}
+
+.developer-profiles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* Reduce spacing between developer profiles */
+    justify-content: flex-start;
+    margin-left: 120px;
+}
+
+.developer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100px; /* Slightly smaller profile cards */
+}
+
+.developer img {
+    width: 80px; /* Smaller profile images */
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 5px; /* Reduce spacing below the image */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.developer figcaption {
+    font-size: 15px; /* Smaller font size for names */
+    text-align: center;
+    color: #333;
+    font-weight: bold;
+}

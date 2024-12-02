@@ -10,11 +10,11 @@ exports.removeUser = async (req, res) => {
             return res.status(404).json({ message: "User not found" });
         }
 
-        const user_id = user.rows[0].user_id;
+        const userId = user.rows[0].id;
 
         // Remove user from related tables
-        await pool.query("DELETE FROM advisors WHERE user_id = $1", [user_id]);
-        await pool.query("DELETE FROM candidate_guides WHERE user_id = $1", [user_id]);
+        await pool.query("DELETE FROM advisors WHERE user_id = $1", [userId]);
+        await pool.query("DELETE FROM candidate_guides WHERE user_id = $1", [userId]);
         await pool.query("DELETE FROM users WHERE email = $1", [email]);
 
         res.status(200).json({ message: "User removed successfully" });
@@ -35,7 +35,7 @@ exports.changeUserRole = async (req, res) => {
             return res.status(404).json({ message: "User not found" });
         }
 
-        const user_id = user.rows[0].user_id;
+        const userId = user.rows[0].id;
         const current_role = user.rows[0].role;
 
         const roleToUserType = {
@@ -51,15 +51,15 @@ exports.changeUserRole = async (req, res) => {
 
         // Update role and user_type in users table
         await pool.query(
-            "UPDATE users SET role = $1, user_type = $2 WHERE user_id = $3",
-            [new_role, roleToUserType[new_role], user_id]
+            "UPDATE users SET role = $1, user_type = $2 WHERE id = $3",
+            [new_role, roleToUserType[new_role], userId]
         );
 
         // Remove user from old role-specific tables
         if (current_role === "advisor") {
-            await pool.query("DELETE FROM advisors WHERE user_id = $1", [user_id]);
+            await pool.query("DELETE FROM advisors WHERE user_id = $1", [userId]);
         } else if (current_role === "candidate guide") {
-            await pool.query("DELETE FROM candidate_guides WHERE user_id = $1", [user_id]);
+            await pool.query("DELETE FROM candidate_guides WHERE user_id = $1", [userId]);
         }
 
         // Add user to the new role-specific table
@@ -74,7 +74,7 @@ exports.changeUserRole = async (req, res) => {
                  SET day = EXCLUDED.day, 
                      full_name = EXCLUDED.full_name,
                      updated_at = NOW()`,
-                [user_id, days, `${user.rows[0].first_name} ${user.rows[0].last_name}`]
+                [userId, days, `${user.rows[0].first_name} ${user.rows[0].last_name}`]
             );
         } /*else if (new_role === "candidate guide") {
             const advisor = await pool.query("SELECT user_id FROM advisors WHERE day = $1 LIMIT 1", [days]);
@@ -94,8 +94,8 @@ exports.changeUserRole = async (req, res) => {
         }*/
         // Remove user from advisors and candidate_guides if switching to guide
         if (new_role === "guide") {
-            await pool.query("DELETE FROM advisors WHERE user_id = $1", [user_id]);
-            await pool.query("DELETE FROM candidate_guides WHERE user_id = $1", [user_id]);
+            await pool.query("DELETE FROM advisors WHERE user_id = $1", [userId]);
+            await pool.query("DELETE FROM candidate_guides WHERE user_id = $1", [userId]);
         }
 
         res.status(200).json({ message: "User role updated successfully in all relevant tables" });
@@ -121,9 +121,9 @@ exports.updateCrewNo = async (req, res) => {
             return res.status(404).json({ message: "User not found" });
         }
 
-        const user_id = user.rows[0].user_id;
+        const userId = user.rows[0].id;
 
-        await pool.query("UPDATE users SET crew_no = $1 WHERE user_id = $2", [crew_no, user_id]);
+        await pool.query("UPDATE users SET crew_no = $1 WHERE user_id = $2", [crew_no, userId]);
 
         res.status(200).json({ message: "Crew number updated successfully" });
     } catch (error) {

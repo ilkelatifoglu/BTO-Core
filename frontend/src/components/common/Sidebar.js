@@ -51,7 +51,7 @@ const Sidebar = ({ setCurrentPage }) => {
                         <i className="pi pi-check"></i>
                         {isExpanded && <span>Review Tour Request</span>}
                     </li>
-                    <li className="menu__item" onClick={() => handleNavigation('DataInsights')}>
+                    <li className="menu__item" onClick={() => handleNavigation('data-insight')}>
                         <i className="pi pi-chart-line"></i>
                         {isExpanded && <span>Data Insights</span>}
                     </li>
@@ -66,6 +66,10 @@ const Sidebar = ({ setCurrentPage }) => {
                     <li className="menu__item" onClick={() => handleNavigation('FeedbackPage')}>
                         <i className="pi pi-comments"></i>
                         {isExpanded && <span>Feedback Page</span>}
+                    </li>
+                    <li className="menu__item" onClick={() => handleNavigation('advisors')}>
+                        <i className="pi pi-briefcase"></i>
+                        {isExpanded && <span>Advisors</span>}
                     </li>
                 </ul>
                 <div className="sidebar__footer">

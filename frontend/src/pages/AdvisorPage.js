@@ -3,6 +3,7 @@ import axios from "axios";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import "./AdvisorPage.css"; // Import specific CSS for this page
+import Sidebar from '../components/common/Sidebar'; 
 
 const AdvisorPage = () => {
     const [advisors, setAdvisors] = useState([]);
@@ -61,7 +62,9 @@ const AdvisorPage = () => {
     
 
     return (
-        <div className="advisor-page-container">
+        <div>
+             <Sidebar />
+             <div className="advisor-page-container">
             <h1 className="advisor-page-title">Advisor Schedule</h1>
 
             {/* PrimeReact DataTable */}
@@ -111,6 +114,7 @@ const AdvisorPage = () => {
                 ))}
             </div>
         </div>
+         </div>
     );
 };
 

@@ -1,6 +1,6 @@
 // src/routes/workRoutes.js
 const express = require("express");
-const { getAllWorkEntries, getAllNonApprovedWorkEntries, updateWork, getWorkEntryById, addWork, getUserWorkEntries, deleteWorkEntry, editWorkEntry } = require("../controllers/workController");
+const { getAllWorkEntries, getAllNonApprovedWorkEntries, updateWork, saveWorkload, addWork, getUserWorkEntries, deleteWorkEntry, editWorkEntry } = require("../controllers/workController");
 const router = express.Router();
 
 // Define routes for work entries
@@ -13,4 +13,5 @@ router.get("/user-work", getUserWorkEntries);
 router.delete("/delete/:id", deleteWorkEntry);
 router.put("/edit/:id", editWorkEntry); // Route to edit a work entry
 router.put("/update/:work_id", updateWork);
+router.put("/:workId/workload", saveWorkload);
 module.exports = router;

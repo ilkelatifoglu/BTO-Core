@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
-import { getUserWorkEntries, deleteWorkEntry } from "../../services/WorkService";
+import { getUserWorkEntries, deleteWorkEntry, saveWorkload } from "../../services/WorkService";
 import EditWorkScreen from "./EditWorkScreen"; // Import the dialog component
 import AddWork from "./AddWork"; // Import AddWork component
 import { Button } from "primereact/button";
@@ -9,6 +9,7 @@ import "./PuantajComponents.css";
 
 export default function UserWorkTable() {
     const [workEntries, setWorkEntries] = useState([]);
+    const [workloadInputs, setWorkloadInputs] = useState({}); // Store workload inputs for Tour rows
     const [selectedWork, setSelectedWork] = useState(null); // Store selected work for editing
     const [isEditScreenOpen, setIsEditScreenOpen] = useState(false); // Control the edit dialog visibility
 
@@ -59,7 +60,33 @@ export default function UserWorkTable() {
             console.error("Error refreshing data:", error);
         }
     };
+    const handleSaveWorkload = async (rowData) => {
+        const confirmSave = window.confirm("Are you sure you want to save this workload?");
+        if (!confirmSave) return;
 
+        const { hours, minutes } = workloadInputs[rowData.work_id] || {};
+        const totalWorkload = (parseInt(hours, 10) || 0) * 60 + (parseInt(minutes, 10) || 0);
+
+        try {
+            await saveWorkload(rowData.work_id, totalWorkload); // Save workload in the database
+            setWorkEntries((prevEntries) =>
+                prevEntries.map((entry) =>
+                    entry.work_id === rowData.work_id ? { ...entry, workload: totalWorkload } : entry
+                )
+            );
+            alert("Workload saved successfully!");
+        } catch (error) {
+            console.error("Error saving workload:", error);
+            alert("Failed to save workload.");
+        }
+    };
+
+    const handleInputChange = (workId, field, value) => {
+        setWorkloadInputs((prevInputs) => ({
+            ...prevInputs,
+            [workId]: { ...prevInputs[workId], [field]: value },
+        }));
+    };
     const handleSaveEdit = (updatedWork) => {
         setWorkEntries((prevEntries) =>
             prevEntries.map((entry) =>
@@ -83,9 +110,45 @@ export default function UserWorkTable() {
         return `${hours} hour(s) ${minutes} minute(s)`;
     };
 
+    const renderWorkload = (rowData) => {
+        if (rowData.work_type === "Tour" && rowData.workload === null) {
+            const { hours = "", minutes = "" } = workloadInputs[rowData.work_id] || {};
+            return (
+                <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                    <input
+                        type="number"
+                        value={hours}
+                        onChange={(e) => handleInputChange(rowData.work_id, "hours", e.target.value)}
+                        placeholder="Hours"
+                        style={{ width: "3rem" }}
+                    />
+                    :
+                    <input
+                        type="number"
+                        value={minutes}
+                        onChange={(e) => handleInputChange(rowData.work_id, "minutes", e.target.value)}
+                        placeholder="Minutes"
+                        style={{ width: "3rem" }}
+                    />
+                </div>
+            );
+        }
+        return `${Math.floor(rowData.workload / 60)} hour(s) ${rowData.workload % 60} minute(s)`;
+    };
+
     const renderActions = (rowData) => {
+        if (rowData.work_type === "Tour" && rowData.workload === null) {
+            return (
+                <Button
+                    label="Save"
+                    icon="pi pi-save"
+                    className="p-button-success p-button-sm"
+                    onClick={() => handleSaveWorkload(rowData)}
+                />
+            );
+        }
         if (rowData.work_type === "Tour" || rowData.is_approved) {
-            return <span style={{ color: "#aaa" }}>Not Editable</span>; // Placeholder text
+            return <span style={{ color: "#aaa" }}>Not Editable</span>; // Placeholder for no action
         }
         return (
             <>
@@ -125,7 +188,7 @@ export default function UserWorkTable() {
                     <Column
                         field="workload"
                         header="Workload"
-                        body={(rowData) => formatWorkload(rowData.workload)}
+                        body={(rowData) => renderWorkload(rowData)}
                     />
                     <Column
                         field="status"

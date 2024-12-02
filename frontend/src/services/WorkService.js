@@ -97,3 +97,13 @@ export const updateWorkEntry = async (workId, isApproved, workType) => {
         throw error;
     }
 };
+export const saveWorkload = async (workId, workload) => {
+
+    try {
+        const response = await axios.put(`${API_URL}/work/${workId}/workload`, { workload });
+        return response.data;
+    } catch (error) {
+        console.error("Error saving workload:", error);
+        throw error;
+    }
+};

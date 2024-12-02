@@ -16,6 +16,7 @@ const getAllWorkEntries = async (req, res) => {
             FROM tours t
             JOIN tour_guide tg ON t.id = tg.tour_id
             JOIN users u ON tg.guide_id = u.id
+            WHERE t.tour_status = 'DONE'
 
             UNION ALL
 
@@ -58,7 +59,7 @@ const getUserWorkEntries = async (req, res) => {
             FROM tours t
             JOIN tour_guide tg ON t.id = tg.tour_id
             JOIN users u ON tg.guide_id = u.id
-            WHERE tg.guide_id = $1
+            WHERE tg.guide_id = $1 and t.tour_status = 'DONE'
 
             UNION ALL
 
@@ -102,7 +103,7 @@ const getAllNonApprovedWorkEntries = async (req, res) => {
             FROM tours t
             JOIN tour_guide tg ON t.id = tg.tour_id
             JOIN users u ON tg.guide_id = u.id
-            WHERE tg.is_approved = false
+            WHERE tg.is_approved = false and t.tour_status = 'DONE'
 
             UNION ALL
 
@@ -265,6 +266,35 @@ async function updateWork(req, res) {
         res.status(500).json({ success: false, message: "Failed to update work entry.", error: error.message });
     }
 }
+
+const saveWorkload = async (req, res) => {
+    const { workId } = req.params; // Extract work ID from route parameter
+    const { workload } = req.body; // Extract workload from request body
+
+    if (workload == null || workload < 0) {
+        return res.status(400).json({ success: false, message: "Invalid workload value." });
+    }
+
+    try {
+        // Correct PostgreSQL query with $ placeholders
+        const query = 'UPDATE "tours" SET "workload" = $1 WHERE "id" = $2';
+        const values = [workload, workId];
+
+        // Execute the query
+        const result = await db.query(query, values);
+
+        // Check if any rows were affected
+        if (result.rowCount === 0) {
+            return res.status(404).json({ success: false, message: "Work entry not found." });
+        }
+
+        res.status(200).json({ success: true, message: "Workload updated successfully." });
+    } catch (error) {
+        console.error("Error updating workload:", error);
+        res.status(500).json({ success: false, message: "Failed to update workload.", error: error.message });
+    }
+};
+
 module.exports = {
     getAllWorkEntries,
     getUserWorkEntries,
@@ -274,5 +304,6 @@ module.exports = {
     addWork,
     deleteWorkEntry,
     editWorkEntry,
-    updateWork
+    updateWork,
+    saveWorkload
 };

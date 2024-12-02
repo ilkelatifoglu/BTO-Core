@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import GenericDropdown from "./Dropdown";
-import FormatDemo from "./Calender";
 import { addWork } from "../../services/WorkService";
 
 function AddWork({ refreshData }) {
@@ -10,9 +8,8 @@ function AddWork({ refreshData }) {
         { name: 'Information Booth', code: 'INFO_BOOTH' }
     ];
 
-    const [selectedWorkType, setSelectedWorkType] = useState(null);
-    const [selectedTime, setSelectedTime] = useState(""); // Free text input for time
-    const [selectedDate, setSelectedDate] = useState(null);
+    const [selectedWorkType, setSelectedWorkType] = useState(""); // Store selected work type as a string
+    const [dateTime, setDateTime] = useState(""); // Input for datetime-local
     const [workHours, setWorkHours] = useState(""); // Input for workload hours
     const [workMinutes, setWorkMinutes] = useState(""); // Input for workload minutes
 
@@ -23,12 +20,21 @@ function AddWork({ refreshData }) {
     };
 
     const handleAddWork = async () => {
-        if (!selectedWorkType || !selectedTime || !selectedDate || (!workHours && !workMinutes)) {
+        if (!selectedWorkType || !dateTime || (!workHours && !workMinutes)) {
             alert("Please fill all the fields!");
             return;
         }
 
-        const day = getDayOfWeek(selectedDate);
+        // Validate hours and minutes
+        if (workHours < 0 || workHours > 10 || workMinutes < 0 || workMinutes > 59) {
+            alert("Work hours cannot exceed 10, and minutes cannot exceed 59. Neither can be negative.");
+            return;
+        }
+
+        // Split date and time
+        const [date, time] = dateTime.split("T");
+
+        const day = getDayOfWeek(date);
 
         // Convert hours and minutes to total minutes
         const workload = (parseInt(workHours, 10) || 0) * 60 + (parseInt(workMinutes, 10) || 0);
@@ -37,10 +43,10 @@ function AddWork({ refreshData }) {
         const userId = localStorage.getItem("userId");
 
         const newWork = {
-            type: selectedWorkType.name,
-            date: selectedDate,
+            type: selectedWorkType,
+            date, // Pass date separately
+            time, // Pass time separately
             day,
-            time: selectedTime,
             user_id: userId, // Pass userId directly
             workload,
             is_approved: false
@@ -59,22 +65,27 @@ function AddWork({ refreshData }) {
 
     return (
         <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
-            <GenericDropdown
-                options={workTypes}
+            <select
                 value={selectedWorkType}
-                onChange={setSelectedWorkType}
-                optionLabel="name"
-                placeholder="Select a Work Type"
-            />
-            <FormatDemo
-                value={selectedDate}
-                onChange={setSelectedDate}
-            />
+                onChange={(e) => setSelectedWorkType(e.target.value)}
+                style={{
+                    padding: '0.5rem',
+                    borderRadius: '5px',
+                    border: '1px solid #ccc',
+                    width: '200px'
+                }}
+            >
+                <option value="" disabled>Select a Work Type</option>
+                {workTypes.map((type) => (
+                    <option key={type.code} value={type.name}>
+                        {type.name}
+                    </option>
+                ))}
+            </select>
             <input
-                type="text"
-                value={selectedTime}
-                onChange={(e) => setSelectedTime(e.target.value)}
-                placeholder="Enter Time (e.g., 13:30)"
+                type="datetime-local"
+                value={dateTime}
+                onChange={(e) => setDateTime(e.target.value)}
                 style={{
                     padding: '0.5rem',
                     borderRadius: '5px',
@@ -85,7 +96,7 @@ function AddWork({ refreshData }) {
                 <input
                     type="number"
                     value={workHours}
-                    onChange={(e) => setWorkHours(e.target.value)}
+                    onChange={(e) => setWorkHours(Math.max(0, Math.min(10, e.target.value)))} // Constrain hours
                     placeholder="Hours"
                     style={{
                         width: '5rem',
@@ -98,7 +109,7 @@ function AddWork({ refreshData }) {
                 <input
                     type="number"
                     value={workMinutes}
-                    onChange={(e) => setWorkMinutes(e.target.value)}
+                    onChange={(e) => setWorkMinutes(Math.max(0, Math.min(59, e.target.value)))} // Constrain minutes
                     placeholder="Minutes"
                     style={{
                         width: '5rem',

@@ -1,4 +1,5 @@
 const { query } = require("../config/database");
+const { getAllSchools } = require("../queries/schoolQueries");
 
 exports.addSchool = async (req, res) => {
   const {
@@ -51,6 +52,20 @@ exports.addSchool = async (req, res) => {
     });
   } catch (error) {
     console.error("Error adding school:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+exports.getAllSchools = async (req, res) => {
+  try {
+    const schools = await getAllSchools();
+
+    res.status(200).json({
+      success: true,
+      data: schools,
+    });
+  } catch (error) {
+    console.error("Error retrieving schools:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };

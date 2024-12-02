@@ -86,6 +86,15 @@ function AddWork({ refreshData }) {
                 type="datetime-local"
                 value={dateTime}
                 onChange={(e) => setDateTime(e.target.value)}
+                max={(() => {
+                    const now = new Date();
+                    if (dateTime.split("T")[0] === now.toISOString().slice(0, 10)) {
+                        // If the selected date matches today's date, restrict to the current time
+                        return now.toISOString().slice(0, 16);
+                    }
+                    // Otherwise, allow the full day
+                    return now.toISOString().slice(0, 10) + "T23:59";
+                })()}
                 style={{
                     padding: '0.5rem',
                     borderRadius: '5px',

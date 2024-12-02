@@ -29,21 +29,23 @@ export default function AdminWorkTable() {
     const handleCheckboxChange = (workId, checked) => {
         setSelectedEntries((prev) => ({
             ...prev,
-            [workId]: checked,
+            [workId]: checked, // Update the state of the specific work_id
         }));
     };
 
+
     const handleSubmit = async () => {
         try {
-            const updates = Object.entries(selectedEntries).map(([workId, isApproved]) => {
-                const work = workEntries.find(entry => entry.work_id === parseInt(workId, 10));
-                return {
-                    work_id: parseInt(workId, 10),
-                    is_approved: isApproved,
-                    work_type: work.work_type, // Add work_type to the update payload
-                };
-            });
+            // Filter and map only the changed rows
+            const updates = workEntries
+                .filter((entry) => selectedEntries[entry.work_id] !== entry.is_approved) // Only process rows with changes
+                .map((entry) => ({
+                    work_id: entry.work_id,
+                    is_approved: selectedEntries[entry.work_id],
+                    work_type: entry.work_type, // Include work_type
+                }));
 
+            // Send updates to the backend
             for (const update of updates) {
                 await updateWorkEntry(update.work_id, update.is_approved, update.work_type);
             }
@@ -55,6 +57,7 @@ export default function AdminWorkTable() {
             alert("Failed to update work entries.");
         }
     };
+
 
     const refreshData = async () => {
         try {
@@ -77,6 +80,11 @@ export default function AdminWorkTable() {
     const formatTime = (time) => {
         return new Date(`1970-01-01T${time}`).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
     };
+    const formatWorkload = (workload) => {
+        const hours = Math.floor(workload / 60);
+        const minutes = workload % 60;
+        return `${hours} hour(s) ${minutes} minute(s)`;
+    };
 
     return (
         <div className="data-table-container">
@@ -97,7 +105,12 @@ export default function AdminWorkTable() {
                     <Column field="time" header="Time" body={(rowData) => formatTime(rowData.time)}></Column>
                     <Column field="first_name" header="First Name"></Column>
                     <Column field="last_name" header="Last Name"></Column>
-                    <Column field="workload" header="Workload"></Column>
+                    <Column
+                        field="workload"
+                        header="Workload"
+                        body={(rowData) => formatWorkload(rowData.workload)}
+                    />
+
                     <Column
                         field="status"
                         header="Status"

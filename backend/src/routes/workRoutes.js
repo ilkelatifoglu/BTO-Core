@@ -12,6 +12,6 @@ router.post("/add", addWork)
 router.get("/user-work", getUserWorkEntries);
 router.delete("/delete/:id", deleteWorkEntry);
 router.put("/edit/:id", editWorkEntry); // Route to edit a work entry
-router.put("/update/:work_id", updateWork);
+router.put("/update/:id", updateWork);
 router.put("/:workId/workload", saveWorkload);
 module.exports = router;

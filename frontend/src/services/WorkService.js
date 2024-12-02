@@ -85,18 +85,19 @@ export const editWorkEntry = async (id, updatedWork) => {
         throw error;
     }
 };
-export const updateWorkEntry = async (workId, isApproved, workType) => {
+export const updateWorkEntry = async (id, isApproved, workType) => {
     try {
-        const response = await axios.put(`${API_URL}/work/update/${workId}`, {
+        const response = await axios.put(`${API_URL}/work/update/${id}`, {
             is_approved: isApproved,
             work_type: workType, // Include work_type in the payload
         });
         return response.data;
     } catch (error) {
-        console.error("Error in updateWorkEntry:", error);
+        console.error("Error in updateWorkEntry:", error.response?.data || error.message);
         throw error;
     }
 };
+
 export const saveWorkload = async (workId, workload) => {
 
     try {

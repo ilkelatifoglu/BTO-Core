@@ -221,51 +221,62 @@ const editWorkEntry = async (req, res) => {
         res.status(500).json({ error: "Internal Server Error" });
     }
 };
-async function updateWork(req, res) {
-    const { work_id } = req.params; // Extract work ID from the route parameter
-    const { is_approved, work_type } = req.body; // Extract is_approved and work_type from request body
+const updateWork = async (req, res) => {
+    const { id } = req.params;
+    const { is_approved, work_type } = req.body;
+
+    // Convert id to integer
+    const workId = parseInt(id, 10);
+
+    if (isNaN(workId) || typeof is_approved === "undefined" || !work_type) {
+        console.error("Invalid input data:", { id, is_approved, work_type });
+        return res.status(400).json({ success: false, message: "Invalid input data." });
+    }
 
     try {
         if (work_type === "Tour") {
-            // Update the tour_guide table for tours
-            const [tour] = await db.query(
-                "SELECT tour_id, guide_id FROM tour_guide WHERE tour_id = ?",
-                [work_id]
+            const result = await db.query(
+                'SELECT "tour_id", "guide_id" FROM "tour_guide" WHERE "tour_id" = $1',
+                [workId]
             );
 
-            if (!tour) {
+            if (result.rows.length === 0) {
                 return res.status(404).json({ success: false, message: "Tour entry not found." });
             }
 
+            const tour = result.rows[0];
+
             await db.query(
-                "UPDATE tour_guide SET is_approved = ? WHERE tour_id = ? AND guide_id = ?",
+                'UPDATE "tour_guide" SET "is_approved" = $1 WHERE "tour_id" = $2 AND "guide_id" = $3',
                 [is_approved, tour.tour_id, tour.guide_id]
             );
+
             return res.status(200).json({ success: true, message: "Tour entry updated successfully." });
-        } else if (work_type === "Other") {
-            // Update the other_works table for other work types
-            const [otherWork] = await db.query(
-                "SELECT work_id FROM other_works WHERE id = ?",
-                [work_id]
+        } else {
+            const result = await db.query(
+                'SELECT "id" FROM "other_works" WHERE "id" = $1',
+                [workId]
             );
 
-            if (!otherWork) {
+            if (result.rows.length === 0) {
                 return res.status(404).json({ success: false, message: "Other work entry not found." });
             }
 
             await db.query(
-                "UPDATE other_works SET is_approved = ? WHERE work_id = ?",
-                [is_approved, work_id]
+                'UPDATE "other_works" SET "is_approved" = $1 WHERE "id" = $2',
+                [is_approved, workId]
             );
+
             return res.status(200).json({ success: true, message: "Other work entry updated successfully." });
-        } else {
-            return res.status(400).json({ success: false, message: "Invalid work type." });
         }
     } catch (error) {
         console.error("Error in updateWork:", error);
         res.status(500).json({ success: false, message: "Failed to update work entry.", error: error.message });
     }
-}
+};
+
+
+
 
 const saveWorkload = async (req, res) => {
     const { workId } = req.params; // Extract work ID from route parameter

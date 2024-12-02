@@ -4,6 +4,10 @@ exports.getGuideInfo = async (req, res) => {
     try {
         const { name, role, department, sort_by = 'first_name', order = 'asc', page = 1, limit = 10 } = req.query;
 
+        const { user_type } = req.user; // Extract user_type from the decoded token
+
+        console.log('Decoded user_type:', typeof user_type, user_type); // Should log: "number 4"
+
         // Calculate offset for pagination
         const offset = (page - 1) * limit;
 
@@ -17,14 +21,17 @@ exports.getGuideInfo = async (req, res) => {
                 u.department, 
                 u.phone_number, 
                 s.schedule_file
-            FROM 
-                users u
-            LEFT JOIN 
-                schedules s 
-            ON 
-                u.id = s.user_id
-            WHERE 
-                u.role IN ('guide', 'advisor', 'coordinator')
+        `;
+
+        // Include iban and crew_no only if user_type is 4
+        if (user_type === 4) {
+            query += `, u.iban, u.crew_no `;
+        }
+
+        query += `
+            FROM users u
+            LEFT JOIN schedules s ON u.id = s.user_id
+            WHERE u.role IN ('guide', 'advisor', 'coordinator')
         `;
 
 
@@ -70,6 +77,8 @@ exports.getGuideInfo = async (req, res) => {
             }
             return row;
         });
+        console.log('Data being sent to frontend:', formattedResult);
+
         
         // Send the result as JSON
         // Send the result as JSON

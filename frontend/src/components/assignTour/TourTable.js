@@ -181,7 +181,11 @@ export default function ReadyToursTable() {
     );
   };
   
-  
+  const rowClassName = (data) => {
+    if (data.tour_status === "CANCELLED") return "cancelled-row";
+    if (data.tour_status === "DONE") return "done-row";
+    return ""; // Default for READY
+  };
 
 
   return (
@@ -191,8 +195,11 @@ export default function ReadyToursTable() {
       <div className="assign-tour-table">
       <DataTable
         value={tours}
+        paginator
+        rows={50}
         className="p-datatable-striped"
         tableStyle={{ width: "100%" }}
+        rowClassName={rowClassName}
         expandedRows={expandedRows}
         onRowToggle={(e) => setExpandedRows(e.data)}
         rowExpansionTemplate={rowExpansionTemplate}
@@ -245,55 +252,61 @@ export default function ReadyToursTable() {
           style={{ width: "10%" }}
         ></Column>
 
-        {/* Assign Guide Column */}
         <Column
           header="Be Guide"
-          body={(rowData) => (
-            <Button
-              icon="pi pi-plus"
-              className="p-button-rounded p-button-success"
-              onClick={() => handleAssignGuide(rowData)}
-              style={{ width: "45px"}}
-            />
-          )}
+          body={(rowData) => {
+            if (rowData.tour_status === "READY") {
+              return (
+                <Button
+                  icon="pi pi-plus"
+                  className="p-button-rounded p-button-success"
+                  onClick={() => handleAssignGuide(rowData)}
+                  style={{ width: "45px" }}
+                />
+              );
+            }
+            return null;
+          }}
           style={{ width: "10%" }}
         ></Column>
 
-        {/* Assign Candidate Column */}
         <Column
           header="Assign Candidate"
           body={(rowData) => {
-            const selectedForTour = selectedCandidates[rowData.id] || [];
-            return (
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                <MultiSelect
-                  value={selectedForTour}
-                  options={candidateGuideOptions}
-                  onChange={(e) => {
-                    console.log("Selected candidates:", e.value);  // Log selected IDs
-                    setSelectedCandidates((prev) => ({
-                      ...prev,
-                      [rowData.id]: e.value,
-                    }));
-                  }}
-                  placeholder="Select Candidates"
-                  display="chip"
-                  className="p-multiselect-dropdown scrollable-multiselect"
-                  style={{ width: "100%", whiteSpace: "nowrap", maxWidth: "200px" }}
-                />
-                <Button
-                  label="Confirm"
-                  icon="pi pi-check"
-                  className="p-button-sm p-button-rounded p-button-success"
-                  onClick={() => handleAssignCandidates(rowData, selectedForTour)}
-                  disabled={selectedForTour.length === 0}
-                  style={{ alignSelf: "center", width: "60%" }} // Smaller button
-                />
-              </div>
-            );
+            if (rowData.tour_status === "READY") {
+              const selectedForTour = selectedCandidates[rowData.id] || [];
+              return (
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                  <MultiSelect
+                    value={selectedForTour}
+                    options={candidateGuideOptions}
+                    onChange={(e) => {
+                      setSelectedCandidates((prev) => ({
+                        ...prev,
+                        [rowData.id]: e.value,
+                      }));
+                    }}
+                    placeholder="Select Candidates"
+                    display="chip"
+                    className="p-multiselect-dropdown scrollable-multiselect"
+                    style={{ width: "100%", whiteSpace: "nowrap", maxWidth: "200px" }}
+                  />
+                  <Button
+                    label="Confirm"
+                    icon="pi pi-check"
+                    className="p-button-sm p-button-rounded p-button-success"
+                    onClick={() => handleAssignCandidates(rowData, selectedForTour)}
+                    disabled={selectedForTour.length === 0}
+                    style={{ alignSelf: "center", width: "60%" }}
+                  />
+                </div>
+              );
+            }
+            return null;
           }}
           style={{ width: "20%" }}
         ></Column>
+
         <Column
           expander
           style={{ width: '3rem' }} // Adjust width of the expander column

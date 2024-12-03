@@ -1,0 +1,25 @@
+/* Bright green row for Approved/Ready tours */
+.green-row {
+    background-color: #a8f0a0 !important; /* Bright green */
+    color: #064e3b !important;           /* Deep green text for contrast */
+    font-weight: 600;
+}
+
+/* Bright yellow row for Waiting tours */
+.yellow-row {
+    background-color: #fff380 !important; /* Bright yellow */
+    color: #854d0e !important;            /* Dark golden text for contrast */
+    font-weight: 600;
+}
+
+/* Bright red row for Rejected/Canceled tours */
+.red-row {
+    background-color: #ff7f7f !important; /* Bright red */
+    color: #8b0000 !important;           /* Dark red text for contrast */
+    font-weight: 600;
+}
+.table-container {
+    width: 110%; /* Full width of the viewport */
+    overflow: hidden; /* Prevent overflow */
+    padding: 0 16px; /* Add some padding around the table */
+}

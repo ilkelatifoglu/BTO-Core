@@ -22,6 +22,7 @@ const Sidebar = ({ setCurrentPage }) => {
     }
   };
 
+<<<<<<< HEAD
   return (
     <div style={{ display: "flex" }}>
       <div className={`sidebar ${isExpanded ? "expanded" : "collapsed"}`}>
@@ -31,6 +32,68 @@ const Sidebar = ({ setCurrentPage }) => {
         <div className="sidebar__header">
           <img src={defaultProfileImage} alt="Profile" />
           {isExpanded && <h2>{user?.email}</h2>}
+=======
+    return (
+        <div style={{ display: "flex" }}>
+            <div className={`sidebar ${isExpanded ? 'expanded' : 'collapsed'}`}>
+                <button className="sidebar__toggle" onClick={toggleSidebar}>
+                    {isExpanded ? '<<' : '>>'}
+                </button>
+                <div className="sidebar__header">
+                    <img src={defaultProfileImage} alt="Profile" />
+                    {isExpanded && <h2>{user?.email}</h2>}
+                </div>
+                {isExpanded && <p className="sidebar__dashboard">Dashboard</p>}
+                <ul className="sidebar__menu">
+                    <li className="menu__item" onClick={() => handleNavigation('assign-tour')}>
+                        <i className="pi pi-table"></i>
+                        {isExpanded && <span>Tour Assignment</span>}
+                    </li>
+                    <li className="menu__item" onClick={() => handleNavigation('guideInfo')}>
+                        <i className="pi pi-info-circle"></i>
+                        {isExpanded && <span>Guide Info</span>}
+                    </li>
+                    <li className="menu__item" onClick={() => handleNavigation('puantaj-page')}>
+                        <i className="pi pi-calendar"></i>
+                        {isExpanded && <span>Puantaj Page</span>}
+                    </li>
+                    <li className="menu__item" onClick={() => handleNavigation('approve-tour')}>
+                        <i className="pi pi-check"></i>
+                        {isExpanded && <span>Tour Approval</span>}
+                    </li>
+                    <li className="menu__item" onClick={() => handleNavigation('data-insight')}>
+                        <i className="pi pi-chart-line"></i>
+                        {isExpanded && <span>Data Insights</span>}
+                    </li>
+                    <li className="menu__item" onClick={() => handleNavigation('manageUser')}>
+                        <i className="pi pi-user-plus"></i>
+                        {isExpanded && <span>User Management</span>}
+                    </li>
+                    <li className="menu__item" onClick={() => handleNavigation('RealTimeStatus')}>
+                        <i className="pi pi-clock"></i>
+                        {isExpanded && <span>Real-time Status</span>}
+                    </li>
+                    <li className="menu__item" onClick={() => handleNavigation('FeedbackPage')}>
+                        <i className="pi pi-comments"></i>
+                        {isExpanded && <span>Feedback Page</span>}
+                    </li>
+                    <li className="menu__item" onClick={() => handleNavigation('advisors')}>
+                        <i className="pi pi-briefcase"></i>
+                        {isExpanded && <span>Advisors</span>}
+                    </li>
+                </ul>
+                <div className="sidebar__footer">
+                    <button className="menu__item" onClick={() => handleNavigation('Settings')}>
+                        <i className="pi pi-cog"></i>
+                        {isExpanded && <span>Settings</span>}
+                    </button>
+                    <button className="menu__item" onClick={() => handleNavigation('logout')}>
+                        <i className="pi pi-sign-out"></i>
+                        {isExpanded && <span>Logout</span>}
+                    </button>
+                </div>
+            </div>
+>>>>>>> cea6c1da4edcce9403e3f4b7e569c1d030497907
         </div>
         {isExpanded && <p className="sidebar__dashboard">Dashboard</p>}
         <ul className="sidebar__menu">

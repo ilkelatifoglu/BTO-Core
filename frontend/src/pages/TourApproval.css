@@ -1,0 +1,53 @@
+/* Layout for the TourApprovalPage */
+
+/* Full Page Layout */
+.tour-approval-page {
+    display: flex; /* Arrange sidebar and table side by side */
+    height: 100vh; /* Full viewport height */
+    width: 100%; /* Full viewport width */
+    overflow: hidden; /* Prevent content from overflowing */
+   
+}
+
+/* Sidebar Section */
+.sidebar-container {
+    flex-shrink: 0; /* Ensure sidebar doesn't resize */
+    width: 240px; /* Set a fixed width for the sidebar */
+    background-color: #f8f9fa; /* Optional: Add a background color for the sidebar */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional: Add a shadow for sidebar separation */
+    z-index: 1;
+}
+
+/* Main Content Section */
+.main-content-container {
+    flex-grow: 1; /* Take up remaining space */
+    overflow-x: hidden; /* Allow horizontal scrolling for the content */
+    padding: 90px; /* Add some padding around the table */
+    margin-left: -130px;
+    margin-right: -20px;
+    background-color: #ffffff; /* Optional: Add a background color for the main area */
+}
+
+/* Add responsive behavior for smaller screens */
+@media screen and (max-width: 768px) {
+    .tour-approval-page {
+        flex-direction: column; /* Stack sidebar and main content vertically */
+    }
+
+    .sidebar-container {
+        width: 100%; /* Full width for smaller screens */
+        box-shadow: none; /* Remove shadow for a cleaner look on small screens */
+    }
+
+    .main-content-container {
+        padding: 8px; /* Reduce padding for smaller screens */
+    }
+}
+@media screen and (max-width: 1200px) {
+    .main-content-container {
+        padding: 8px;
+    }
+    .table-container {
+        font-size: 0.9rem; /* Slightly smaller font size */
+    }
+}

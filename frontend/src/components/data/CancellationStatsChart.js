@@ -1,25 +1,9 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React from "react";
 import "./CancellationStatsChart.css";
-import { fetchTourData } from "../../services/DataService";
 
-const CancellationStatsPieChart = ({ filter }) => {
-  const [data, setData] = useState(null);
-
-  useEffect(() => {
-    const fetchTourData = async () => {
-      try {
-        const response = await axios.get(`http://localhost:3001/data/${filter}`);
-        setData(response.data.tourStatusData);
-      } catch (error) {
-        console.error("Error fetching tour data:", error);
-      }
-    };
-    fetchTourData();
-  }, [filter]);
-
+const CancellationStatsPieChart = ({ data }) => {
   if (!data) {
-    return <div>Loading...</div>;
+    return <div>No data available</div>;
   }
 
   // Aggregate counts across all days
@@ -51,10 +35,8 @@ const CancellationStatsPieChart = ({ filter }) => {
     currentPercentage += approvedPercentage;
   }
 
-
-
   if (rejectedPercentage > 0) {
-    segments.push(`#ff9800 ${currentPercentage}% ${currentPercentage + rejectedPercentage}%`);
+    segments.push(`#ff0000 ${currentPercentage}% ${currentPercentage + rejectedPercentage}%`);
     currentPercentage += rejectedPercentage;
   }
 
@@ -81,7 +63,7 @@ const CancellationStatsPieChart = ({ filter }) => {
 
         {totalRejected > 0 && (
           <div className="legend-item">
-            <span className="legend-color" style={{ backgroundColor: "#ff9800" }}></span>
+            <span className="legend-color" style={{ backgroundColor: "#ff0000" }}></span>
             <span>
               Rejected: {totalRejected} ({rejectedPercentage.toFixed(1)}%)
             </span>

@@ -1,11 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Sidebar from "../components/common/Sidebar";
 import TourDaysChart from "../components/data/TourDaysChart";
 import CancellationStatsPieChart from "../components/data/CancellationStatsChart";
+import ToursByCityChart from "../components/data/ToursByCityChart"; // Import the new component
+import { fetchTourData } from "../services/DataService"; // Import the data fetching function
 import "./DataInsightPage.css";
 
 const DataInsightPage = () => {
   const [filter, setFilter] = useState("weekly");
+  const [tourData, setTourData] = useState(null);
+
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const data = await fetchTourData(filter);
+        setTourData(data);
+      } catch (error) {
+        console.error("Error fetching tour data:", error);
+      }
+    };
+
+    getData();
+  }, [filter]);
 
   return (
     <div className="data-insight-page">
@@ -24,8 +40,15 @@ const DataInsightPage = () => {
           ))}
         </div>
         <div className="charts">
-          <TourDaysChart filter={filter} />
-          <CancellationStatsPieChart filter={filter} />
+          {tourData ? (
+            <>
+              <TourDaysChart data={tourData.tourDays} />
+              <CancellationStatsPieChart data={tourData.tourStatusData} />
+              <ToursByCityChart data={tourData.toursByCity} /> {/* Add the new chart */}
+            </>
+          ) : (
+            <p>Loading...</p>
+          )}
         </div>
       </div>
     </div>
@@ -34,57 +57,3 @@ const DataInsightPage = () => {
 
 export default DataInsightPage;
 
-
-
-
-
-/*
-const DataInsightPage = () => {
-  const [filter, setFilter] = useState("Weekly");
-  const [data, setData] = useState(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Backend endpoint çağrılır
-        const response = await axios.get(`http://localhost:3001/data/${filter.toLowerCase()}`);
-        setData(response.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-    fetchData();
-  }, [filter]);
-
-  if (!data) {
-    return <div>Loading...</div>;
-  }
-
-  return (
-    <div className="data-insight-page">
-      <Sidebar />
-      <div className="data-insight-content">
-        <h1>Data Insights</h1>
-        <div className="filter-buttons">
-          {["Yearly", "Monthly", "Weekly"].map((type) => (
-            <button
-              key={type}
-              className={filter === type ? "active" : ""}
-              onClick={() => setFilter(type)}
-            >
-              {type}
-            </button>
-          ))}
-        </div>
-        <div className="charts">
-          <ToursByCityChart data={data} />
-          <TourDaysChart data={data} />
-          <CancellationStatsChart data={data} />
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default DataInsightPage;
-*/

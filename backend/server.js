@@ -37,7 +37,7 @@ app.use("/tour", tourRoutes);
 app.use("/school", schoolRoutes);
 app.use("/advisors", advisorRoutes);
 app.use("/user-management", userManagementRoutes);
-app.use("/", dataRoutes);
+app.use('/data', dataRoutes); 
 //app.use('/uploads', express.static('uploads')); // profil foto için eklendi
 
 io.on("connection", (socket) => {

@@ -7,6 +7,45 @@ import CancellationStatsChart from "../components/data/CancellationStatsChart";
 import "./DataInsightPage.css";
 
 const DataInsightPage = () => {
+  const [filter, setFilter] = useState("weekly");
+
+  return (
+    <div className="data-insight-page">
+      <Sidebar />
+      <div className="data-insight-content">
+        <h1>Data Insights</h1>
+        <div className="filter-buttons">
+          {["Yearly", "Monthly", "Weekly"].map((type) => (
+            <button
+              key={type}
+              className={filter.toLowerCase() === type.toLowerCase() ? "active" : ""}
+              onClick={() => setFilter(type.toLowerCase())}
+            >
+              {type}
+            </button>
+          ))}
+        </div>
+        <div className="charts">
+          <TourDaysChart filter={filter} />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default DataInsightPage;
+
+
+
+
+
+
+
+
+
+
+/*
+const DataInsightPage = () => {
   const [filter, setFilter] = useState("Weekly");
   const [data, setData] = useState(null);
 
@@ -54,3 +93,4 @@ const DataInsightPage = () => {
 };
 
 export default DataInsightPage;
+*/

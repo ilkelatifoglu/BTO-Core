@@ -1,7 +1,23 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./TourDaysChart.css";
+import { fetchTourData } from "../../services/ToursService";
 
-const TourDaysChart = ({ data }) => {
+const TourDaysChart = ({ filter }) => {
+  const [data, setData] = useState({ tourDays: {} });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const result = await fetchTourData(filter.toLowerCase());
+        setData(result);
+      } catch (error) {
+        console.error("Error fetching tour data:", error);
+      }
+    };
+
+    fetchData();
+  }, [filter]);
+
   const totalTours = Object.values(data.tourDays).reduce((a, b) => a + b, 0);
 
   const getPercentage = (value) => (value / totalTours) * 100;

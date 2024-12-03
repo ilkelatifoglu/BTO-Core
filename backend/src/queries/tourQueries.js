@@ -158,7 +158,7 @@ exports.getAllTours = async () => {
      FROM tours t
      JOIN schools s ON t.school_id = s.id
      LEFT JOIN tour_time tt ON t.id = tt.tour_id
-     ORDER BY t.id DESC` // Ordering by tour_id in descending order
+     ORDER BY t.date ASC` // Ordering by tour_id in descending order
   );
   return result.rows;
 };

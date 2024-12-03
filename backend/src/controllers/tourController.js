@@ -23,6 +23,11 @@ const {
 const { getSchoolId } = require("../queries/schoolQueries"); // Import from school queries
 const { sendConfirmationEmail } = require('../utils/email'); // Import the function
 const { query } = require("../config/database");
+const { verifyToken, generateCancellationToken } = require("../utils/jwt");
+
+require("dotenv").config(); // At the top of your entry file (e.g., server.js or app.js)
+
+const FRONTEND_URL = process.env.FRONTEND_URL;
 
 const { sendEmail } = require("../utils/email");
 // src/controllers/tourController.js
@@ -135,8 +140,8 @@ exports.assignGuideToTour = async (req, res) => {
     const io = req.app.get("io");
     io.emit("guideAssigned", {
       tourId: tour_id,
-      guide_names: updatedGuideNames, 
-      assignedGuides: assigned_guides + 1,  
+      guide_names: updatedGuideNames,
+      assignedGuides: assigned_guides + 1,
     });
 
     res.status(200).json({
@@ -157,7 +162,7 @@ exports.assignCandidateGuidesToTour = async (req, res) => {
     const { id: tour_id, guide_count } = await fetchTourDetails(school_name, city, date, time);
     const { assigned_candidates, candidate_names } = await fetchAssignmentCounts(tour_id);
     console.log("Fetched assigned candidates before insert:", assigned_candidates);
-    
+
     const newAssignments = [];
     for (const user_id of user_ids) {
       if (
@@ -272,38 +277,61 @@ exports.getAllTours = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
+
 exports.approveTour = async (req, res) => {
   const { id } = req.params;
-  const { selectedTime } = req.body;
+  const { selectedTime, tourDate } = req.body; // Include selectedTime and tourDate in the request
 
-  if (!selectedTime) {
-    return res.status(400).json({ message: "Time preference is required" });
-  }
-
-  const allowedTimes = ['09:00', '11:00', '13:30', '16:00'];
-  if (!allowedTimes.includes(selectedTime)) {
-    return res.status(400).json({ message: "Invalid time preference" });
+  if (!selectedTime || !tourDate) {
+    return res.status(400).json({ message: "Time preference and tour date are required" });
   }
 
   try {
-    // Update the tour in the database
-    const tour = await approveTour(id, selectedTime); // Ensure this query returns teacher_email and other relevant fields
+    // Fetch the teacher_email and teacher_name from the database
+    const fetchQuery = `SELECT teacher_email, teacher_name FROM tours WHERE id = $1`;
+    const fetchResult = await query(fetchQuery, [id]);
 
-    // Send an email to the teacher
+    if (fetchResult.rows.length === 0) {
+      return res.status(404).json({ message: "Tour not found" });
+    }
+
+    const { teacher_email, teacher_name } = fetchResult.rows[0];
+
+    if (!teacher_email) {
+      return res.status(400).json({ message: "Teacher email not found for this tour" });
+    }
+
+    // Update the tour status and selected time in the database
+    const updateQuery = `
+      UPDATE tours 
+      SET time = $1, tour_status = 'APPROVED'
+      WHERE id = $2
+    `;
+    await query(updateQuery, [selectedTime, id]);
+
+    // Generate the cancellation token
+    const cancellationToken = generateCancellationToken(id, tourDate);
+
+    // Construct the cancellation link
+    const FRONTEND_URL = process.env.FRONTEND_URL;
+    const cancellationLink = `${FRONTEND_URL}/tours/cancel?token=${cancellationToken}`;
+
+    // Send email with cancellation link
     const emailContent = `
-      <p>Dear ${tour.teacher_name},</p>
-      <p>We are pleased to inform you that your tour has been approved with the selected time: <b>${selectedTime}</b>.</p>
-      <p>Thank you for your patience.</p>
-      <p>Best regards,<br/>BTO Core Team</p>
+      <p>Dear ${teacher_name || "Applicant"},</p>
+      <p>Your tour has been approved for the time: <b>${selectedTime}</b>.</p>
+      <p>If you wish to cancel, click the link below:</p>
+      <a href="${cancellationLink}">Cancel My Tour</a>
     `;
 
     await sendEmail({
-      to: tour.teacher_email,
+      to: teacher_email, // Use the teacher_email from the database
       subject: "Tour Approved",
       html: emailContent,
     });
 
-    res.status(200).json({ message: "Tour approved and email sent" });
+    res.status(200).json({ message: "Tour approved, status updated, and email sent" });
   } catch (error) {
     console.error("Error approving tour:", error);
     res.status(500).json({ message: "Failed to approve tour" });
@@ -339,6 +367,38 @@ exports.rejectTour = async (req, res) => {
     res.status(500).json({ message: "Failed to reject tour" });
   }
 };
+
+exports.cancelTour = async (req, res) => {
+  const { token } = req.query;
+
+  try {
+    // Verify the token
+    const decoded = verifyToken(token);
+
+    // Extract the tour ID from the token payload
+    const { tourId } = decoded;
+
+    if (!tourId) {
+      return res.status(400).json({ message: "Invalid cancellation token" });
+    }
+
+    // Update the tour status to CANCELED
+    const queryUpdate = 'UPDATE "tours" SET "tour_status" = $1 WHERE "id" = $2';
+    await query(queryUpdate, ["CANCELLED", tourId]);
+
+    res.status(200).send("<h1>Tour successfully canceled.</h1>");
+  } catch (error) {
+    console.error("Error canceling tour:", error);
+
+    // Handle token expiration
+    if (error.name === "TokenExpiredError") {
+      return res.status(400).json({ message: "Cancellation token has expired" });
+    }
+
+    res.status(500).json({ message: "Failed to cancel tour" });
+  }
+};
+
 
 exports.updateClassRoom = async (req, res) => {
   const { id } = req.params;

@@ -18,7 +18,7 @@ const TourApprovalTable = () => {
 
                 // Override statuses for display
                 const processedTours = data.map((tour) => {
-                    if (["READY", "DONE", "CANCELED"].includes(tour.tour_status)) {
+                    if (["READY", "DONE", "CANCELLED"].includes(tour.tour_status)) {
                         return { ...tour, display_status: "APPROVED" };
                     }
                     return { ...tour, display_status: tour.tour_status };
@@ -43,12 +43,15 @@ const TourApprovalTable = () => {
 
     const handleApprove = async (rowData) => {
         const selectedTime = selectedTimes[rowData.tour_id];
+        const tourDate = rowData.date; // Assuming the date is available in rowData
+
         if (!selectedTime) {
             alert("Please select a time preference!");
             return;
         }
+
         try {
-            await approveTour(rowData.tour_id, selectedTime);
+            await approveTour(rowData.tour_id, selectedTime, tourDate); // Pass tourDate as an argument
             setTours((prevTours) =>
                 prevTours.map((tour) =>
                     tour.tour_id === rowData.tour_id
@@ -60,6 +63,7 @@ const TourApprovalTable = () => {
             console.error("Error approving tour:", error);
         }
     };
+
 
     const handleReject = async (rowData) => {
         try {

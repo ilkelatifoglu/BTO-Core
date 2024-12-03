@@ -11,6 +11,7 @@ const { addTour,
     rejectTour,
     updateClassRoom,
     updateTime,
+    cancelTour
 } = require("../controllers/tourController");
 
 const router = express.Router();
@@ -26,4 +27,5 @@ router.put("/approve/:id", approveTour);
 router.put("/reject/:id", rejectTour);
 router.put("/updateClassRoom/:id", updateClassRoom);
 router.put("/updateTime/:id", updateTime);
+router.get("/cancel", cancelTour);
 module.exports = router;

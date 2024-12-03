@@ -9,5 +9,12 @@ exports.generateToken = (userId, user_type, isTemp) => {
 };
 
 exports.verifyToken = (token) => {
-  return jwt.verify(token, JWT_SECRET);
+  return jwt.verify(token, JWT_SECRET);
+};
+exports.generateCancellationToken = (tourId, tourDate) => {
+  // Convert the tour date to Unix timestamp (seconds since epoch)
+  const expirationTime = Math.floor(new Date(tourDate).getTime() / 1000);
+
+  // Generate the token with the tour ID and expiration
+  return jwt.sign({ tourId }, JWT_SECRET, { expiresIn: expirationTime });
 };

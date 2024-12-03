@@ -300,7 +300,7 @@ exports.getAllTours = async () => {
   return result.rows;
 };
 
-exports.approveTour = async (tourId, selectedTime) => {
+/*exports.approveTour = async (tourId, selectedTime) => {
   const allowedTimes = ['09:00', '11:00', '13:30', '16:00'];
   if (!allowedTimes.includes(selectedTime)) {
     throw new Error('Invalid time preference');
@@ -316,7 +316,7 @@ exports.approveTour = async (tourId, selectedTime) => {
     throw new Error('Tour not found or already approved');
   }
   return result.rows[0];
-};
+};*/
 
 exports.rejectTour = async (tourId) => {
   const result = await query(

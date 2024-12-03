@@ -21,8 +21,6 @@ exports.getData = async (req, res) => {
     return res.status(400).json({ error: "Invalid filter type" });
   }
 
-  console.log("Start Date:", startDate);
-  console.log("Current Date:", currentDate);
 
   try {
     // Corrected query for tour status data

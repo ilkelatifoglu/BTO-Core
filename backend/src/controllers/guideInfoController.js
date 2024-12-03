@@ -72,7 +72,6 @@ exports.getGuideInfo = async (req, res) => {
         });
         
         // Send the result as JSON
-        // Send the result as JSON
         return res.status(200).json(formattedResult);
     } catch (err) {
         // Log the error for debugging

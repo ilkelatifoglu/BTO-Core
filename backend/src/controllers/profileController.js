@@ -11,7 +11,7 @@ exports.getProfile = async (req, res) => {
                 first_name AS "firstName", 
                 last_name AS "lastName", 
                 email, 
-                phone, 
+                phone_number, 
                 iban, 
                 department
             FROM users
@@ -33,16 +33,16 @@ exports.getProfile = async (req, res) => {
 exports.updateProfile = async (req, res) => {
     console.log('req.user in updateProfile:', req.user); 
     const userId = req.user.userId;
-    const { phone, iban, department } = req.body;
+    const { phone_number, iban, department } = req.body;
 
     try {
         await db.query(
             `
             UPDATE users 
-            SET phone = $1, iban = $2, department = $3
+            SET phone_number = $1, iban = $2, department = $3
             WHERE id = $4
             `,
-            [phone, iban, department, userId]
+            [phone_number, iban, department, userId]
         );
         return res.status(200).json({ message: 'Profile updated successfully' });
     } catch (error) {

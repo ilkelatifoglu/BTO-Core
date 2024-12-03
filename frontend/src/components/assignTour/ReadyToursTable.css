@@ -5,7 +5,7 @@
     align-items: center; /* Center horizontally */
     padding: 2rem;
     margin-top: 2rem; /* Push the table slightly down from the very top */
-    width: 90%;
+    width: 80%;
     box-sizing: border-box;
     margin-left: 190px;
 }
@@ -160,3 +160,14 @@
     color: darkblue;
   }
     
+/* Row colors for different statuses */
+.cancelled-row {
+    background-color: #e11f1f 
+  }
+  
+  .done-row {
+    background-color: #3fbf3f 
+  }
+  
+  /* Default READY status inherits no special row styles */
+  

@@ -1,21 +1,23 @@
+/* Overall container styling */
 .data-table-container {
     display: flex; 
+    flex-direction: column; /* Arrange components vertically */
+    align-items: center; /* Center-align components horizontally */
     height: 100vh; 
     background-color: #f9f9f9; 
+    margin-left: 250px;
+    padding: 20px; /* Add some padding around the container */
 }
 
 /* Main content area where the table and filters are placed */
 .data-table-content {
-    flex: 1; 
-    padding: 20px; 
+    width: 80%; /* Ensure consistent width for the table content */
     background-color: #ffffff; 
     border-radius: 8px; 
-    margin: 20px; 
-    margin-left: auto; 
-    margin-right: 50px; 
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+    padding: 20px; 
+    margin-bottom: 20px; /* Add space below the table for the Add Work component */
     overflow-y: auto; 
-    max-width: 80%; 
 }
 
 /* Header styling */
@@ -30,9 +32,8 @@
 /* PrimeReact DataTable Styling */
 .p-datatable {
     min-width: 600px; 
-    width: 95%; 
-    margin-left: auto; 
-    margin-right: auto; 
+    width: 100%; /* Make the table occupy the full width of its container */
+    margin: 0 auto; /* Center the table horizontally */
 }
 
 .p-datatable-thead > tr > th {
@@ -48,6 +49,43 @@
     color: #333333; 
 }
 
+/* Add Work button container */
+.add-work-container {
+    display: flex; 
+    justify-content: flex-end; /* Align the button to the right */
+    width: 80%; /* Match the width of the table */
+    margin-top: 20px; 
+}
+
+/* Add Work button styling */
+.add-work-button {
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    padding: 0.5rem 1rem; 
+    background-color: #4CAF50; 
+    color: white; 
+    border: none; 
+    border-radius: 5px; 
+    cursor: pointer; 
+    font-size: 1rem; 
+    transition: background-color 0.3s ease; 
+    height: 2.5rem; /* Match the height of action buttons */
+    min-width: 6rem; /* Ensure a consistent button size */
+}
+
+.add-work-button:hover {
+    background-color: #45a049; 
+}
+
+/* Align Add Work button with table */
+.submit-button-container {
+    display: flex; 
+    justify-content: flex-end; 
+    width: 100%; 
+    margin-top: 10px; 
+}
+
 /* Toggle and Submit Button container styling */
 .toggle-container {
     display: flex; 
@@ -58,12 +96,6 @@
 }
 
 /* Submit button styling */
-.submit-button-container {
-    display: flex;
-    justify-content: flex-end; 
-    margin-top: 20px; 
-}
-
 .submit-button-container button {
     padding: 0.5rem 1rem; 
     background-color: #5a6268; 

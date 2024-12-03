@@ -52,7 +52,7 @@ exports.addTour = async (req, res) => {
       return res.status(400).json({ message: "A tour already exists for this school on the given date" });
     }
 
-    const day = new Date(date).toLocaleString("tr-TR", { weekday: "long" });
+    const day = new Date(date).toLocaleString("en-GB", { weekday: "long" });
     const guide_count = Math.ceil(tour_size / 60);
 
     const tourId = await insertTour({

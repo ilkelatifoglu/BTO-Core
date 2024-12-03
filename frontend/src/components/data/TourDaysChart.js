@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
 import "./TourDaysChart.css";
-import { fetchTourData } from "../../services/ToursService";
+import { fetchTourData } from "../../services/DataService";
 
 const TourDaysChart = ({ filter }) => {
-  const [data, setData] = useState({ tourDays: {} });
+  const [tourDays, setTourDays] = useState({});
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const result = await fetchTourData(filter.toLowerCase());
-        setData(result);
+        setTourDays(result.tourDays); // Use tourDays from the response
       } catch (error) {
         console.error("Error fetching tour data:", error);
       }
@@ -17,8 +17,10 @@ const TourDaysChart = ({ filter }) => {
 
     fetchData();
   }, [filter]);
-
-  const totalTours = Object.values(data.tourDays).reduce((a, b) => a + b, 0);
+  if (!tourDays || Object.keys(tourDays).length === 0) {
+    return <div>Loading...</div>;
+  }
+  const totalTours = Object.values(tourDays).reduce((a, b) => a + b, 0);
 
   const getPercentage = (value) => (value / totalTours) * 100;
 
@@ -34,7 +36,7 @@ const TourDaysChart = ({ filter }) => {
 
   const getConicGradient = () => {
     let cumulativeOffset = 0;
-    const segments = Object.entries(data.tourDays).map(([day, value], index) => {
+    const segments = Object.entries(tourDays).map(([day, value], index) => {
       const percentage = getPercentage(value); // Calculate percentage of each segment
       const start = cumulativeOffset; // Start offset for the current segment
       const end = cumulativeOffset + percentage; // End offset for the current segment
@@ -55,7 +57,7 @@ const TourDaysChart = ({ filter }) => {
         }}
       ></div>
       <div className="legend">
-        {Object.entries(data.tourDays).map(([day, value], index) => (
+        {Object.entries(tourDays).map(([day, value], index) => (
           <div key={day} className="legend-item">
             <span
               className="legend-color"

@@ -1,9 +1,7 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useState } from "react";
 import Sidebar from "../components/common/Sidebar";
-import ToursByCityChart from "../components/data/ToursByCityChart";
 import TourDaysChart from "../components/data/TourDaysChart";
-import CancellationStatsChart from "../components/data/CancellationStatsChart";
+import CancellationStatsPieChart from "../components/data/CancellationStatsChart";
 import "./DataInsightPage.css";
 
 const DataInsightPage = () => {
@@ -27,6 +25,7 @@ const DataInsightPage = () => {
         </div>
         <div className="charts">
           <TourDaysChart filter={filter} />
+          <CancellationStatsPieChart filter={filter} />
         </div>
       </div>
     </div>
@@ -34,11 +33,6 @@ const DataInsightPage = () => {
 };
 
 export default DataInsightPage;
-
-
-
-
-
 
 
 

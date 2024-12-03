@@ -1,5 +1,7 @@
+// components/guideInfo/GuideFilterBar.js
+
 import React, { useState } from 'react';
-import './GuideFilterBar.css'; 
+import './GuideFilterBar.css';
 
 const GuideFilterBar = ({ onFilter }) => {
     const [name, setName] = useState('');
@@ -21,15 +23,15 @@ const GuideFilterBar = ({ onFilter }) => {
             <select value={role} onChange={(e) => setRole(e.target.value)}>
                 <option value="">Role</option>
                 <option value="guide">Guide</option>
-                <option value="candidate guide">Candidate Guide</option>
                 <option value="advisor">Advisor</option>
                 <option value="coordinator">Coordinator</option>
             </select>
             <select value={department} onChange={(e) => setDepartment(e.target.value)}>
                 <option value="">Department</option>
-                <option value="CS">CS</option>
-                <option value="EE">EE</option>
-                <option value="ME">ME</option>
+                <option value="History">History</option>
+                <option value="Physics">Physics</option>
+                <option value="Mathematics">Mathematics</option>
+                {/* Add more departments as needed */}
             </select>
             <button onClick={applyFilter}>Apply</button>
         </div>

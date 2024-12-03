@@ -1,9 +1,11 @@
+/* components/guideInfo/GuideFilterBar.css */
+
 .guide-filter-bar {
     display: flex;
-    justify-content: flex-start; 
-    align-items: center; 
-    gap: 15px; 
-    margin-bottom: 20px; 
+    justify-content: flex-start;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
     margin-left: 300px;
 }
 
@@ -17,14 +19,14 @@
 }
 
 .guide-filter-bar button {
-    background-color: #5a6268; 
-    color: #fff; 
+    background-color: #5a6268;
+    color: #fff;
     cursor: pointer;
     border: none;
-    padding: 8px 16px; 
-    transition: background-color 0.3s ease; 
+    padding: 8px 16px;
+    transition: background-color 0.3s ease;
 }
 
 .guide-filter-bar button:hover {
-    background-color: #515c67; 
+    background-color: #515c67;
 }

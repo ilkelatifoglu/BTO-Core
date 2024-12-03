@@ -1,0 +1,84 @@
+/* Container styling */
+.homepage-footer {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 20px 40px;
+    text-align: center;
+    margin-top: 0px;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  /* Follow Us Section */
+  .footer-top {
+    margin-bottom: 20px;
+  }
+  
+  .follow-us {
+    font-size: 1.5rem;
+    color: #4a90e2; /* Grayish-blue color */
+    margin-bottom: 10px;
+  }
+  
+  .social-icons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+  }
+  
+  .social-link {
+    font-size: 1.5rem;
+    color: #4a90e2;
+    transition: color 0.3s ease;
+  }
+  
+  .social-link:hover {
+    color: #003366; /* Darker blue on hover */
+  }
+  
+  /* Contact Us Section */
+  .footer-middle {
+    margin-bottom: 20px;
+  }
+  
+  .contact-us {
+    font-size: 1rem;
+    color: #000000;
+  }
+  
+  .email-link {
+    color: #4a90e2;
+    text-decoration: underline;
+    transition: color 0.3s ease;
+  }
+  
+  .email-link:hover {
+    color: #003366; /* Darker blue on hover */
+  }
+  
+  /* Copyright Section */
+  .footer-bottom {
+    font-size: 0.875rem;
+    color: #000000;
+    margin-top: 10px;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .homepage-footer {
+      padding: 20px;
+    }
+  
+    .social-icons {
+      gap: 10px;
+    }
+  
+    .follow-us {
+      font-size: 1.25rem;
+    }
+  
+    .contact-us {
+      font-size: 0.9rem;
+    }
+  }
+  

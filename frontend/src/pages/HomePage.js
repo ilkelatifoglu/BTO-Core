@@ -3,9 +3,9 @@ import './HomePage.css';
 import Header from '../components/homepage/Header';
 import CoreValues from '../components/homepage/CoreValues';
 import TourForm from '../components/homepage/tourform-components/TourForm';
-import Contact from '../components/homepage/Contact';
 import Home from '../components/homepage/Home';
 import HorizontalDivider from '../components/homepage/HorizontalDivider80';
+import HomepageFooter from '../components/homepage/HomepageFooter';
 
 const HomePage = () => {
     return (
@@ -24,8 +24,8 @@ const HomePage = () => {
                     <TourForm />
                 </section>
                 <HorizontalDivider />
-                <section className='section' id="contact">
-                    <Contact />
+                <section className='section' id="homepage-footer">
+                    <HomepageFooter />
                 </section>
             </div>
         </div>

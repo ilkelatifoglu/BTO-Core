@@ -5,8 +5,9 @@
     align-items: center; /* Center horizontally */
     padding: 2rem;
     margin-top: 2rem; /* Push the table slightly down from the very top */
-    width: 100%;
+    width: 80%;
     box-sizing: border-box;
+    margin-left: 190px;
 }
 
 /* Table title styling */
@@ -14,8 +15,27 @@
     font-size: 2rem;
     font-weight: bold;
     margin-bottom: 1.5rem;
-    text-align: center;
-}
+    margin-left: -100px;
+}  
+  .action-buttons {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem; /* Adjust space between buttons */
+  }
+  
+  .p-multiselect-dropdown {
+    width: 100%;
+    min-width: 200px; /* Adjust as needed */
+  }
+  
+  
+  .p-button-rounded {
+    margin-right: 0.5rem; /* Space between action buttons */
+  }
+  
+  .p-datatable .p-expansionrow-content {
+    padding: 1rem; /* Add padding for expanded row */
+  }  
 
 /* Align headers and content to the left */
 .p-datatable thead th,
@@ -27,9 +47,43 @@
 
 /* Table container width */
 .assign-tour-table {
-    width: 75%; /* Adjust table width */
+    width: 100%; /* Adjust table width */
     margin: 0 auto; /* Center horizontally */
 }
+/* Ensure the MultiSelect dropdown and its selected items stay within bounds */
+.scrollable-multiselect {
+    max-width: 200px; /* Limit width of the MultiSelect input field */
+    overflow: hidden; /* Prevent overflow of the container */
+}
+
+/* Horizontally scrollable selected chips */
+.scrollable-multiselect .p-multiselect-token-container {
+    display: flex;
+    flex-wrap: nowrap; /* Prevent chips from wrapping to the next line */
+    overflow-x: auto; /* Enable horizontal scrolling */
+    max-width: 100%; /* Ensure it fits within the parent container */
+    padding: 0.25rem; /* Add some padding for better appearance */
+    scrollbar-width: thin; /* Use a thin scrollbar for better UI */
+}
+
+.scrollable-multiselect .p-multiselect-token {
+    flex-shrink: 0; /* Prevent chips from shrinking */
+    margin-right: 0.5rem; /* Add spacing between chips */
+}
+
+/* Fix the dropdown panel's horizontal scrolling */
+.p-multiselect-panel {
+    max-width: 200px; /* Set a fixed width for the dropdown */
+    overflow-x: auto; /* Enable horizontal scrolling */
+    white-space: nowrap; /* Prevent text wrapping */
+}
+
+/* Fix the list of dropdown items */
+.p-multiselect-items {
+    display: inline-block; /* Prevent items from wrapping */
+    min-width: 200px; /* Ensure dropdown width fits content */
+}
+
 
 /* Styling for the action buttons */
 .p-button-rounded.p-button-success {
@@ -48,3 +102,72 @@
     margin-bottom: 1rem;
     text-align: center;
 }
+
+/* Ensure the column and MultiSelect container have fixed widths */
+.p-multiselect {
+    width: 100%; /* Full width of its container */
+    max-width: 200px; /* Limit the maximum width */
+    overflow: hidden; /* Prevent content overflow */
+    text-overflow: ellipsis; /* Add ellipsis for overflowing text */
+}
+
+/* Make the MultiSelect chips horizontally scrollable */
+.scrollable-multiselect .p-multiselect-token-container {
+    display: flex;
+    flex-wrap: nowrap; /* Prevent chips from wrapping */
+    overflow-x: auto; /* Enable horizontal scrolling */
+    max-width: 200px; /* Limit the scrollable area width */
+    scrollbar-width: thin; /* Thin scrollbar for better aesthetics */
+}
+
+.scrollable-multiselect .p-multiselect-token {
+    flex-shrink: 0; /* Prevent chips from shrinking */
+}
+
+/* Button inside the Assign Candidate column */
+.p-button-sm {
+    width: 80px; /* Small fixed width for Confirm button */
+    align-self: center; /* Center the button horizontally */
+}
+
+/* Style the MultiSelect dropdown panel */
+.p-multiselect-panel {
+    max-width: 200px; /* Set a fixed width for the dropdown panel */
+    overflow-x: auto; /* Enable horizontal scrolling */
+    white-space: nowrap; /* Prevent text wrapping */
+}
+
+/* Style the list of dropdown items */
+.p-multiselect-items {
+    display: inline-block; /* Prevent items from wrapping */
+    min-width: 200px; /* Ensure enough width for scrolling */
+}
+
+.p-datatable .p-row-expansion-toggler {
+    visibility: visible !important;
+  }
+  
+  .p-datatable .p-row-expansion-toggler.p-highlight {
+    transform: rotate(90deg);  /* Rotating the arrow when expanded */
+  }
+  .guide-link, .candidate-link {
+    color: blue;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  
+  .guide-link:hover, .candidate-link:hover {
+    color: darkblue;
+  }
+    
+/* Row colors for different statuses */
+.cancelled-row {
+    background-color: #e11f1f 
+  }
+  
+  .done-row {
+    background-color: #3fbf3f 
+  }
+  
+  /* Default READY status inherits no special row styles */
+  

@@ -7,6 +7,7 @@
     border-right: 1px solid #ddd; /* Subtle divider */
     padding-top: 10px; /* Add some padding for spacing */
     position: fixed; /* Sidebar remains fixed */
+    justify-content: space-between;
 }
 
 .sidebar.collapsed {
@@ -21,6 +22,7 @@
     text-align: right;
     width: 100%;
 }
+
 .sidebar__header {
     display: flex;
     align-items: center;
@@ -28,8 +30,9 @@
     padding: 10px 15px; /* Keep padding for spacing */
     margin-top: 0px; /* Reduce or remove margin to move header up */
     background-color: #ffffff;
-    color: #333;
+    color: #000000;
     text-align: center;
+    font-weight: bold;
     position: relative;
 }
 
@@ -112,7 +115,7 @@
 .menu__item {
     display: flex;
     align-items: center;
-    padding: 10px 15px;
+    padding: 8px 12px;
     cursor: pointer;
     transition: background 0.3s, box-shadow 0.3s;
     font-size: 0.95rem;

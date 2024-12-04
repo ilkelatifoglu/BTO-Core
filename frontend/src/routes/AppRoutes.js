@@ -17,6 +17,8 @@ import TourApprovalPage from "../pages/TourApproval";
 import DataInsightPage from "../pages/DataInsightPage";
 import MyTours from "../components/myTours/MyTours";
 
+import CancellationPage from "../pages/CancellationPage";
+
 const AppRoutes = () => {
   return (
     <Routes>
@@ -37,7 +39,7 @@ const AppRoutes = () => {
       <Route path="/data-insight" element={<DataInsightPage />} />
       <Route path="/approve-tour" element={<TourApprovalPage />} />
       <Route path="/my-tours" element={<MyTours />} />
-
+      <Route path="/tours/cancel" element={<CancellationPage />} />
     </Routes>
   );
 };

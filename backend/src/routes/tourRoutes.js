@@ -13,6 +13,7 @@ const { addTour,
     updateTime,
     getMyTours,
     withdrawFromTour,
+    cancelTour
 } = require("../controllers/tourController");
 const authenticateToken = require('../middleware/auth'); // Middleware for authentication
 
@@ -32,4 +33,5 @@ router.put("/updateTime/:id", updateTime);
 router.get("/myTours", authenticateToken, getMyTours); // Ensure `authenticateUser` middleware is implemented
 router.delete("/withdraw/:id", authenticateToken, withdrawFromTour);
 
+router.get("/cancel", cancelTour);
 module.exports = router;

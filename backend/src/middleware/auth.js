@@ -29,6 +29,7 @@ const authenticateToken = (req, res, next) => {
       user_type: decodedToken.user_type,
       isTemp: decodedToken.isTemp, 
     };
+    console.log('req.user in middleware:', req.user); 
     next(); 
   } catch (error) {
     if (error.name === "TokenExpiredError") {

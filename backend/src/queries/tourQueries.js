@@ -199,44 +199,33 @@ exports.getReadyTours = async () => {
         t.date,
         t.day,
         t.time,
-        t.classRoom,
+        t.tour_status,
         s.school_name,
         s.city,
         t.tour_size,
         t.guide_count,
-        tt.timepref1,
-        tt.timepref2,
-        tt.timepref3,
-        tt.timepref4,
-
-        COALESCE(
-          (SELECT STRING_AGG(u.first_name || ' ' || u.last_name, ', ') 
-           FROM tour_guide tg
-           JOIN users u ON tg.guide_id = u.id
-           WHERE tg.tour_id = t.id AND u.user_type != 1), '') AS guide_names,
-
-        COALESCE(
-          (SELECT STRING_AGG(u.first_name || ' ' || u.last_name, ', ') 
-           FROM tour_guide tg
-           JOIN users u ON tg.guide_id = u.id
-           WHERE tg.tour_id = t.id AND u.user_type = 1), '') AS candidate_names,
-
+        (SELECT STRING_AGG(u.first_name || ' ' || u.last_name, ', ') 
+        FROM tour_guide tg
+        JOIN users u ON tg.guide_id = u.id
+        WHERE tg.tour_id = t.id AND u.user_type != 1) AS guide_names,
+        (SELECT STRING_AGG(u.first_name || ' ' || u.last_name, ', ') 
+        FROM tour_guide tg
+        JOIN users u ON tg.guide_id = u.id
+        WHERE tg.tour_id = t.id AND u.user_type = 1) AS candidate_names,
         (SELECT COUNT(*) 
-         FROM tour_guide tg 
-         JOIN users u ON tg.guide_id = u.id 
-         WHERE tg.tour_id = t.id AND u.user_type = 1) AS assigned_candidates,
-         
+        FROM tour_guide tg 
+        JOIN users u ON tg.guide_id = u.id 
+        WHERE tg.tour_id = t.id AND u.user_type = 1) AS assigned_candidates,
+        
         (SELECT COUNT(*) 
-         FROM tour_guide tg 
-         JOIN users u ON tg.guide_id = u.id 
-         WHERE tg.tour_id = t.id AND u.user_type != 1) AS assigned_guides
-     FROM tours t
-     JOIN schools s ON t.school_id = s.id
-     LEFT JOIN tour_time tt ON t.id = tt.tour_id
-     WHERE t.tour_status = 'READY'
-     ORDER BY t.date, t.time;`
-  );
-
+        FROM tour_guide tg 
+        JOIN users u ON tg.guide_id = u.id 
+        WHERE tg.tour_id = t.id AND u.user_type != 1) AS assigned_guides
+      FROM tours t
+      JOIN schools s ON t.school_id = s.id
+      WHERE t.tour_status IN ('READY', 'CANCELLED', 'DONE') 
+      ORDER BY t.date, t.time;`
+    );
   // Ensure that assigned_candidates and assigned_guides are integers
   return result.rows.map(row => ({
     ...row,
@@ -244,9 +233,6 @@ exports.getReadyTours = async () => {
     assigned_guides: parseInt(row.assigned_guides || '0', 10),
   }));
 };
-
-
-
 
 exports.fetchCandidateGuides = async () => {
   const result = await query(

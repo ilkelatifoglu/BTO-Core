@@ -35,9 +35,9 @@ const Sidebar = ({ setCurrentPage }) => {
                 </div>
                 {isExpanded && <p className="sidebar__dashboard">Dashboard</p>}
                 <ul className="sidebar__menu">
-                    <li className="menu__item" onClick={() => handleNavigation('TourTables')}>
+                    <li className="menu__item" onClick={() => handleNavigation('assign-tour')}>
                         <i className="pi pi-table"></i>
-                        {isExpanded && <span>Tour Tables</span>}
+                        {isExpanded && <span>Tour Assignment</span>}
                     </li>
                     <li className="menu__item" onClick={() => handleNavigation('guideInfo')}>
                         <i className="pi pi-info-circle"></i>
@@ -47,9 +47,9 @@ const Sidebar = ({ setCurrentPage }) => {
                         <i className="pi pi-calendar"></i>
                         {isExpanded && <span>Puantaj Page</span>}
                     </li>
-                    <li className="menu__item" onClick={() => handleNavigation('ReviewTourRequest')}>
+                    <li className="menu__item" onClick={() => handleNavigation('approve-tour')}>
                         <i className="pi pi-check"></i>
-                        {isExpanded && <span>Review Tour Request</span>}
+                        {isExpanded && <span>Tour Approval</span>}
                     </li>
                     <li className="menu__item" onClick={() => handleNavigation('data-insight')}>
                         <i className="pi pi-chart-line"></i>

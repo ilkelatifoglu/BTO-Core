@@ -5,8 +5,9 @@
     align-items: center; /* Center horizontally */
     padding: 2rem;
     margin-top: 2rem; /* Push the table slightly down from the very top */
-    width: 100%;
+    width: 80%;
     box-sizing: border-box;
+    margin-left: 260px;
 }
 
 /* Table title styling */
@@ -14,7 +15,7 @@
     font-size: 2rem;
     font-weight: bold;
     margin-bottom: 1.5rem;
-    text-align: center;
+    margin-left: -100px;
 }  
   .action-buttons {
     display: flex;
@@ -159,3 +160,14 @@
     color: darkblue;
   }
     
+/* Row colors for different statuses */
+.cancelled-row {
+    background-color: #e11f1f 
+  }
+  
+  .done-row {
+    background-color: #3fbf3f 
+  }
+  
+  /* Default READY status inherits no special row styles */
+  

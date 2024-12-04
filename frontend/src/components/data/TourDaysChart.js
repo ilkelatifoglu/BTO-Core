@@ -2,7 +2,12 @@ import React from "react";
 import "./TourDaysChart.css";
 
 const TourDaysChart = ({ data }) => {
-  const totalTours = Object.values(data.tourDays).reduce((a, b) => a + b, 0);
+  if (!data || Object.keys(data).length === 0) {
+    return <div>No data available</div>;
+  }
+
+  const tourDays = data;
+  const totalTours = Object.values(tourDays).reduce((a, b) => a + b, 0);
 
   const getPercentage = (value) => (value / totalTours) * 100;
 
@@ -18,7 +23,7 @@ const TourDaysChart = ({ data }) => {
 
   const getConicGradient = () => {
     let cumulativeOffset = 0;
-    const segments = Object.entries(data.tourDays).map(([day, value], index) => {
+    const segments = Object.entries(tourDays).map(([day, value], index) => {
       const percentage = getPercentage(value); // Calculate percentage of each segment
       const start = cumulativeOffset; // Start offset for the current segment
       const end = cumulativeOffset + percentage; // End offset for the current segment
@@ -39,7 +44,7 @@ const TourDaysChart = ({ data }) => {
         }}
       ></div>
       <div className="legend">
-        {Object.entries(data.tourDays).map(([day, value], index) => (
+        {Object.entries(tourDays).map(([day, value], index) => (
           <div key={day} className="legend-item">
             <span
               className="legend-color"

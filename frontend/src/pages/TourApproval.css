@@ -1,53 +1,59 @@
-/* Layout for the TourApprovalPage */
-
 /* Full Page Layout */
 .tour-approval-page {
-    display: flex; /* Arrange sidebar and table side by side */
+    display: flex; /* Arrange sidebar and main content side by side */
     height: 100vh; /* Full viewport height */
     width: 100%; /* Full viewport width */
-    overflow: hidden; /* Prevent content from overflowing */
-   
+    overflow: hidden; /* Prevent unwanted overflow */
 }
 
 /* Sidebar Section */
 .sidebar-container {
-    flex-shrink: 0; /* Ensure sidebar doesn't resize */
-    width: 240px; /* Set a fixed width for the sidebar */
-    background-color: #f8f9fa; /* Optional: Add a background color for the sidebar */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional: Add a shadow for sidebar separation */
+    flex-shrink: 0; /* Sidebar should not resize */
+    width: 240px; /* Fixed width for sidebar */
+    background-color: #f8f9fa; /* Light gray for sidebar */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow for separation */
     z-index: 1;
 }
 
 /* Main Content Section */
 .main-content-container {
     flex-grow: 1; /* Take up remaining space */
-    overflow-x: hidden; /* Allow horizontal scrolling for the content */
-    padding: 90px; /* Add some padding around the table */
-    margin-left: -130px;
-    margin-right: -20px;
-    background-color: #ffffff; /* Optional: Add a background color for the main area */
+    overflow-x: auto; /* Allow horizontal scrolling */
+    padding: 20px; /* Spacing around the table */
+    background-color: #ffffff; /* White background for the content */
 }
 
-/* Add responsive behavior for smaller screens */
+/* Table Container */
+.table-container {
+    width: 100%; /* Table container should span full width */
+    margin: 0 auto; /* Center the table horizontally */
+    overflow-x: auto; /* Enable horizontal scrolling for wide content */
+    padding: 10px 0; /* Add some vertical padding for better spacing */
+}
+
+
+/* Responsive Adjustments for Smaller Screens */
 @media screen and (max-width: 768px) {
     .tour-approval-page {
-        flex-direction: column; /* Stack sidebar and main content vertically */
+        flex-direction: column; /* Stack sidebar and content vertically */
     }
 
     .sidebar-container {
-        width: 100%; /* Full width for smaller screens */
-        box-shadow: none; /* Remove shadow for a cleaner look on small screens */
+        width: 100%; /* Sidebar takes full width on smaller screens */
+        box-shadow: none; /* Remove shadow for simplicity */
     }
 
     .main-content-container {
-        padding: 8px; /* Reduce padding for smaller screens */
+        padding: 8px; /* Reduce padding on smaller screens */
     }
 }
+
 @media screen and (max-width: 1200px) {
     .main-content-container {
-        padding: 8px;
+        padding: 10px; /* Slightly reduce padding for medium screens */
     }
+
     .table-container {
-        font-size: 0.9rem; /* Slightly smaller font size */
+        font-size: 0.9rem; /* Adjust font size for better fit */
     }
 }

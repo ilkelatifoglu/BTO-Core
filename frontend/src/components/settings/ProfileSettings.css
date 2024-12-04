@@ -43,15 +43,28 @@
 }
 
 /* Save Button */
-.save-button {
-    grid-column: span 2; /* Ensure the button spans both columns */
-    margin-top: 20px;
-    padding: 12px 20px;
-    font-size: 16px;
+.save-buttonaccount {
+    grid-column: span 2;
+    margin-top: 15px;
+    margin-left: 0; 
+    padding: 12px 24px; 
+    font-size: 14px; 
     border: none;
-    border-radius: 8px;
-    background-color: #383d43;
+    border-radius: 6px; 
+    background-color: #5a6268;
     color: #ffffff;
     cursor: pointer;
     text-align: center;
-}
+    align-self: start; 
+    justify-self: start; 
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  
+  .save-buttonaccount:hover {
+    background-color: #515c67; 
+  }
+  
+  .save-buttonaccount:active {
+    transform: translateX(-1px) translateY(1px); 
+  }
+  

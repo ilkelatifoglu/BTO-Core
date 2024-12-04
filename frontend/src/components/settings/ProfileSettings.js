@@ -148,7 +148,7 @@ const ProfileSettings = () => {
                     />
                 </div>
 
-                <button className="save-button" onClick={handleSave}>
+                <button className="save-buttonaccount" onClick={handleSave}>
                     Save
                 </button>
             </div>

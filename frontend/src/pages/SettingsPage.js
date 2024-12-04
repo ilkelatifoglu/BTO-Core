@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import Sidebar from '../components/common/Sidebar'; // Main application sidebar
+import Sidebar from '../components/common/Sidebar'; 
 import ProfileSettings from '../components/settings/ProfileSettings';
 import ChangePassword from '../components/settings/ChangePassword';
 import About from '../components/settings/About';

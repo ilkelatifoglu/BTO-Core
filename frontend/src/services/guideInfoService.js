@@ -1,4 +1,8 @@
+// services/guideInfoService.js
+
 import axios from 'axios';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 /**
  * Fetch guide information with optional filters.
@@ -8,15 +12,10 @@ import axios from 'axios';
  */
 export const fetchGuideInfo = async (filters = {}) => {
     try {
-        const token = localStorage.getItem('tempToken'); // Retrieve token
-        const response = await axios.get(
-            `http://localhost:3001/guideInfo?${new URLSearchParams(filters)}`,
-            {
-                headers: {
-                    Authorization: `Bearer ${token}` // Include token in request
-                }
-            }
-        );
+        // Make a GET request to the backend server
+        const response = await axios.get(`${BACKEND_URL}/guide-info`, {
+            params: filters,
+        });
 
         // Return the data from the response
         return response.data;
@@ -30,32 +29,23 @@ export const fetchGuideInfo = async (filters = {}) => {
 };
 
 /**
- * Upload a user's schedule file to the server.
+ * Fetch a user's schedule data from the server.
  *
- * @param {Object} data - Form data containing the schedule file and user ID.
- * @returns {Promise<Object>} - Returns the response from the server.
+ * @param {number} userId - The ID of the user whose schedule is to be fetched.
+ * @returns {Promise<Object|null>} - Returns the schedule data or null if not found.
  */
-export const uploadSchedule = async (data) => {
+export const fetchGuideSchedule = async (userId) => {
     try {
-        // Create a FormData object for sending file data
-        const formData = new FormData();
-        formData.append('userId', data.userId); // Add user ID to the form data
-        formData.append('schedule', data.schedule); // Add the schedule file
+        // Make a GET request to fetch the schedule
+        const response = await axios.get(`${BACKEND_URL}/schedule/getSchedule/${userId}`);
 
-        // Make a POST request to upload the schedule
-        const response = await axios.post('http://localhost:3001/guideInfo/uploadSchedule', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data', // Ensure correct content type for file upload
-            },
-        });
-
-        // Return the server's response
+        // Return the schedule data from the response
         return response.data;
     } catch (error) {
         // Log the error for debugging purposes
-        console.error('Error uploading schedule:', error);
+        console.error('Error fetching guide schedule:', error);
 
-        // Return an error object if an error occurs
-        return { error: 'Failed to upload schedule' };
+        // Return null if an error occurs
+        return null;
     }
 };

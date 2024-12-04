@@ -7,12 +7,14 @@ const { sendEmail } = require("../utils/email");
 const jwt = require("jsonwebtoken");
 const { generateOtp, validateOtp, isOtpExpired } = require("../utils/otp");
 
+const emailService = require("../services/EmailService");
+
 exports.register = async (req, res) => {
   const {
     first_name,
     last_name,
     email,
-   // user_id, // This is the user-provided user_id
+    // user_id, // This is the user-provided user_id
     department,
     role,
     phone_number,
@@ -24,11 +26,15 @@ exports.register = async (req, res) => {
   try {
     // Validate Bilkent email
     if (!email.endsWith("@ug.bilkent.edu.tr")) {
-      return res.status(400).json({ message: "Email must be a valid Bilkent email." });
+      return res
+        .status(400)
+        .json({ message: "Email must be a valid Bilkent email." });
     }
 
     // Check if user already exists
-    const userCheck = await query("SELECT * FROM users WHERE email = $1", [email]);
+    const userCheck = await query("SELECT * FROM users WHERE email = $1", [
+      email,
+    ]);
     if (userCheck.rows.length > 0) {
       return res.status(400).json({ message: "User already exists." });
     }
@@ -72,7 +78,9 @@ exports.register = async (req, res) => {
     // Handle role-specific logic
     if (role === "advisor") {
       if (!days) {
-        return res.status(400).json({ message: "Days is required for advisor role." });
+        return res
+          .status(400)
+          .json({ message: "Days is required for advisor role." });
       }
 
       await query(
@@ -81,7 +89,10 @@ exports.register = async (req, res) => {
         [userId, `${first_name} ${last_name}`, days]
       );
     } else if (role === "candidate guide") {
-      const advisor = await query(`SELECT * FROM advisors WHERE full_name = $1`, [advisor_name]);
+      const advisor = await query(
+        `SELECT * FROM advisors WHERE full_name = $1`,
+        [advisor_name]
+      );
       if (advisor.rows.length === 0) {
         return res.status(400).json({ message: "Advisor not found." });
       }
@@ -90,38 +101,31 @@ exports.register = async (req, res) => {
       await query(
         `INSERT INTO candidate_guides (user_id, advisor_user_id, advisor_name, full_name, department, created_at, updated_at) 
          VALUES ($1, $2, $3, $4, $5,  NOW(), NOW())`,
-        [userId, advisorUserId, advisor_name, `${first_name} ${last_name}`, department]
+        [
+          userId,
+          advisorUserId,
+          advisor_name,
+          `${first_name} ${last_name}`,
+          department,
+        ]
       );
 
-      await query(`UPDATE advisors SET candidate_guides_count = candidate_guides_count + 1 WHERE user_id = $1`, [
-        advisorUserId,
-      ]);
+      await query(
+        `UPDATE advisors SET candidate_guides_count = candidate_guides_count + 1 WHERE user_id = $1`,
+        [advisorUserId]
+      );
     }
 
-    await sendEmail({
-      to: email,
-      subject: "Account Details",
-      html: `
-        <h1>Welcome to Our Platform</h1>
-        <p>Your account has been created by an administrator. Here are your login details:</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Password:</strong> ${password}</p>
-        <p>For security reasons, we recommend changing your password after your first login.</p>
-        <p>You can log in using the link below:</p>
-        <a href="${process.env.FRONTEND_URL}/login">Login to Your Account</a>
-      `,
-    });
+    await emailService.sendRegistrationEmail(email, originalPassword);
 
-    res.status(200).json({ success: true, message: "User registered successfully." });
+    res
+      .status(200)
+      .json({ success: true, message: "User registered successfully." });
   } catch (error) {
     console.error("Error during registration:", error);
     res.status(500).json({ success: false, message: "Server error." });
   }
 };
-
-
-
-
 
 exports.login = async (req, res) => {
   const { email, password } = req.body;
@@ -144,17 +148,7 @@ exports.login = async (req, res) => {
       [otp, user.id]
     );
 
-    await sendEmail({
-      to: email,
-      subject: "Your Login Verification Code",
-      html: `
-        <h1>Login Verification Code</h1>
-        <p>Your verification code is:</p>
-        <h2 style="font-size: 24px; letter-spacing: 2px; background: #f4f4f4; padding: 10px; text-align: center;">${otp}</h2>
-        <p>This code will expire in 5 minutes.</p>
-        <p>If you didn't request this code, please ignore this email.</p>
-      `,
-    });
+    await emailService.sendLoginOTPEmail(email, otp);
 
     const token = generateToken(user.id, user.user_type, true);
 
@@ -309,17 +303,7 @@ exports.requestPasswordReset = async (req, res) => {
     );
 
     const resetLink = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
-
-    await sendEmail({
-      to: email,
-      subject: "BTO Core Password Reset Request",
-      html: `
-          <p>Click the link below to reset your password:</p>
-          <a href="${resetLink}">Reset Password</a>
-          <p>This link will expire in 1 hour.</p>
-          <p>\n BTO Core Team</p>
-        `,
-    });
+    await emailService.sendPasswordResetEmail(email, resetLink);
 
     res.json({ message: "Password reset email sent" });
   } catch (err) {

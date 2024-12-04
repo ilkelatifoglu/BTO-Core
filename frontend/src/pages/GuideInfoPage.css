@@ -27,10 +27,6 @@
     font-family: Arial, sans-serif;
 }
 
-.guide-info-table {
-    margin-top: 20px;
-}
-
 .p-datatable {
     border-collapse: collapse;
     width: 100%;
@@ -54,20 +50,4 @@
 .p-paginator {
     font-size: 14px;
     padding: 10px;
-}
-
-.guide-filter-bar {
-    display: flex;
-    gap: 20px;
-    margin-bottom: 20px;
-    justify-content: flex-start;
-    align-items: center;
-}
-
-.guide-filter-bar input,
-.guide-filter-bar select,
-.guide-filter-bar button {
-    max-width: 200px;
-    padding: 10px;
-    font-size: 14px;
 }

@@ -84,6 +84,45 @@ const ProfileSettings = () => {
         }
     };
 
+    const handlePhoneNumberChange = (e) => {
+        let input = e.target.value.replace(/\D/g, '').substring(0, 11); 
+
+        let formattedNumber = '';
+        if (input.length > 0) {
+            formattedNumber = '0';
+        }
+        if (input.length > 1 && input.length <= 4) {
+            formattedNumber += ` ${input.substring(1)}`;
+        } else if (input.length > 4 && input.length <= 7) {
+            formattedNumber += ` ${input.substring(1, 4)} ${input.substring(4)}`;
+        } else if (input.length > 7 && input.length <= 9) {
+            formattedNumber += ` ${input.substring(1, 4)} ${input.substring(4, 7)} ${input.substring(7)}`;
+        } else if (input.length > 9) {
+            formattedNumber += ` ${input.substring(1, 4)} ${input.substring(4, 7)} ${input.substring(7, 9)} ${input.substring(9)}`;
+        }
+
+        setEditData({ ...editData, phone_number: formattedNumber });
+    };
+
+const handleIBANChange = (e) => {
+    let input = e.target.value.toUpperCase().replace(/[^0-9]/g, ''); 
+    input = input.substring(0, 24); 
+    let formattedIBAN = 'TR'; 
+    const parts = input.match(/.{1,4}/g); 
+    if (parts) {
+        formattedIBAN += ' ' + parts.join(' ');
+    }
+
+    setEditData({ ...editData, iban: formattedIBAN });
+};
+
+useEffect(() => {
+    if (!editData.iban.startsWith('TR')) {
+        setEditData((prevData) => ({ ...prevData, iban: 'TR' }));
+    }
+}, []);
+
+
     const handleSave = async () => {
         try {
             await updateProfileData(token, editData);
@@ -120,7 +159,7 @@ const ProfileSettings = () => {
                         name="phone_number"
                         placeholder="0 XXX XXX XX XX"
                         value={editData.phone_number}
-                        onChange={(e) => setEditData({ ...editData, phone_number: e.target.value })}
+                        onChange={handlePhoneNumberChange}
                         className="large-input"
                     />
                 </div>
@@ -131,7 +170,7 @@ const ProfileSettings = () => {
                         name="iban"
                         placeholder="TRXX XXXX XXXX XXXX XXXX XXXX XX"
                         value={editData.iban}
-                        onChange={(e) => setEditData({ ...editData, iban: e.target.value })}
+                        onChange={handleIBANChange}
                         className="large-input"
                     />
                 </div>

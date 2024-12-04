@@ -1,10 +1,15 @@
-// profileRoutes.js
 const express = require('express');
 const router = express.Router();
-const { uploadProfilePhoto, fetchUserProfile } = require('../controllers/profileController');
+const { getProfile, updateProfile } = require('../controllers/profileController');
 const authenticateToken = require('../middleware/auth');
-const multer = require('multer');
 
+router.get('/getProfile', authenticateToken, getProfile);
+router.put('/updateProfile', authenticateToken, updateProfile);
+
+module.exports = router;
+
+
+/*
 // Configure multer
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -23,3 +28,4 @@ router.post('/upload-photo', authenticateToken, upload.single('photo'), uploadPr
 router.get('/', authenticateToken, fetchUserProfile);
 
 module.exports = router;
+*/

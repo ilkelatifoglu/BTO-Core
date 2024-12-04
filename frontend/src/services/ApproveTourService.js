@@ -13,10 +13,25 @@ export const getAllTours = async () => {
         throw error;
     }
 };
-export const approveTour = async (tourId, selectedTime) => {
-    return await axios.put(`${BASE_URL}/tour/approve/${tourId}`, { selectedTime });
+export const approveTour = async (tourId, selectedTime, tourDate) => {
+    //console.log(tourId, selectedTime, tourDate);
+    return await axios.put(`${BASE_URL}/tour/approve/${tourId}`, {
+        selectedTime,
+        tourDate, // Include the tourDate in the payload
+    });
 };
 
 export const rejectTour = async (tourId) => {
     return await axios.put(`${BASE_URL}/tour/reject/${tourId}`);
+};
+export const cancelTour = async (token) => {
+    try {
+        const response = await axios.get(`${BASE_URL}/tour/cancel`, {
+            params: { token },
+        });
+        return response.data; // Return success message or relevant data
+    } catch (error) {
+        console.error("Error canceling tour:", error);
+        throw error; // Throw error for the component to handle
+    }
 };

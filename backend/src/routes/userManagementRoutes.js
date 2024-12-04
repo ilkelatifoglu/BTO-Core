@@ -10,5 +10,6 @@ const userManagementController = require("../controllers/userManagementControlle
 router.post("/remove", userManagementController.removeUser);
 router.post("/changeRole", userManagementController.changeUserRole);
 router.post("/updateCrewNo", userManagementController.updateCrewNo);
+router.get("/advisors", userManagementController.getAdvisors);
 
 module.exports = router;

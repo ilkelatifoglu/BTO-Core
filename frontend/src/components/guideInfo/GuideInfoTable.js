@@ -27,7 +27,7 @@ const GuideInfoTable = ({ guides, loading }) => {
         } else {
             alert('No schedule available for this guide.');
         }
-
+      
         setDownloading((prev) => ({ ...prev, [rowData.id]: false }));
     };
 

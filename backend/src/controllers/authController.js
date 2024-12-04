@@ -8,115 +8,23 @@ const jwt = require("jsonwebtoken");
 const { generateOtp, validateOtp, isOtpExpired } = require("../utils/otp");
 
 const emailService = require("../services/EmailService");
+const userService = require("../services/UserService");
 
 exports.register = async (req, res) => {
-  const {
-    first_name,
-    last_name,
-    email,
-    // user_id, // This is the user-provided user_id
-    department,
-    role,
-    phone_number,
-    crew_no,
-    advisor_name,
-    days,
-  } = req.body;
-
   try {
-    // Validate Bilkent email
     if (!email.endsWith("@ug.bilkent.edu.tr")) {
       return res
         .status(400)
         .json({ message: "Email must be a valid Bilkent email." });
     }
 
-    // Check if user already exists
-    const userCheck = await query("SELECT * FROM users WHERE email = $1", [
-      email,
-    ]);
-    if (userCheck.rows.length > 0) {
+    const existingUser = await userService.findUserByEmail(req.body.email);
+    if (existingUser) {
       return res.status(400).json({ message: "User already exists." });
     }
 
-    // Define user type mapping based on role
-    const roleToUserType = {
-      "candidate guide": 1,
-      guide: 2,
-      advisor: 3,
-      coordinator: 4,
-    };
-
-    const userType = roleToUserType[role];
-    if (!userType) {
-      return res.status(400).json({ message: "Invalid role specified." });
-    }
-
-    // Generate password and insert into users table
-    const originalPassword = Math.random().toString(36).slice(-8);
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(originalPassword, salt);
-
-    const newUser = await query(
-      `INSERT INTO users (first_name, last_name, email, password, department, role, phone_number, crew_no, user_type) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id`,
-      [
-        first_name,
-        last_name,
-        email,
-        hashedPassword,
-        //user_id,
-        department,
-        role,
-        phone_number,
-        crew_no || null,
-        userType,
-      ]
-    );
-
-    const userId = newUser.rows[0].id;
-
-    // Handle role-specific logic
-    if (role === "advisor") {
-      if (!days) {
-        return res
-          .status(400)
-          .json({ message: "Days is required for advisor role." });
-      }
-
-      await query(
-        ` INSERT INTO advisors (user_id, full_name, day, candidate_guides_count, created_at, updated_at) 
-         VALUES ($1, $2, $3, 0, NOW(), NOW())`,
-        [userId, `${first_name} ${last_name}`, days]
-      );
-    } else if (role === "candidate guide") {
-      const advisor = await query(
-        `SELECT * FROM advisors WHERE full_name = $1`,
-        [advisor_name]
-      );
-      if (advisor.rows.length === 0) {
-        return res.status(400).json({ message: "Advisor not found." });
-      }
-
-      const advisorUserId = advisor.rows[0].user_id;
-      await query(
-        `INSERT INTO candidate_guides (user_id, advisor_user_id, advisor_name, full_name, department, created_at, updated_at) 
-         VALUES ($1, $2, $3, $4, $5,  NOW(), NOW())`,
-        [
-          userId,
-          advisorUserId,
-          advisor_name,
-          `${first_name} ${last_name}`,
-          department,
-        ]
-      );
-
-      await query(
-        `UPDATE advisors SET candidate_guides_count = candidate_guides_count + 1 WHERE user_id = $1`,
-        [advisorUserId]
-      );
-    }
-
-    await emailService.sendRegistrationEmail(email, originalPassword);
+    const { userId, password } = await userService.createUser(req.body);
+    await emailService.sendRegistrationEmail(req.body.email, password);
 
     res
       .status(200)
@@ -130,14 +38,15 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   const { email, password } = req.body;
   try {
-    const result = await query("SELECT * FROM users WHERE email = $1", [email]);
-    if (result.rows.length === 0) {
+    const user = await userService.findUserByEmail(email);
+    if (!user) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    const user = result.rows[0];
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-
+    const isPasswordValid = await userService.verifyPassword(
+      password,
+      user.password
+    );
     if (!isPasswordValid) {
       return res.status(401).json({ message: "Invalid credentials" });
     }

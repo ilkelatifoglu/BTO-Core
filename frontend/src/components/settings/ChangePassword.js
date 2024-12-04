@@ -1,16 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import axios from 'axios';
 import './ChangePassword.css';
+import { Toast } from 'primereact/toast';
 
 const ChangePassword = ({ userEmail }) => {
-    const [oldPassword, setOldPassword] = useState(" ");
-    const [newPassword, setNewPassword] = useState(" ");
-    const [confirmNewPassword, setConfirmNewPassword] = useState(" ");
-    const [error, setError] = useState(" ");
-    const [success, setSuccess] = useState(" ");
+    const [oldPassword, setOldPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmNewPassword, setConfirmNewPassword] = useState('');
     const [showOldPassword, setShowOldPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+    const toast = useRef(null);
 
     // Toggle password visibility
     const togglePasswordVisibility = (field) => {
@@ -22,12 +23,15 @@ const ChangePassword = ({ userEmail }) => {
     // Form submission handler
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError('');
-        setSuccess('');
 
         // Validate that new passwords match
         if (newPassword !== confirmNewPassword) {
-            setError('New passwords do not match');
+            toast.current.show({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'New passwords do not match',
+                life: 3000,
+            });
             return;
         }
 
@@ -43,29 +47,46 @@ const ChangePassword = ({ userEmail }) => {
             );
 
             if (response.data.message === 'Password updated successfully') {
-                setSuccess('Password updated successfully');
-                setOldPassword(" ");
-                setNewPassword(" ");
-                setConfirmNewPassword(" ");
+                toast.current.show({
+                    severity: 'success',
+                    summary: 'Success',
+                    detail: 'Password updated successfully',
+                    life: 3000,
+                });
+                setOldPassword('');
+                setNewPassword('');
+                setConfirmNewPassword('');
             } else {
-                setError('Failed to update password');
+                toast.current.show({
+                    severity: 'error',
+                    summary: 'Error',
+                    detail: 'Failed to update password',
+                    life: 3000,
+                });
             }
         } catch (err) {
-            setError(
+            const errorMessage =
                 err.response?.data?.message ||
-                'An error occurred while updating the password'
-            );
+                'An error occurred while updating the password';
+            toast.current.show({
+                severity: 'error',
+                summary: 'Error',
+                detail: errorMessage,
+                life: 3000,
+            });
         }
     };
 
     return (
-        <div className="change-password-wrapper">
+        <div className="change-password-container-wrapper">
+            <Toast ref={toast} position="top-right" />
             <h2 className="change-password-header">Change Password</h2>
             <form onSubmit={handleSubmit} className="change-password-form">
                 <div className="input-group">
-                    <label>Current Password:</label>
+                    <label htmlFor="current-password">Current Password:</label>
                     <div className="password-field">
                         <input
+                            id="current-password"
                             type={showOldPassword ? 'text' : 'password'}
                             placeholder="Enter your current password"
                             value={oldPassword}
@@ -75,15 +96,19 @@ const ChangePassword = ({ userEmail }) => {
                         <span
                             className="toggle-password"
                             onClick={() => togglePasswordVisibility('old')}
+                            aria-label={
+                                showOldPassword ? 'Hide password' : 'Show password'
+                            }
                         >
                             {showOldPassword ? '🙈' : '👁️'}
                         </span>
                     </div>
                 </div>
                 <div className="input-group">
-                    <label>New Password:</label>
+                    <label htmlFor="new-password">New Password:</label>
                     <div className="password-field">
                         <input
+                            id="new-password"
                             type={showNewPassword ? 'text' : 'password'}
                             placeholder="Enter a new password"
                             value={newPassword}
@@ -93,15 +118,19 @@ const ChangePassword = ({ userEmail }) => {
                         <span
                             className="toggle-password"
                             onClick={() => togglePasswordVisibility('new')}
+                            aria-label={
+                                showNewPassword ? 'Hide password' : 'Show password'
+                            }
                         >
                             {showNewPassword ? '🙈' : '👁️'}
                         </span>
                     </div>
                 </div>
                 <div className="input-group">
-                    <label>Confirm New Password:</label>
+                    <label htmlFor="confirm-password">Confirm New Password:</label>
                     <div className="password-field">
                         <input
+                            id="confirm-password"
                             type={showConfirmPassword ? 'text' : 'password'}
                             placeholder="Repeat your new password"
                             value={confirmNewPassword}
@@ -111,6 +140,9 @@ const ChangePassword = ({ userEmail }) => {
                         <span
                             className="toggle-password"
                             onClick={() => togglePasswordVisibility('confirm')}
+                            aria-label={
+                                showConfirmPassword ? 'Hide password' : 'Show password'
+                            }
                         >
                             {showConfirmPassword ? '🙈' : '👁️'}
                         </span>
@@ -127,20 +159,14 @@ const ChangePassword = ({ userEmail }) => {
                             setOldPassword('');
                             setNewPassword('');
                             setConfirmNewPassword('');
-                            setError('');
-                            setSuccess('');
                         }}
                     >
                         Cancel
                     </button>
                 </div>
-                {error && <p className="error-message">{error}</p>}
-                {success && <p className="success-message">{success}</p>}
             </form>
         </div>
     );
 };
 
 export default ChangePassword;
-
-

@@ -225,7 +225,7 @@ exports.getReadyTours = async () => {
       JOIN schools s ON t.school_id = s.id
       WHERE t.tour_status IN ('READY', 'CANCELLED', 'DONE') 
       ORDER BY t.date, t.time;`
-    );
+  );
   // Ensure that assigned_candidates and assigned_guides are integers
   return result.rows.map(row => ({
     ...row,
@@ -295,12 +295,12 @@ exports.getAllTours = async () => {
      FROM tours t
      JOIN schools s ON t.school_id = s.id
      LEFT JOIN tour_time tt ON t.id = tt.tour_id
-     ORDER BY t.id DESC`
+     ORDER BY t.date ASC` // Ordering by tour_id in descending order
   );
   return result.rows;
 };
 
-exports.approveTour = async (tourId, selectedTime) => {
+/*exports.approveTour = async (tourId, selectedTime) => {
   const allowedTimes = ['09:00', '11:00', '13:30', '16:00'];
   if (!allowedTimes.includes(selectedTime)) {
     throw new Error('Invalid time preference');
@@ -316,7 +316,7 @@ exports.approveTour = async (tourId, selectedTime) => {
     throw new Error('Tour not found or already approved');
   }
   return result.rows[0];
-};
+};*/
 
 exports.rejectTour = async (tourId) => {
   const result = await query(
@@ -343,7 +343,7 @@ exports.updateClassRoom = async (tourId, classRoom) => {
 // Update Time Preference Function
 exports.updateTime = async (tourId, selectedTime) => {
   const allowedTimes = ['09:00', '11:00', '13:30', '16:00'];
-  
+
   // Validate the selected time
   if (!allowedTimes.includes(selectedTime)) {
     throw new Error('Invalid time preference. Allowed values are 09:00, 11:00, 13:30, or 16:00.');

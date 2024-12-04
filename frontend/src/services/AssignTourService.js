@@ -71,6 +71,32 @@ const AssignTourService = {
     }
   },  
 
+  getMyTours: async () => {
+    const userId = localStorage.getItem("userId"); // Assuming user ID is stored in localStorage
+    const token = localStorage.getItem("tempToken"); // For authorization
+    try {
+        const response = await axios.get(`${API_BASE_URL}/tour/myTours`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        return response.data.tours;
+    } catch (error) {
+        console.error("Error fetching my tours:", error);
+        throw new Error("Unable to fetch my tours");
+    }
+},
+withdrawFromTour: async (tourId) => {
+  const tempToken = localStorage.getItem("tempToken"); // Ensure the token is included
+  try {
+      await axios.delete(`${API_BASE_URL}/tour/withdraw/${tourId}`, {
+          headers: { Authorization: `Bearer ${tempToken}` },
+      });
+  } catch (error) {
+      console.error("Error withdrawing from tour:", error.response?.data || error);
+      throw new Error(error.response?.data?.message || "Unable to withdraw from tour");
+  }
+},
+
+
  };
 
 export default AssignTourService;

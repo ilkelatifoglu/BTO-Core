@@ -3,6 +3,6 @@ const router = express.Router();
 const { getData } = require("../controllers/dataController");
 
 // GET /data/:filter
-router.get("/:filter", getData);
+router.get("/:filter/:periodIndex", getData);
 
 module.exports = router;

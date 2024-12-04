@@ -1,7 +1,6 @@
 const db = require('../config/database');
 
 exports.getProfile = async (req, res) => {
-    console.log('req.user in getProfile:', req.user); 
     const userId = req.user.userId;
 
     try {
@@ -29,9 +28,7 @@ exports.getProfile = async (req, res) => {
     }
 };
 
-
 exports.updateProfile = async (req, res) => {
-    console.log('req.user in updateProfile:', req.user); 
     const userId = req.user.userId;
     const { phone_number, iban, department } = req.body;
 

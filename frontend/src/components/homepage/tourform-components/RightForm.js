@@ -3,7 +3,7 @@
 import React from 'react';
 import './RightForm.css';
 import PropTypes from 'prop-types';
-
+//
 const RightForm = ({
   responsibleName,
   setResponsibleName,

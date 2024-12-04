@@ -1,9 +1,4 @@
-const bcrypt = require("bcrypt");
-const { query } = require("../config/database");
 const { verifyToken, generateToken } = require("../utils/jwt");
-const jwt = require("jsonwebtoken");
-const { generateOtp, validateOtp, isOtpExpired } = require("../utils/otp");
-
 const emailService = require("../services/EmailService");
 const userService = require("../services/UserService");
 const otpService = require("../services/OtpService.js");

@@ -14,6 +14,7 @@ const advisorRoutes = require("./src/routes/advisorRoutes");
 const userManagementRoutes = require("./src/routes/userManagementRoutes");
 const dataRoutes = require("./src/routes/dataRoutes");
 const profileRoutes = require('./src/routes/profileRoutes');
+const individualTourRoutes = require('./src/routes/individualTourRoutes');
 
 const app = express();
 const server = http.createServer(app);
@@ -37,7 +38,8 @@ app.use("/tour", tourRoutes);
 app.use("/school", schoolRoutes);
 app.use("/advisors", advisorRoutes);
 app.use("/user-management", userManagementRoutes);
-app.use('/data', dataRoutes); 
+app.use('/data', dataRoutes);
+app.use('/individual-tours', individualTourRoutes);
 //app.use('/uploads', express.static('uploads')); // profil foto için eklendi
 
 io.on("connection", (socket) => {

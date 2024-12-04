@@ -6,6 +6,7 @@ const { generateOtp, validateOtp, isOtpExpired } = require("../utils/otp");
 
 const emailService = require("../services/EmailService");
 const userService = require("../services/UserService");
+const otpService = require("../services/OtpService.js");
 
 exports.register = async (req, res) => {
   try {
@@ -48,11 +49,7 @@ exports.login = async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    const otp = generateOtp();
-    await query(
-      "UPDATE users SET two_factor_secret = $1, reset_token_expires = NOW() + interval '5 minutes' WHERE id = $2",
-      [otp, user.id]
-    );
+    const otp = await otpService.generateAndSaveOTP(user.id);
 
     await emailService.sendLoginOTPEmail(email, otp);
 
@@ -73,28 +70,19 @@ exports.login = async (req, res) => {
 exports.verifyOtp = async (req, res) => {
   const { otp } = req.body;
   const tempToken = req.headers.authorization?.split(" ")[1];
+
   try {
     const decoded = verifyToken(tempToken);
-
     if (!decoded.isTemp) {
-      return res.status(401).json({ message: "Invalid token 1" });
+      return res.status(401).json({ message: "Invalid token" });
     }
 
-    const result = await query(
-      "SELECT * FROM users WHERE id = $1 AND two_factor_secret = $2 AND reset_token_expires > NOW()",
-      [decoded.userId, otp]
-    );
-
-    if (result.rows.length === 0) {
+    const isValid = await otpService.verifyOTP(decoded.userId, otp);
+    if (!isValid) {
       return res
         .status(401)
         .json({ message: "Invalid or expired verification code" });
     }
-
-    await query(
-      "UPDATE users SET two_factor_secret = NULL, reset_token_expires = NULL WHERE id = $1",
-      [decoded.userId]
-    );
 
     const accessToken = generateToken(decoded.userId, false);
 

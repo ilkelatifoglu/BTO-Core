@@ -1,6 +1,6 @@
 const bcrypt = require("bcrypt");
 const { query } = require("../config/database");
-
+const jwt = require("jsonwebtoken");
 class UserService {
   async createUser({
     first_name,
@@ -58,7 +58,7 @@ class UserService {
     return result.rows[0];
   }
 
-  async deleteUser(email) {
+  async deleteUserByEmail(email) {
     const result = await query(
       "DELETE FROM users WHERE email = $1 RETURNING id, email",
       [email]
@@ -137,6 +137,65 @@ class UserService {
   async hashPassword(password) {
     const salt = await bcrypt.genSalt(10);
     return await bcrypt.hash(password, salt);
+  }
+
+  async updateUserPassword(email, oldPassword, newPassword) {
+    const user = await this.findUserByEmail(email);
+    if (!user) {
+      return null;
+    }
+
+    const isOldPasswordValid = await this.verifyPassword(
+      oldPassword,
+      user.password
+    );
+    if (!isOldPasswordValid) {
+      return false;
+    }
+
+    const hashedNewPassword = await this.hashPassword(newPassword);
+    await query("UPDATE users SET password = $1 WHERE email = $2", [
+      hashedNewPassword,
+      email,
+    ]);
+    return true;
+  }
+
+  async requestPasswordReset(email) {
+    const user = await this.findUserByEmail(email);
+    if (!user) {
+      return null;
+    }
+
+    const resetToken = jwt.sign({ email }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+
+    await query(
+      "UPDATE users SET reset_token = $1, reset_token_expires = NOW() + interval '1 hour' WHERE email = $2",
+      [resetToken, email]
+    );
+
+    return resetToken;
+  }
+
+  async resetPassword(token, newPassword) {
+    const result = await query(
+      "SELECT * FROM users WHERE reset_token = $1 AND reset_token_expires > NOW()",
+      [token]
+    );
+
+    if (result.rows.length === 0) {
+      return false;
+    }
+
+    const hashedPassword = await this.hashPassword(newPassword);
+    await query(
+      "UPDATE users SET password = $1, reset_token = NULL, reset_token_expires = NULL WHERE reset_token = $2",
+      [hashedPassword, token]
+    );
+
+    return true;
   }
 }
 

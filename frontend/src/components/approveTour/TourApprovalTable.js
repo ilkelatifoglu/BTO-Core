@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
+import { Dialog } from "primereact/dialog"; // Import Dialog for pop-up
 import { Dropdown } from "primereact/dropdown";
 import { getAllTours, approveTour, rejectTour } from "../../services/ApproveTourService";
 import "./TourApprovalTable.css";
@@ -10,6 +11,8 @@ const TourApprovalTable = () => {
     const [tours, setTours] = useState([]);
     const [selectedTimes, setSelectedTimes] = useState({});
     const [rows, setRows] = useState(10);
+    const [dialogVisible, setDialogVisible] = useState(false);
+    const [currentNote, setCurrentNote] = useState("");
 
     useEffect(() => {
         const fetchTours = async () => {
@@ -18,7 +21,7 @@ const TourApprovalTable = () => {
 
                 // Override statuses for display
                 const processedTours = data.map((tour) => {
-                    if (["READY", "DONE", "CANCELLED"].includes(tour.tour_status)) {
+                    if (["READY", "DONE"].includes(tour.tour_status)) {
                         return { ...tour, display_status: "APPROVED" };
                     }
                     return { ...tour, display_status: tour.tour_status };
@@ -43,7 +46,7 @@ const TourApprovalTable = () => {
 
     const handleApprove = async (rowData) => {
         const selectedTime = selectedTimes[rowData.tour_id];
-        const tourDate = rowData.date; // Assuming the date is available in rowData
+        const tourDate = rowData.date;
 
         if (!selectedTime) {
             alert("Please select a time preference!");
@@ -51,7 +54,7 @@ const TourApprovalTable = () => {
         }
 
         try {
-            await approveTour(rowData.tour_id, selectedTime, tourDate); // Pass tourDate as an argument
+            await approveTour(rowData.tour_id, selectedTime, tourDate);
             setTours((prevTours) =>
                 prevTours.map((tour) =>
                     tour.tour_id === rowData.tour_id
@@ -63,7 +66,6 @@ const TourApprovalTable = () => {
             console.error("Error approving tour:", error);
         }
     };
-
 
     const handleReject = async (rowData) => {
         try {
@@ -88,6 +90,22 @@ const TourApprovalTable = () => {
                 {formattedDate} ({rowData.day})
             </span>
         );
+    };
+
+    const notesBodyTemplate = (rowData) => {
+        if (rowData.visitor_notes) {
+            return (
+                <Button
+                    icon="pi pi-file"
+                    className="p-button-info"
+                    onClick={() => {
+                        setCurrentNote(rowData.visitor_notes);
+                        setDialogVisible(true);
+                    }}
+                />
+            );
+        }
+        return <span>No notes</span>;
     };
 
     const actionBodyTemplate = (rowData) => {
@@ -142,6 +160,7 @@ const TourApprovalTable = () => {
             case "WAITING":
                 return "yellow-row";
             case "REJECTED":
+            case "CANCELLED": // Use the same style as REJECTED
                 return "red-row";
             default:
                 return "";
@@ -175,11 +194,32 @@ const TourApprovalTable = () => {
                 <Column field="teacher_phone" header="Teacher Phone" style={{ width: "10%" }}></Column>
                 <Column field="time" header="Selected Time" style={{ width: "5%" }}></Column>
                 <Column
+                    header="Notes"
+                    body={notesBodyTemplate}
+                    style={{ width: "10%" }}
+                ></Column>
+                <Column
                     header="Approve/Reject"
                     body={actionBodyTemplate}
                     style={{ width: "10%" }}
                 ></Column>
             </DataTable>
+
+            {/* Dialog for Notes */}
+            <Dialog
+                visible={dialogVisible}
+                onHide={() => setDialogVisible(false)}
+                header="Visitor Notes"
+                footer={
+                    <Button
+                        label="Close"
+                        icon="pi pi-times"
+                        onClick={() => setDialogVisible(false)}
+                    />
+                }
+            >
+                <p>{currentNote}</p>
+            </Dialog>
         </div>
     );
 };

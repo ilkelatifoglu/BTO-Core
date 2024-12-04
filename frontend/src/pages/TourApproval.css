@@ -1,0 +1,59 @@
+/* Full Page Layout */
+.tour-approval-page {
+    display: flex; /* Arrange sidebar and main content side by side */
+    height: 100vh; /* Full viewport height */
+    width: 100%; /* Full viewport width */
+    overflow: hidden; /* Prevent unwanted overflow */
+}
+
+/* Sidebar Section */
+.sidebar-container {
+    flex-shrink: 0; /* Sidebar should not resize */
+    width: 240px; /* Fixed width for sidebar */
+    background-color: #f8f9fa; /* Light gray for sidebar */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow for separation */
+    z-index: 1;
+}
+
+/* Main Content Section */
+.main-content-container {
+    flex-grow: 1; /* Take up remaining space */
+    overflow-x: auto; /* Allow horizontal scrolling */
+    padding: 20px; /* Spacing around the table */
+    background-color: #ffffff; /* White background for the content */
+}
+
+/* Table Container */
+.table-container {
+    width: 100%; /* Table container should span full width */
+    margin: 0 auto; /* Center the table horizontally */
+    overflow-x: auto; /* Enable horizontal scrolling for wide content */
+    padding: 10px 0; /* Add some vertical padding for better spacing */
+}
+
+
+/* Responsive Adjustments for Smaller Screens */
+@media screen and (max-width: 768px) {
+    .tour-approval-page {
+        flex-direction: column; /* Stack sidebar and content vertically */
+    }
+
+    .sidebar-container {
+        width: 100%; /* Sidebar takes full width on smaller screens */
+        box-shadow: none; /* Remove shadow for simplicity */
+    }
+
+    .main-content-container {
+        padding: 8px; /* Reduce padding on smaller screens */
+    }
+}
+
+@media screen and (max-width: 1200px) {
+    .main-content-container {
+        padding: 10px; /* Slightly reduce padding for medium screens */
+    }
+
+    .table-container {
+        font-size: 0.9rem; /* Adjust font size for better fit */
+    }
+}

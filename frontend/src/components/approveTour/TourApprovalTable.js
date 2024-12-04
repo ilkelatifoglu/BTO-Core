@@ -148,9 +148,9 @@ const TourApprovalTable = () => {
     };
 
     return (
-        <div>
-            {/* Page Header */}
-            <h1 style={{ textAlign: "center", margin: "20px 0" }}>Tour Approval Page</h1>
+        <div className="table-container">
+        <h1 style={{ textAlign: "center", margin: "20px 0" }}>Tour Approval Page</h1>
+        <div style={{ overflowX: "hidden", width: "100%" }}> {/* Ensure no horizontal scrolling */}
 
             {/* Data Table */}
             <DataTable
@@ -183,6 +183,7 @@ const TourApprovalTable = () => {
                     style={{ width: "10%" }}
                 ></Column>
             </DataTable>
+        </div>
         </div>
     );
 };

@@ -1,0 +1,76 @@
+import axios from 'axios';
+
+/**
+ * Fetch user profile data.
+ *
+ * @param {string} token - Authentication token for the user.
+ * @returns {Promise<Object>} - The user's profile data.
+ */
+export const fetchProfileData = async (token) => {
+    try {
+        const response = await axios.get('http://localhost:3001/profile/getProfile', {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching profile data:', error);
+        throw new Error('Failed to fetch profile data.');
+    }
+};
+
+/**
+ * Update user profile data.
+ *
+ * @param {string} token - Authentication token for the user.
+ * @param {Object} updatedData - Data to update (phone, iban, department).
+ * @returns {Promise<void>}
+ */
+export const updateProfileData = async (token, updatedData) => {
+    try {
+        await axios.put(
+            'http://localhost:3001/profile/updateProfile',
+            updatedData,
+            {
+                headers: { Authorization: `Bearer ${token}` },
+            }
+        );
+    } catch (error) {
+        console.error('Error updating profile data:', error);
+        throw new Error('Failed to update profile data.');
+    }
+};
+
+/**
+ * Upload user profile picture.
+ *
+ * @param {string} token - Authentication token for the user.
+ * @param {File} photo - The photo file to upload.
+ * @returns {Promise<Object>} - Response data after uploading the photo.
+ */
+export const uploadProfilePhoto = async (token, photo) => {
+    try {
+        const formData = new FormData();
+        formData.append('photo', photo);
+
+        const response = await axios.post('http://localhost:3001/profile/upload-photo', formData, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+
+        return response.data;
+    } catch (error) {
+        console.error('Error uploading profile photo:', error);
+        throw new Error('Failed to upload profile photo.');
+    }
+};
+
+// Default export to group all functions together
+const profileService = {
+    fetchProfileData,
+    updateProfileData,
+    uploadProfilePhoto,
+};
+
+export default profileService;

@@ -7,11 +7,14 @@ import { MultiSelect } from "primereact/multiselect";
 import AssignTourService from "../../services/AssignTourService";
 import "./ReadyToursTable.css";
 import io from "socket.io-client";
+import FilterBar from "./FilterBar"; // Import the FilterBar component
+
 
 const socket = io("http://localhost:3001");
 
 export default function ReadyToursTable() {
   const [tours, setTours] = useState([]);
+  const [filteredTours, setFilteredTours] = useState([]); // State to store filtered tours
   const [message, setMessage] = useState(null);
   const [expandedRows, setExpandedRows] = useState(null); // For expandable rows
   const [selectedCandidates, setSelectedCandidates] = useState({}); // Tracks MultiSelect values
@@ -23,6 +26,7 @@ export default function ReadyToursTable() {
       try {
         const data = await AssignTourService.getReadyTours();
         setTours(data);
+        setFilteredTours(data); // Initialize filtered tours
       } catch (error) {
         console.error("Error fetching tours:", error);
       }
@@ -76,6 +80,26 @@ export default function ReadyToursTable() {
   }, []);
   
   
+  const handleFilterChange = (filters) => {
+    const filtered = tours.filter((tour) => {
+      const matchDate =
+        !filters.date ||
+        new Date(tour.date).toDateString() === filters.date.toDateString();
+      const matchDay = !filters.day || tour.day === filters.day;
+      const matchTime = !filters.time || tour.time.includes(filters.time);
+      const matchSchool =
+        !filters.school || tour.school_name.toLowerCase().includes(filters.school.toLowerCase());
+      const matchCity =
+        !filters.city || tour.city.toLowerCase().includes(filters.city.toLowerCase());
+      const matchGuide =
+        !filters.guide ||
+        (tour.guide_names &&
+          tour.guide_names.toLowerCase().includes(filters.guide.toLowerCase()));
+
+      return matchDate && matchDay && matchTime && matchSchool && matchCity && matchGuide;
+    });
+    setFilteredTours(filtered);
+  };
 
   const handleAssignGuide = async (rowData) => {
     const { school_name, city, date, time } = rowData;
@@ -119,6 +143,7 @@ export default function ReadyToursTable() {
   
       const updatedTours = await AssignTourService.getReadyTours();
       setTours(updatedTours);
+      setFilteredTours(updatedTours);
       setSelectedCandidates(prevState => ({
         ...prevState,
         [rowData.id]: [] // Clear the selected candidates for this tour
@@ -191,10 +216,10 @@ export default function ReadyToursTable() {
   return (
     <div className="assign-tour-container">
       <h1 className="table-title">Tour Assignment</h1>
-      {message && <p className="message">{message}</p>}
-      <div className="assign-tour-table">
+      <FilterBar onFilterChange={handleFilterChange} /> {/* Render FilterBar */}
+      {message && <p className="message">{message}</p>}      <div className="assign-tour-table">
       <DataTable
-        value={tours}
+        value={filteredTours}
         paginator
         rows={50}
         className="p-datatable-striped"

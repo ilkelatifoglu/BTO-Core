@@ -23,7 +23,7 @@ const authenticateToken = (req, res, next) => {
     const decodedToken = verifyToken(token);
     if (!decodedToken.userId || typeof decodedToken.user_type !== "number") {
       return res.status(401).json({ error: "Malformed token" });
-    }
+    }    
     req.user = {
       userId: decodedToken.userId,
       user_type: decodedToken.user_type,

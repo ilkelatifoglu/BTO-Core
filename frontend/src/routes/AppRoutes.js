@@ -15,6 +15,8 @@ import AdvisorPage from "../pages/AdvisorPage"; // Adjust path if necessar
 import UserManagementPage from "../pages/UserManagementPage";
 import TourApprovalPage from "../pages/TourApproval";
 import DataInsightPage from "../pages/DataInsightPage";
+import MyTours from "../components/myTours/MyTours";
+
 import CancellationPage from "../pages/CancellationPage";
 
 const AppRoutes = () => {
@@ -23,7 +25,7 @@ const AppRoutes = () => {
       <Route path="/home" element={<HomePage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/dashboard" element={<DashboardPage />} />
-      <Route path="/settings" element={<SettingsPage />} />
+      <Route path="/Settings" element={<SettingsPage />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="*" element={<NotFound />} />
       <Route path="/" element={<Navigate replace to="/home" />} />
@@ -36,6 +38,7 @@ const AppRoutes = () => {
       <Route path="/manageUser" element={<UserManagementPage />} />
       <Route path="/data-insight" element={<DataInsightPage />} />
       <Route path="/approve-tour" element={<TourApprovalPage />} />
+      <Route path="/my-tours" element={<MyTours />} />
       <Route path="/tours/cancel" element={<CancellationPage />} />
     </Routes>
   );

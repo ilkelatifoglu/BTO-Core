@@ -8,10 +8,15 @@ import axios from 'axios';
  */
 export const fetchGuideInfo = async (filters = {}) => {
     try {
-        // Make a GET request to the backend server
-        const response = await axios.get('http://localhost:3001/guideInfo', {
-            params: filters, // Send filters as query parameters
-        });
+        const token = localStorage.getItem('tempToken'); // Retrieve token
+        const response = await axios.get(
+            `http://localhost:3001/guideInfo?${new URLSearchParams(filters)}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}` // Include token in request
+                }
+            }
+        );
 
         // Return the data from the response
         return response.data;

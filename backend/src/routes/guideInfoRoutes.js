@@ -6,7 +6,7 @@ const { getGuideInfo } = require('../controllers/guideInfoController');
 const authenticateToken = require('../middleware/auth'); // Middleware for authentication
 
 // Route to fetch guide information
-router.get('/', getGuideInfo); // Ensure only authenticated users can access this route
+router.get('/', authenticateToken, getGuideInfo); // Ensure only authenticated users can access this route
 
 // Route to fetch individual schedule
 router.get('/schedules/:fileName', (req, res) => {

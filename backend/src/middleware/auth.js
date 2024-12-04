@@ -23,12 +23,13 @@ const authenticateToken = (req, res, next) => {
     const decodedToken = verifyToken(token);
     if (!decodedToken.userId || typeof decodedToken.user_type !== "number") {
       return res.status(401).json({ error: "Malformed token" });
-    }
+    }    
     req.user = {
       userId: decodedToken.userId,
       user_type: decodedToken.user_type,
       isTemp: decodedToken.isTemp, 
     };
+    console.log('req.user in middleware:', req.user); 
     next(); 
   } catch (error) {
     if (error.name === "TokenExpiredError") {

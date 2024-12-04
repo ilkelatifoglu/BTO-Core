@@ -57,7 +57,7 @@ exports.addTour = async (req, res) => {
       return res.status(400).json({ message: "A tour already exists for this school on the given date" });
     }
 
-    const day = new Date(date).toLocaleString("tr-TR", { weekday: "long" });
+    const day = new Date(date).toLocaleString("en-GB", { weekday: "long" });
     const guide_count = Math.ceil(tour_size / 60);
 
     const tourId = await insertTour({
@@ -437,5 +437,50 @@ exports.updateTime = async (req, res) => {
       success: false,
       message: "Failed to update time.",
     });
+  }
+};
+
+exports.getMyTours = async (req, res) => {
+  const userId = req.user.userId; // Assuming you are using an authentication middleware that sets req.user
+  try {
+    console.log("Logged-in user ID:", userId); // Debug the user ID
+
+      const result = await query(
+          `
+          SELECT t.id, t.date, t.day, t.time, t.classroom, t.tour_status,
+                 s.school_name, s.city, t.tour_size, t.teacher_name,
+                 STRING_AGG(u.first_name || ' ' || u.last_name, ', ') AS guide_names
+          FROM tours t
+          JOIN schools s ON t.school_id = s.id
+          JOIN tour_guide tg ON t.id = tg.tour_id
+          LEFT JOIN users u ON tg.guide_id = u.id
+          WHERE tg.guide_id = $1 AND t.tour_status = 'READY'
+          GROUP BY t.id, s.school_name, s.city, t.tour_size, t.teacher_name
+          ORDER BY t.date, t.time
+          `,
+          [userId]
+      );
+      res.status(200).json({ success: true, tours: result.rows });
+  } catch (error) {
+      console.error("Error fetching user tours:", error.message || error);
+      res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+exports.withdrawFromTour = async (req, res) => {
+  const userId = req.user.userId; // Retrieve user ID from the authentication token
+  const { id: tourId } = req.params; // Retrieve tour ID from the route parameter
+
+  try {
+      // Remove the user from the tour
+      await query(
+          `DELETE FROM tour_guide WHERE guide_id = $1 AND tour_id = $2`,
+          [userId, tourId]
+      );
+
+      res.status(200).json({ success: true, message: "Successfully withdrawn from the tour" });
+  } catch (error) {
+      console.error("Error withdrawing from tour:", error.message || error);
+      res.status(500).json({ success: false, message: "Server error" });
   }
 };

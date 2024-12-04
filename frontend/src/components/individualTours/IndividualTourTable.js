@@ -12,6 +12,7 @@ const IndividualToursTable = () => {
     const [visible, setVisible] = useState(false); // State for controlling the visibility of the popup
     const [selectedNote, setSelectedNote] = useState(""); // State for storing selected note
     const [userId, setUserId] = useState(localStorage.getItem("userId")); // Get userId from localStorage
+    const [userType, setUserType] = useState(localStorage.getItem("userType")); // Get userType from localStorage
 
     // Function to fetch tours and set the state
     const fetchTours = async () => {
@@ -107,12 +108,15 @@ const IndividualToursTable = () => {
                         onClick={() => handleApproveTour(rowData.id)}
                         aria-label="Approve Tour"
                     />
-                    <Button
-                        icon="pi pi-times"
-                        className="p-button-danger p-button-reject p-button-rounded" // Red button class for reject
-                        onClick={() => handleRejectTour(rowData.id)}
-                        aria-label="Reject Tour"
-                    />
+                    {/* Show reject button only for userType 3 and 4 */}
+                    {(userType === "3" || userType === "4") && (
+                        <Button
+                            icon="pi pi-times"
+                            className="p-button-danger p-button-reject p-button-rounded" // Red button class for reject
+                            onClick={() => handleRejectTour(rowData.id)}
+                            aria-label="Reject Tour"
+                        />
+                    )}
                 </div>
             );
         }
@@ -157,17 +161,17 @@ const IndividualToursTable = () => {
                 rowClassName={(data) => getRowClass(data.tour_status)} // Apply the dynamic row class
             >
                 <Column field="id" header="ID" style={{ width: "5%" }}></Column>
+                <Column field="tour_status" header="Tour Status" style={{ width: "10%" }}></Column>
                 <Column field="date" header="Date" style={{ width: "10%" }} body={rowData => formatDate(rowData.date)}></Column>
                 <Column field="day" header="Day" style={{ width: "10%" }}></Column>
                 <Column field="time" header="Time" style={{ width: "5%" }}></Column>
                 <Column field="tour_size" header="Tour Size" style={{ width: "5%" }}></Column>
                 <Column field="contact_name" header="Contact Name" style={{ width: "10%" }}></Column>
                 <Column field="contact_phone" header="Contact Phone" style={{ width: "10%" }}></Column>
-                <Column field="tour_status" header="Tour Status" style={{ width: "10%" }}></Column>
                 {/* Guide Name column, combining first and last name */}
-                <Column header="Guide Name" style={{ width: "10%" }} body={combineGuideName}></Column>
-                <Column field="visitor_notes" header="Visitor Notes" style={{ width: "5%" }} body={noteBodyTemplate}></Column>
                 <Column field="major_of_interest" header="Major of Interest" style={{ width: "10%" }}></Column>
+                <Column field="visitor_notes" header="Visitor Notes" style={{ width: "5%" }} body={noteBodyTemplate}></Column>
+                <Column header="Guide Name" style={{ width: "10%" }} body={combineGuideName}></Column>
                 <Column body={actionBodyTemplate} header="Actions" style={{ width: "10%" }}></Column> {/* New column */}
             </DataTable>
 

@@ -3,6 +3,9 @@ const express = require("express");
 const http = require("http");
 const socketIo = require("socket.io");
 const cors = require("cors");
+const aws = require("aws-sdk");
+const multer = require("multer");
+const multerS3 = require("multer-s3");
 
 const authRoutes = require("./src/routes/authRoutes");
 
@@ -22,6 +25,28 @@ const io = socketIo(server, {
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   },
+});
+
+aws.config.update({
+  secretAccessKey: process.env.ACCESS_SECRET,
+  accessKeyId: process.env.ACCESS_KEY,
+  region: process.env.REGION,
+});
+
+const BUCKET_NAME = process.env.BUCKET_NAME;
+const s3 = new aws.S3();
+
+const upload = multer ({
+    storage: multerS3({
+        s3: s3,
+        bucket: BUCKET_NAME,
+        metadata: function(req, file, cb){
+            cb:(null, {fieldName: file.fieldname});
+          },
+          key: function (req, file, cb){
+            cb: (null, file.originalname)
+          }
+    })
 });
 
 app.use(cors());

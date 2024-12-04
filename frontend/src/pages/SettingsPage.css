@@ -71,3 +71,82 @@
     background-color: #f9f9f9; /* Match the settings sidebar color */
     z-index: -1; /* Place it behind the content */
 }
+
+
+/* Updated settings container styles */
+.settings-page-container {
+    display: flex;
+    flex-grow: 1;
+    background-color: #f9f9f9; /* Keep the overall page background light */
+    padding: 20px;
+    height: 100%;
+    margin-left: 230px;
+    transition: margin-left 0.3s ease;
+}
+
+/* Sidebar styled as a white card */
+.settings-sidebar {
+    width: 240px;
+    background-color: #ffffff; /* White card background */
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for card effect */
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    margin-right: 20px; /* Spacing between sidebar and content */
+    margin-left: 20px;
+}
+
+/* Sidebar header */
+.settings-header {
+    margin-bottom: 20px;
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #000000;
+}
+
+/* Sidebar buttons */
+.settings-sidebar button {
+    background: none;
+    border: none;
+    text-align: left;
+    padding: 10px;
+    margin-bottom: 10px;
+    font-size: 1em;
+    color: #333;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-radius: 8px;
+    transition: all 0.3s;
+}
+
+.settings-sidebar button:hover,
+.settings-sidebar button.active-tab {
+    background-color: #f0f0f0; /* Highlight active and hover states */
+    color: #000000;
+}
+
+/* Rendered content styled as a white card */
+.settings-content {
+    flex-grow: 1;
+    padding: 40px;
+    background-color: #ffffff; /* White card background */
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for card effect */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-y: auto;
+}
+
+/* Inner white card styling */
+.inner-card {
+    width: 100%;
+    max-width: 800px; /* Optional: limit width of inner content */
+    background-color: #ffffff; /* White card */
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Inner card shadow */
+}

@@ -1,13 +1,30 @@
-import React, { useState, useContext } from "react";
+// Sidebar.js
+
+import React, { useState, useRef, useEffect } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../../context/AuthContext";
 import "./Sidebar.css";
 import defaultProfileImage from "../../assets/profile.jpg";
+import { Toast } from "primereact/toast";
+
+// Module-level variables to cache profile image and user profile
+let cachedProfileImage = null;
+let cachedUserProfile = null;
 
 const Sidebar = ({ setCurrentPage }) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const navigate = useNavigate();
-  const { user } = useContext(AuthContext);
+  const [profileImage, setProfileImage] = useState(
+    cachedProfileImage || defaultProfileImage
+  );
+  const [userName, setUserName] = useState(
+    cachedUserProfile
+      ? `${cachedUserProfile.firstName} ${cachedUserProfile.lastName}`
+      : ""
+  );
+  const [isLoadingPicture, setIsLoadingPicture] = useState(false);
+  const [isLoadingProfile, setIsLoadingProfile] = useState(false);
+  const toast = useRef(null);
 
   const toggleSidebar = () => {
     setIsExpanded(!isExpanded);
@@ -22,17 +39,164 @@ const Sidebar = ({ setCurrentPage }) => {
     }
   };
 
+  // Helper function to get user ID from localStorage
+  const getUserId = () => {
+    return localStorage.getItem("userId");
+  };
+
+  // Function to fetch profile picture from backend
+  const fetchProfilePicture = async () => {
+    const userId = getUserId();
+    if (!userId) {
+      toast.current.show({
+        severity: "error",
+        summary: "User Not Found",
+        detail: "Please log in.",
+        life: 3000,
+      });
+      return;
+    }
+
+    setIsLoadingPicture(true);
+
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/profile/get-profile-picture/${userId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("tempToken")}`,
+          },
+        }
+      );
+
+      const { profile_picture_data, profile_picture_mime_type } = response.data;
+
+      // Construct the data URL
+      const imageSrc = `data:${profile_picture_mime_type};base64,${profile_picture_data}`;
+
+      setProfileImage(imageSrc);
+      cachedProfileImage = imageSrc; // Cache the image
+    } catch (error) {
+      console.error("Error fetching profile picture:", error);
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to load profile picture.",
+        life: 3000,
+      });
+      // Optionally, keep the default profile image
+    } finally {
+      setIsLoadingPicture(false);
+    }
+  };
+
+  // Function to fetch user profile from backend
+  const fetchUserProfile = async () => {
+    const userId = getUserId();
+    if (!userId) {
+      toast.current.show({
+        severity: "error",
+        summary: "User Not Found",
+        detail: "Please log in.",
+        life: 3000,
+      });
+      return;
+    }
+
+    setIsLoadingProfile(true);
+
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/profile/getProfile`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("tempToken")}`,
+          },
+        }
+      );
+
+      const { firstName, lastName } = response.data;
+
+      setUserName(`${firstName} ${lastName}`);
+      cachedUserProfile = { firstName, lastName }; // Cache the profile
+    } catch (error) {
+      console.error("Error fetching user profile:", error);
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to load user profile.",
+        life: 3000,
+      });
+      setUserName("User"); // Fallback to 'User'
+    } finally {
+      setIsLoadingProfile(false);
+    }
+  };
+
+  // Combined function to fetch both profile picture and user profile
+  const fetchUserData = async () => {
+    await Promise.all([fetchProfilePicture(), fetchUserProfile()]);
+  };
+
+  useEffect(() => {
+    if (!cachedProfileImage || !cachedUserProfile) {
+      fetchUserData();
+    } else {
+      setProfileImage(cachedProfileImage);
+      setUserName(
+        `${cachedUserProfile.firstName} ${cachedUserProfile.lastName}`
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty dependency array ensures this runs once when the component mounts
+
   return (
     <div style={{ display: "flex" }}>
       <div className={`sidebar ${isExpanded ? "expanded" : "collapsed"}`}>
-        <button className="sidebar__toggle" onClick={toggleSidebar}>
+        <Toast ref={toast} position="top-right" />
+        <button
+          className="sidebar__toggle"
+          onClick={toggleSidebar}
+          style={{ marginRight: "15px" }}
+        >
           {isExpanded ? "<<" : ">>"}
         </button>
         <div className="sidebar__header">
-          <img src={defaultProfileImage} alt="Profile" />
-          {isExpanded && <h2>{user?.email}</h2>}
+          <div className="profile-container">
+            <div className="profile-picture-wrapper">
+              {isLoadingPicture ? (
+                <div className="profile-loading">
+                  <i
+                    className="pi pi-spin pi-spinner"
+                    style={{ fontSize: "2em" }}
+                  ></i>
+                </div>
+              ) : (
+                <img
+                  src={profileImage}
+                  alt="Profile"
+                  className="profile-picture"
+                />
+              )}
+              {isExpanded && !isLoadingPicture && (
+                <button
+                  className="refresh-button"
+                  onClick={fetchUserData}
+                  disabled={isLoadingPicture || isLoadingProfile}
+                  title="Refresh Profile and Name"
+                >
+                  <i className="pi pi-refresh"></i>
+                </button>
+              )}
+            </div>
+            {isExpanded && <h2>{userName || "User"}</h2>}
+          </div>
         </div>
+        {/* Divider */}
+        {isExpanded && <div className="sidebar__divider"></div>}
+
         {isExpanded && <p className="sidebar__dashboard">Dashboard</p>}
+
         <ul className="sidebar__menu">
           <li
             className="menu__item"
@@ -78,7 +242,7 @@ const Sidebar = ({ setCurrentPage }) => {
           </li>
           <li
             className="menu__item"
-            onClick={() => handleNavigation("realtime-status")}
+            onClick={() => handleNavigation("RealTimeStatus")}
           >
             <i className="pi pi-clock"></i>
             {isExpanded && <span>Real-time Status</span>}

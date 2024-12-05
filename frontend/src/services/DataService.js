@@ -8,3 +8,11 @@ export const fetchTourData = async (filter, periodIndex) => {
     throw error;
   }
 };
+
+export const fetchSchoolStudentData = async () => {
+  const response = await fetch(`http://localhost:3001/data/school-student-data`);
+  if (!response.ok) {
+    throw new Error("Failed to fetch school student data");
+  }
+  return response.json();
+};

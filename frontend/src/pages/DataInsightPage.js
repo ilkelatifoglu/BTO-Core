@@ -3,7 +3,8 @@ import Sidebar from "../components/common/Sidebar";
 import TourDaysChart from "../components/data/TourDaysChart";
 import CancellationStatsPieChart from "../components/data/CancellationStatsChart";
 import ToursByCityChart from "../components/data/ToursByCityChart"; // Import the new component
-import { fetchTourData } from "../services/DataService"; // Import the data fetching function
+import SchoolStudentChart from "../components/data/SchoolStudent"; // Yeni komponenti ekliyoruz
+import { fetchTourData, fetchSchoolStudentData } from "../services/DataService";
 import "./DataInsightPage.css";
 
 
@@ -11,6 +12,7 @@ const DataInsightPage = () => {
   const [filter, setFilter] = useState("weekly");
   const [periodIndex, setPeriodIndex] = useState(0);
   const [tourData, setTourData] = useState(null);
+  const [schoolStudentData, setSchoolStudentData] = useState(null);
 
   useEffect(() => {
     setPeriodIndex(0); 
@@ -28,6 +30,19 @@ const DataInsightPage = () => {
 
     getData();
   }, [filter, periodIndex]);
+
+  useEffect(() => {
+    const getSchoolData = async () => {
+      try {
+        const data = await fetchSchoolStudentData();
+        setSchoolStudentData(data.schoolData);
+      } catch (error) {
+        console.error("Error fetching school student data:", error);
+      }
+    };
+
+    getSchoolData();
+  }, []);
 
   const maxPeriod =
     filter === "weekly" ? 3 : filter === "monthly" ? 11 : filter === "yearly" ? 5 : 0;
@@ -90,6 +105,12 @@ const DataInsightPage = () => {
                 handleNext={handleNext}
                 maxPeriod={maxPeriod}
               />
+               {schoolStudentData ? (
+                <SchoolStudentChart data={schoolStudentData} />
+              ) : (
+                <p>Loading school data...</p>
+              )}
+
             </>
           ) : (
             <p>Loading...</p>

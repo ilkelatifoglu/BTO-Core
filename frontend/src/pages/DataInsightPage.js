@@ -1,31 +1,48 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import Sidebar from "../components/common/Sidebar";
-import ToursByCityChart from "../components/data/ToursByCityChart";
 import TourDaysChart from "../components/data/TourDaysChart";
-import CancellationStatsChart from "../components/data/CancellationStatsChart";
+import CancellationStatsPieChart from "../components/data/CancellationStatsChart";
+import ToursByCityChart from "../components/data/ToursByCityChart"; // Import the new component
+import { fetchTourData } from "../services/DataService"; // Import the data fetching function
 import "./DataInsightPage.css";
 
+
 const DataInsightPage = () => {
-  const [filter, setFilter] = useState("Weekly");
-  const [data, setData] = useState(null);
+  const [filter, setFilter] = useState("weekly");
+  const [periodIndex, setPeriodIndex] = useState(0);
+  const [tourData, setTourData] = useState(null);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Backend endpoint çağrılır
-        const response = await axios.get(`http://localhost:3001/data/${filter.toLowerCase()}`);
-        setData(response.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-    fetchData();
+    setPeriodIndex(0); 
   }, [filter]);
 
-  if (!data) {
-    return <div>Loading...</div>;
-  }
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const data = await fetchTourData(filter, periodIndex);
+        setTourData(data);
+      } catch (error) {
+        console.error("Error fetching tour data:", error);
+      }
+    };
+
+    getData();
+  }, [filter, periodIndex]);
+
+  const maxPeriod =
+    filter === "weekly" ? 3 : filter === "monthly" ? 11 : filter === "yearly" ? 5 : 0;
+
+  const handlePrevious = () => {
+    if (periodIndex < maxPeriod) {
+      setPeriodIndex(periodIndex + 1);
+    }
+  };
+
+  const handleNext = () => {
+    if (periodIndex > 0) {
+      setPeriodIndex(periodIndex - 1);
+    }
+  };
 
   return (
     <div className="data-insight-page">
@@ -36,17 +53,47 @@ const DataInsightPage = () => {
           {["Yearly", "Monthly", "Weekly"].map((type) => (
             <button
               key={type}
-              className={filter === type ? "active" : ""}
-              onClick={() => setFilter(type)}
+              className={filter.toLowerCase() === type.toLowerCase() ? "active" : ""}
+              onClick={() => setFilter(type.toLowerCase())}
             >
               {type}
             </button>
           ))}
         </div>
         <div className="charts">
-          <ToursByCityChart data={data} />
-          <TourDaysChart data={data} />
-          <CancellationStatsChart data={data} />
+          {tourData ? (
+            <>
+              <TourDaysChart
+                data={tourData.tourDays}
+                startDate={tourData.startDate}
+                endDate={tourData.endDate}
+                periodIndex={periodIndex}
+                handlePrevious={handlePrevious}
+                handleNext={handleNext}
+                maxPeriod={maxPeriod}
+              />
+              <CancellationStatsPieChart
+                data={tourData.tourStatusData}
+                startDate={tourData.startDate}
+                endDate={tourData.endDate}
+                periodIndex={periodIndex}
+                handlePrevious={handlePrevious}
+                handleNext={handleNext}
+                maxPeriod={maxPeriod}
+              />
+              <ToursByCityChart
+                data={tourData.toursByCity}
+                startDate={tourData.startDate}
+                endDate={tourData.endDate}
+                periodIndex={periodIndex}
+                handlePrevious={handlePrevious}
+                handleNext={handleNext}
+                maxPeriod={maxPeriod}
+              />
+            </>
+          ) : (
+            <p>Loading...</p>
+          )}
         </div>
       </div>
     </div>

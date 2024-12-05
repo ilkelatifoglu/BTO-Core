@@ -131,3 +131,16 @@ exports.updateCrewNo = async (req, res) => {
         res.status(500).json({ error: "An error occurred while updating the crew number" });
     }
 };
+
+exports.getAdvisors = async (req, res) => {
+    try {
+        console.log("Fetching advisors...");
+        const result = await pool.query("SELECT full_name, user_id FROM advisors");
+        console.log("Advisors fetched:", result.rows);
+        res.status(200).json(result.rows);
+    } catch (error) {
+        console.error("Error fetching advisors:", error); // Log the exact error
+        res.status(500).json({ message: "Error fetching advisors." });
+    }
+};
+

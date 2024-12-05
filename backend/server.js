@@ -13,6 +13,8 @@ const schoolRoutes = require("./src/routes/schoolRoutes");
 const advisorRoutes = require("./src/routes/advisorRoutes");
 const userManagementRoutes = require("./src/routes/userManagementRoutes");
 const dataRoutes = require("./src/routes/dataRoutes");
+const scheduleRoutes = require('./src/routes/scheduleRoutes');
+const profileRoutes = require('./src/routes/profileRoutes');
 
 const app = express();
 const server = http.createServer(app);
@@ -28,15 +30,17 @@ app.use(cors());
 app.use(express.json());
 app.set("io", io);
 
-app.use('/uploads', express.static('uploads')); // profil foto için eklendi
+app.use('/uploads', express.static('uploads')); 
+app.use('/profile', profileRoutes);
 app.use("/auth", authRoutes);
-app.use("/guideInfo", guideInfoRoutes);
+app.use("/guide-info", guideInfoRoutes);
 app.use("/work", workRoutes);
 app.use("/tour", tourRoutes);
 app.use("/school", schoolRoutes);
 app.use("/advisors", advisorRoutes);
 app.use("/user-management", userManagementRoutes);
-app.use("/", dataRoutes);
+app.use('/schedule', scheduleRoutes);
+app.use('/data', dataRoutes); 
 
 io.on("connection", (socket) => {
   console.log("New client connected:", socket.id);

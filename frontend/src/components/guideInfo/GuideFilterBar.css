@@ -1,12 +1,16 @@
+/* Guide Filter Bar */
 .guide-filter-bar {
-    display: flex;
-    justify-content: flex-start; 
-    align-items: center; 
-    gap: 15px; 
-    margin-bottom: 20px; 
-    margin-left: 300px;
+    justify-content: center;
+    display: grid; /* Use grid for layout */
+    grid-template-columns: repeat(3, 25.333%) 15%; 
+    gap: 20px; /* Add spacing between columns */
+    width: 100%; /* Ensure full width of the parent container */
+    padding: 10px; /* Add padding to the bar */
+    box-sizing: border-box; /* Include padding in width calculations */
+    margin-bottom: 20px; /* Space below the filter bar */
 }
 
+/* Inputs, Selects, and Button */
 .guide-filter-bar input,
 .guide-filter-bar select,
 .guide-filter-bar button {
@@ -14,17 +18,88 @@
     font-size: 14px;
     border: 1px solid #ccc;
     border-radius: 4px;
+    width: 100%; /* Ensure elements fill their grid column */
+    box-sizing: border-box; /* Include padding in width calculations */
 }
 
-.guide-filter-bar button {
-    background-color: #5a6268; 
-    color: #fff; 
+/* Exclude the Apply button from dropdown styles */
+.guide-filter-bar button:not(.dropdown-button) {
+    background-color: #5a6268;
+    color: #fff;
     cursor: pointer;
     border: none;
-    padding: 8px 16px; 
-    transition: background-color 0.3s ease; 
+    padding: 8px 16px;
+    transition: background-color 0.3s ease;
 }
 
-.guide-filter-bar button:hover {
-    background-color: #515c67; 
+/* Hover Effect for Apply Button */
+.guide-filter-bar button:not(.dropdown-button):hover {
+    background-color: #515c67;
+}
+
+/* Custom Dropdown Wrapper */
+.custom-dropdown {
+    position: relative;
+    width: 100%; /* Make the dropdown button stretch */
+}
+
+/* Dropdown Button */
+.dropdown-button {
+    width: 100%; /* Make it fill the column */
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    cursor: pointer;
+    text-align: left;
+    position: relative;
+    appearance: none;
+    white-space: nowrap; /* Prevent text wrapping */
+}
+
+/* Add the arrow to the dropdown button */
+.dropdown-button::after {
+    content: "▼"; /* Arrow symbol */
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    font-size: 12px;
+    color: #000;
+}
+
+/* Active State for Dropdown Button */
+.dropdown-button.active {
+    border-color: #007bff;
+}
+
+/* Dropdown Menu */
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    max-height: 200px;
+    overflow-y: auto;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    margin-top: 4px;
+}
+
+/* Dropdown Items */
+.dropdown-item {
+    padding: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    white-space: nowrap; /* Prevent text wrapping */
+}
+
+.dropdown-item:hover {
+    background-color: #007bff;
+    color: white;
 }

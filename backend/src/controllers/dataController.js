@@ -1,90 +1,248 @@
-// Mock Data
-const mockData = {
-  weekly: {
-    toursArranged: [6, 8, 3, 4, 7],
-    toursByCity: {
-      Ankara: 12,
-      Bursa: 8,
-      Izmir: 5,
-      Konya: 10,
-      Rize: 3,
-      Igdir: 2,
-      Ordu: 4,
-      Sivas: 6,
-      Usak: 1,
-    },
-    students: 50,
-    highschoolStudents: { pastTours: 30, currentBilkent: 20 },
-    tourDays: {
-      Monday: 16,
-      Tuesday: 14,
-      Wednesday: 15,
-      Thursday: 18,
-      Friday: 25,
-      Saturday: 5,
-      Sunday: 4, // Sunday is here
-    },
-    cancellationStats: { completed: 400, cancelled: 100 },
-  },
-  monthly: {
-    toursArranged: [20, 15, 25, 18, 22],
-    toursByCity: {
-      Ankara: 40,
-      Bursa: 25,
-      Izmir: 15,
-      Konya: 30,
-      Rize: 10,
-      Igdir: 8,
-      Ordu: 12,
-      Sivas: 18,
-      Usak: 4,
-    },
-    students: 200,
-    highschoolStudents: { pastTours: 150, currentBilkent: 50 },
-    tourDays: {
-      Monday: 20,
-      Tuesday: 15,
-      Wednesday: 30,
-      Thursday: 25,
-      Friday: 10,
-      Saturday: 5,
-      Sunday: 7, // Sunday is here
-    },
-    cancellationStats: { completed: 1200, cancelled: 300 },
-  },
-  yearly: {
-    toursArranged: [200, 180, 220, 190, 210],
-    toursByCity: {
-      Ankara: 400,
-      Bursa: 250,
-      Izmir: 150,
-      Konya: 300,
-      Rize: 100,
-      Igdir: 80,
-      Ordu: 120,
-      Sivas: 180,
-      Usak: 40,
-    },
-    students: 1000,
-    highschoolStudents: { pastTours: 700, currentBilkent: 300 },
-    tourDays: {
-      Monday: 16,
-      Tuesday: 18,
-      Wednesday: 22,
-      Thursday: 20,
-      Friday: 14,
-      Saturday: 10,
-      Sunday: 7, // Sunday is here
-    },
-    cancellationStats: { completed: 5000, cancelled: 1000 },
-  },
-};
+const db = require("../config/database");
+exports.getData = async (req, res) => {
+  const { filter, periodIndex } = req.params;
 
-// Controller function
-exports.getData = (req, res) => {
-  const { filter } = req.params;
-  if (!mockData[filter]) {
+  const periodIndexInt = parseInt(periodIndex, 10) || 0;
+
+  const currentDate = new Date();
+  let startDate, endDate;
+
+  if (filter === "weekly") {
+
+    const startOfWeek = new Date(currentDate);
+    startOfWeek.setDate(currentDate.getDate() - currentDate.getDay() + 1);
+
+    startOfWeek.setDate(startOfWeek.getDate() - 7 * periodIndexInt);
+
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 6);
+
+    startDate = startOfWeek;
+    endDate = endOfWeek;
+  } else if (filter === "monthly") {
+
+    const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    startOfMonth.setMonth(startOfMonth.getMonth() - periodIndexInt);
+    const endOfMonth = new Date(startOfMonth.getFullYear(), startOfMonth.getMonth() + 1, 0);
+
+    startDate = startOfMonth;
+    endDate = endOfMonth;
+  } else if (filter === "yearly") {
+
+    const startOfYear = new Date(currentDate.getFullYear(), 0, 1);
+    startOfYear.setFullYear(startOfYear.getFullYear() - periodIndexInt);
+    const endOfYear = new Date(startOfYear.getFullYear(), 11, 31);
+
+    startDate = startOfYear;
+    endDate = endOfYear;
+  } else {
     return res.status(400).json({ error: "Invalid filter type" });
   }
-  res.json(mockData[filter]);
+
+  const formatDate = (date) => {
+    const yyyy = date.getFullYear();
+    const mm = ("0" + (date.getMonth() + 1)).slice(-2);
+    const dd = ("0" + date.getDate()).slice(-2);
+    return `${yyyy}-${mm}-${dd}`;
+  };
+
+  const startDateStr = formatDate(startDate);
+  const endDateStr = formatDate(endDate);
+  try {
+    const statusQuery = `
+      SELECT
+        EXTRACT(ISODOW FROM date::DATE) AS dow,
+        SUM(CASE WHEN tour_status IN ('APPROVED', 'READY', 'DONE', 'CANCELLED') THEN 1 ELSE 0 END) AS approved_count,
+        SUM(CASE WHEN tour_status = 'REJECTED' THEN 1 ELSE 0 END) AS rejected_count
+      FROM tours
+      WHERE date::DATE >= $1::DATE AND date::DATE <= $2::DATE
+      GROUP BY dow
+      ORDER BY dow;
+    `;
+
+    const statusResult = await db.query(statusQuery, [startDateStr, endDateStr]);
+
+    
+    // Query for tour days data
+    const daysQuery = `
+      SELECT
+        EXTRACT(ISODOW FROM date::DATE) AS dow,
+        COUNT(*) AS tour_count
+      FROM tours
+      WHERE date::DATE >= $1::DATE AND date::DATE <= $2::DATE
+      GROUP BY dow
+      ORDER BY dow;
+    `;
+
+    const daysResult = await db.query(daysQuery, [startDate, endDateStr]);
+
+    // New query for tours by city data
+    const cityQuery = `
+      SELECT s.city, COUNT(*) AS tour_count
+      FROM tours t
+      JOIN schools s ON t.school_id = s.id
+      WHERE t.date::DATE >= $1::DATE AND t.date::DATE <= $2::DATE
+      GROUP BY s.city
+      ORDER BY tour_count DESC;
+    `;
+
+    const cityResult = await db.query(cityQuery, [startDate, endDateStr]);
+
+    // Map day numbers to English day names
+    const daysOfWeek = {
+      1: "Monday",
+      2: "Tuesday",
+      3: "Wednesday",
+      4: "Thursday",
+      5: "Friday",
+      6: "Saturday",
+      7: "Sunday",
+    };
+
+    // Process tour status data
+    const tourStatusData = {};
+    statusResult.rows.forEach((row) => {
+      const dayName = daysOfWeek[row.dow];
+      tourStatusData[dayName] = {
+        approved: parseInt(row.approved_count, 10),
+        rejected: parseInt(row.rejected_count, 10),
+      };
+    });
+
+    // Process tour days data
+    const tourDays = {};
+    daysResult.rows.forEach((row) => {
+      const dayName = daysOfWeek[row.dow];
+      tourDays[dayName] = parseInt(row.tour_count, 10);
+    });
+
+    // Process tours by city data
+    const toursByCity = {};
+    cityResult.rows.forEach((row) => {
+      const city = row.city;
+      toursByCity[city] = parseInt(row.tour_count, 10);
+    });
+
+    res.json({
+      tourStatusData,
+      tourDays,
+      toursByCity,
+      startDate: startDateStr,
+      endDate: endDateStr,
+    });
+  } catch (error) {
+    console.error("Error fetching tour data:", error);
+    res.status(500).json({ error: "Failed to fetch tour data" });
+  }
 };
+
+
+
+/*const db = require("../config/database");
+
+exports.getData = async (req, res) => {
+  const { filter } = req.params;
+
+  // Get today's date dynamically
+  const currentDate = new Date();
+  let startDate;
+
+  // Determine the date range
+  if (filter === "weekly") {
+    startDate = new Date(currentDate);
+    startDate.setDate(currentDate.getDate() - 7); // Last 7 days
+  } else if (filter === "monthly") {
+    startDate = new Date(currentDate);
+    startDate.setMonth(currentDate.getMonth() - 1); // Last 1 month
+  } else if (filter === "yearly") {
+    startDate = new Date(currentDate);
+    startDate.setFullYear(currentDate.getFullYear() - 1); // Last 1 year
+  } else {
+    return res.status(400).json({ error: "Invalid filter type" });
+  }
+
+
+  try {
+    // Corrected query for tour status data
+    const statusQuery = `
+      SELECT
+        EXTRACT(ISODOW FROM date::DATE) AS dow,
+        SUM(CASE WHEN tour_status IN ('APPROVED', 'READY', 'DONE', 'CANCELLED') THEN 1 ELSE 0 END) AS approved_count,
+        SUM(CASE WHEN tour_status = 'REJECTED' THEN 1 ELSE 0 END) AS rejected_count
+      FROM tours
+      WHERE date::DATE >= $1::DATE AND date::DATE <= $2::DATE
+      GROUP BY dow
+      ORDER BY dow;
+    `;
+
+    const statusResult = await db.query(statusQuery, [startDate, currentDate]);
+
+    // Query for tour days data
+    const daysQuery = `
+      SELECT
+        EXTRACT(ISODOW FROM date::DATE) AS dow,
+        COUNT(*) AS tour_count
+      FROM tours
+      WHERE date::DATE >= $1::DATE AND date::DATE <= $2::DATE
+      GROUP BY dow
+      ORDER BY dow;
+    `;
+
+    const daysResult = await db.query(daysQuery, [startDate, currentDate]);
+
+    // New query for tours by city data
+    const cityQuery = `
+      SELECT s.city, COUNT(*) AS tour_count
+      FROM tours t
+      JOIN schools s ON t.school_id = s.id
+      WHERE t.date::DATE >= $1::DATE AND t.date::DATE <= $2::DATE
+      GROUP BY s.city
+      ORDER BY tour_count DESC;
+    `;
+
+    const cityResult = await db.query(cityQuery, [startDate, currentDate]);
+
+    // Map day numbers to English day names
+    const daysOfWeek = {
+      1: "Monday",
+      2: "Tuesday",
+      3: "Wednesday",
+      4: "Thursday",
+      5: "Friday",
+      6: "Saturday",
+      7: "Sunday",
+    };
+
+    // Process tour status data
+    const tourStatusData = {};
+    statusResult.rows.forEach((row) => {
+      const dayName = daysOfWeek[row.dow];
+      tourStatusData[dayName] = {
+        approved: parseInt(row.approved_count, 10),
+        rejected: parseInt(row.rejected_count, 10),
+      };
+    });
+
+    // Process tour days data
+    const tourDays = {};
+    daysResult.rows.forEach((row) => {
+      const dayName = daysOfWeek[row.dow];
+      tourDays[dayName] = parseInt(row.tour_count, 10);
+    });
+
+    // Process tours by city data
+    const toursByCity = {};
+    cityResult.rows.forEach((row) => {
+      const city = row.city;
+      toursByCity[city] = parseInt(row.tour_count, 10);
+    });
+
+    // Send all data in the response
+    res.json({ tourStatusData, tourDays, toursByCity });
+  } catch (error) {
+    console.error("Error fetching tour data:", error);
+    res.status(500).json({ error: "Failed to fetch tour data" });
+  }
+};
+
+*/

@@ -1,10 +1,11 @@
 import React, { useState, useContext } from 'react';
-import Sidebar from '../components/common/Sidebar'; // Main application sidebar
+import Sidebar from '../components/common/Sidebar';
 import ProfileSettings from '../components/settings/ProfileSettings';
 import ChangePassword from '../components/settings/ChangePassword';
 import About from '../components/settings/About';
 import HelpSupport from '../components/settings/HelpSupport';
 import Appearance from '../components/settings/Appearance';
+import Uploads from '../components/settings/Uploads'; // Import the Uploads component
 
 import { AuthContext } from '../context/AuthContext';
 import './SettingsPage.css';
@@ -17,20 +18,30 @@ const SettingsPage = () => {
     const userType = user?.user_type;
 
     const renderContent = () => {
-        switch (activeTab) {
-            case 'account':
-                return <ProfileSettings userEmail={userEmail} userType={userType} />;
-            case 'changePassword':
-                return <ChangePassword userEmail={userEmail} />;
-                case 'appearance':
-                    return <Appearance />;
-            case 'helpSupport':
-                return <HelpSupport />;
-            case 'about':
-                return <About />;
-            default:
-                return <div>Select a settings option</div>;
-        }
+        const isInnerCardRequired = ['changePassword', 'appearance', 'helpSupport'].includes(activeTab);
+
+        return (
+            <div className={isInnerCardRequired ? 'inner-card' : ''}>
+                {(() => {
+                    switch (activeTab) {
+                        case 'account':
+                            return <ProfileSettings userEmail={userEmail} userType={userType} />;
+                        case 'changePassword':
+                            return <ChangePassword userEmail={userEmail} />;
+                        case 'appearance':
+                            return <Appearance />;
+                        case 'helpSupport':
+                            return <HelpSupport />;
+                        case 'about':
+                            return <About />;
+                        case 'uploads':
+                            return <Uploads />; // Render the Uploads component
+                        default:
+                            return <div>Select a settings option</div>;
+                    }
+                })()}
+            </div>
+        );
     };
 
     return (
@@ -72,6 +83,12 @@ const SettingsPage = () => {
                         onClick={() => setActiveTab('about')}
                     >
                         <i className="pi pi-info-circle"></i> About
+                    </button>
+                    <button
+                        className={activeTab === 'uploads' ? 'active-tab' : ''}
+                        onClick={() => setActiveTab('uploads')}
+                    >
+                        <i className="pi pi-upload"></i> Uploads
                     </button>
                 </div>
 

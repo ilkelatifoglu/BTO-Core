@@ -1,4 +1,3 @@
-/* Grafikler alanı */
 .chart {
     flex: 1 1 100%;
     background: #fff;
@@ -7,50 +6,85 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
     text-align: left;
-    overflow: hidden; /* Taşmaları önlemek için overflow gizlendi */
+    overflow: hidden; 
+  }
+  /* chart.css */
+  .navigation-buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 8px;
   }
   
-  /* Grafik başlık stili */
+  .navigation-buttons button {
+    margin: 0 5px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: #5a6268;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .navigation-buttons button:hover {
+    background-color: #515c67; /* Daha koyu mavi */
+    transform: translateY(-2px); /* Hafif yukarı hareket */
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .navigation-buttons button:active {
+    transform: translateY(0); /* Düğmeye basıldığında normale döner */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .navigation-buttons button:disabled {
+    background-color: #cccccc;
+    color: #666666;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+  }
+  
+
   .chart-title {
     margin-bottom: 15px;
     font-size: 16px;
     font-weight: bold;
   }
 
-
-  
-  /* Bar üzerinde hover */
   .bar:hover {
     transform: scaleY(1.05);
   }
   
-/* Bar grafik alanı */
 .bar-chart {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  align-items: flex-start;
-  position: relative; /* Çubukları hizalamak için gerekli */
-  padding-left: 60px; /* Çubukların yazılardan uzak başlaması için */
+  position: relative; 
+  padding-left: 60px; 
+}
+.bar-container {
+  margin-bottom: 5px;
 }
 
-/* Bar etiketi */
 .bar span {
   position: absolute;
-  left: -60px; /* Etiketleri çubukların soluna kaydır */
+  left: -70px; 
   font-size: 12px;
-  color: #000; /* Yazı rengini siyah yap */
-  white-space: nowrap; /* Yazıların yan yana kalması için */
+  color: #000; 
+  white-space: nowrap; 
 }
 
-/* Bar stili */
 .bar {
   position: relative;
-  max-width: 100%; /* Bar genişliğinin container'i geçmemesi için */
+  max-width: 100%; 
   height: 20px;
   background: linear-gradient(90deg, blue, #d31616);
   border-radius: 5px;
-  transition: transform 0.3s, width 0.3s; /* Genişlik değişimlerini yumuşatmak için */
+  transition: transform 0.3s, width 0.3s; 
 }
 
   

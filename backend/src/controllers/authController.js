@@ -5,7 +5,7 @@ const otpService = require("../services/OtpService.js");
 
 exports.register = async (req, res) => {
   try {
-    if (!email.endsWith("@ug.bilkent.edu.tr")) {
+    if (!req.body.email.endsWith("@ug.bilkent.edu.tr")) {
       return res
         .status(400)
         .json({ message: "Email must be a valid Bilkent email." });

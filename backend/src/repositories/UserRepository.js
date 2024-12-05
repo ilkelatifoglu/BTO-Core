@@ -1,4 +1,5 @@
 const UserModel = require("../models/UserModel");
+const { query } = require("../config/database");
 
 class UserRepository {
   async createUser(userData) {

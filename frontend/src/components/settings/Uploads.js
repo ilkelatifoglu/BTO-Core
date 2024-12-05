@@ -1,16 +1,14 @@
 // Uploads.js
 
-import React, { useState, useRef, useContext } from 'react';
+import React, { useState, useRef } from 'react';
 import axios from 'axios';
 import './Uploads.css';
 import { Toast } from 'primereact/toast';
-import { AuthContext } from '../../context/AuthContext';
 import { Button } from 'primereact/button';
 import { ProgressBar } from 'primereact/progressbar';
 import imageCompression from 'browser-image-compression';
 
 const Uploads = () => {
-    const userId = localStorage.getItem('userId');
     const toast = useRef(null);
 
     const scheduleInputRef = useRef(null);
@@ -33,7 +31,7 @@ const Uploads = () => {
                 return;
             }
 
-            // Optional: Validate file size before compression
+            // Validate file size before compression (optional)
             const MAX_ORIGINAL_FILE_SIZE = 10 * 1024 * 1024; // 10MB
             if (file.size > MAX_ORIGINAL_FILE_SIZE) {
                 toast.current.show({
@@ -70,6 +68,7 @@ const Uploads = () => {
     };
 
     const uploadSchedule = async (file) => {
+        const userId = localStorage.getItem('userId');
         if (!userId) {
             toast.current.show({
                 severity: 'error',
@@ -134,8 +133,20 @@ const Uploads = () => {
                 return;
             }
 
-            // Compress the image
+            // Validate file size before compression (optional)
+            const MAX_ORIGINAL_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+            if (file.size > MAX_ORIGINAL_FILE_SIZE) {
+                toast.current.show({
+                    severity: 'error',
+                    summary: 'File Too Large',
+                    detail: 'Please select a file smaller than 10MB.',
+                    life: 3000,
+                });
+                return;
+            }
+
             try {
+                // Compress the image
                 const options = {
                     maxSizeMB: 1,
                     maxWidthOrHeight: 1920,
@@ -144,13 +155,8 @@ const Uploads = () => {
 
                 const compressedFile = await imageCompression(file, options);
 
-                // Since backend is not ready, we can display a message
-                toast.current.show({
-                    severity: 'info',
-                    summary: 'Not Implemented',
-                    detail: 'Profile photo upload is not implemented yet.',
-                    life: 3000,
-                });
+                // Upload the compressed image
+                await uploadProfilePicture(compressedFile);
             } catch (error) {
                 console.error('Error compressing image:', error);
                 toast.current.show({
@@ -160,6 +166,61 @@ const Uploads = () => {
                     life: 3000,
                 });
             }
+        }
+    };
+
+    const uploadProfilePicture = async (file) => {
+        const userId = localStorage.getItem('userId');
+        if (!userId) {
+            toast.current.show({
+                severity: 'error',
+                summary: 'User Not Found',
+                detail: 'Please log in.',
+                life: 3000,
+            });
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('profile_picture', file);
+
+        try {
+            setIsUploading(true);
+            setUploadProgress(0);
+
+            await axios.post(
+                `http://localhost:3001/profile/upload-profile-picture/${userId}`,
+                formData,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('tempToken')}`,
+                    },
+                    onUploadProgress: (progressEvent) => {
+                        const percentCompleted = Math.round(
+                            (progressEvent.loaded * 100) / progressEvent.total
+                        );
+                        setUploadProgress(percentCompleted);
+                    },
+                }
+            );
+
+            toast.current.show({
+                severity: 'success',
+                summary: 'Success',
+                detail: 'Profile picture uploaded successfully.',
+                life: 3000,
+            });
+        } catch (error) {
+            console.error('Error uploading profile picture:', error);
+            toast.current.show({
+                severity: 'error',
+                summary: 'Upload Failed',
+                detail: error.response?.data?.error || 'Failed to upload profile picture.',
+                life: 3000,
+            });
+        } finally {
+            setIsUploading(false);
+            setUploadProgress(0);
         }
     };
 
@@ -176,7 +237,7 @@ const Uploads = () => {
     };
 
     return (
-        <div className="uploads-container-wrapper"> 
+        <div className="uploads-container-wrapper">
             <div className="uploads-container">
                 <Toast ref={toast} position="top-right" />
 
@@ -188,8 +249,8 @@ const Uploads = () => {
                     </div>
                 )}
 
-                <div class name="uploads-header">
-                    <h2 className="uploads-header">Uploads</h2>
+                <div className="uploads-header">
+                    <h2>Uploads</h2>
                 </div>
                 <div className="uploads-content">
                     <div className="upload-section">
@@ -198,6 +259,7 @@ const Uploads = () => {
                             icon="pi pi-user"
                             onClick={handleProfileUploadClick}
                             className="upload-button"
+                            disabled={isUploading}
                         />
                         <input
                             ref={profileInputRef}

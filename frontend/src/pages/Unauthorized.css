@@ -1,0 +1,31 @@
+/* Unauthorized.css */
+
+.unauthorized-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Full viewport height */
+    background-color: #ffffff; /* White background */
+    color: #333333; /* Dark gray text */
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    text-align: center;
+    padding: 0 20px;
+    box-sizing: border-box;
+  }
+  
+  .unauthorized-title {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+  }
+  
+  .unauthorized-message {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+  }
+  
+  .unauthorized-redirect {
+    font-size: 1em;
+    color: #777777; /* Lighter gray for the countdown */
+  }
+  

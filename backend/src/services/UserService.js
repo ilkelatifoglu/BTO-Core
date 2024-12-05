@@ -94,6 +94,7 @@ class UserService {
       await this._createCandidateGuide(userId, userData);
     }
   }
+
   async _createAdvisor(userId, { first_name, last_name, days }) {
     const fullName = `${first_name} ${last_name}`;
     await userRepository.createAdvisor(userId, fullName, days);

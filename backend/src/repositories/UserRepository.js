@@ -1,89 +1,51 @@
-const { query } = require("../config/database");
+const UserModel = require("../models/UserModel");
 
 class UserRepository {
   async createUser(userData) {
-    const {
-      first_name,
-      last_name,
-      email,
-      hashedPassword,
-      department,
-      role,
-      phone_number,
-      crew_no,
-      userType,
-    } = userData;
-    const result = await query(
-      `INSERT INTO users (first_name, last_name, email, password, department, role, phone_number, crew_no, user_type) 
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id`,
-      [
-        first_name,
-        last_name,
-        email,
-        hashedPassword,
-        department,
-        role,
-        phone_number,
-        crew_no || null,
-        userType,
-      ]
-    );
-    return result.rows[0].id;
+    const user = await UserModel.create(userData);
+    return user.id;
   }
 
   async findUserByEmail(email) {
-    const result = await query("SELECT * FROM users WHERE email = $1", [email]);
-    return result.rows[0];
+    return await UserModel.findByEmail(email);
   }
 
   async deleteUserByEmail(email) {
-    const result = await query(
-      "DELETE FROM users WHERE email = $1 RETURNING id, email",
-      [email]
-    );
-    return result.rows[0];
+    return await UserModel.deleteByEmail(email);
   }
 
   async updateUserPassword(email, hashedPassword) {
-    await query("UPDATE users SET password = $1 WHERE email = $2", [
-      hashedPassword,
-      email,
-    ]);
+    const user = await UserModel.findByEmail(email);
+    if (user) {
+      await user.updatePassword(hashedPassword);
+    }
   }
 
   async getAllUsers() {
     const result = await query("SELECT id, email FROM users");
-    return result.rows;
+    return result.rows.map((row) => new UserModel(row));
   }
 
   async getUserById(id) {
-    const result = await query(
-      "SELECT id, username, email FROM users WHERE id = $1",
-      [id]
-    );
-    return result.rows[0];
+    return await UserModel.findById(id);
   }
 
   async updateResetToken(email, resetToken) {
-    await query(
-      "UPDATE users SET reset_token = $1, reset_token_expires = NOW() + interval '1 hour' WHERE email = $2",
-      [resetToken, email]
-    );
+    const user = await UserModel.findByEmail(email);
+    if (user) {
+      await user.updateResetToken(resetToken);
+    }
   }
 
   async findUserByResetToken(token) {
-    const result = await query(
-      "SELECT * FROM users WHERE reset_token = $1 AND reset_token_expires > NOW()",
-      [token]
-    );
-    return result.rows[0];
+    return await UserModel.findByResetToken(token);
   }
 
   async resetPassword(token, hashedPassword) {
-    await query(
-      "UPDATE users SET password = $1, reset_token = NULL, reset_token_expires = NULL WHERE reset_token = $2",
-      [hashedPassword, token]
-    );
+    const user = await UserModel.findByResetToken(token);
+    if (user) {
+      await user.resetPassword(hashedPassword);
+    }
   }
 
   async createAdvisor(userId, fullName, days) {
@@ -98,7 +60,10 @@ class UserRepository {
     const advisor = await query(`SELECT * FROM advisors WHERE full_name = $1`, [
       advisorName,
     ]);
-    return advisor.rows[0];
+    if (advisor.rows[0]) {
+      return advisor.rows[0];
+    }
+    return null;
   }
 
   async createCandidateGuide(

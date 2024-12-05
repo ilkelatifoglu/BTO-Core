@@ -134,7 +134,37 @@ exports.getData = async (req, res) => {
     console.error("Error fetching tour data:", error);
     res.status(500).json({ error: "Failed to fetch tour data" });
   }
+
 };
+
+exports.getSchoolStudentData = async (req, res) => {
+  try {
+    const query = `
+      SELECT s.id, s.school_name, s.student_count, s.student_sent_last1, s.student_sent_last2, s.student_sent_last3
+      FROM schools s
+      WHERE s.id IN (SELECT DISTINCT school_id FROM tours)
+    `;
+    const result = await db.query(query);
+
+    const schoolData = result.rows.map((row) => ({
+      id: row.id,
+      school_name: row.school_name,
+      student_count: parseInt(row.student_count, 10) || 0,
+      student_sent_last_total:
+        (parseInt(row.student_sent_last1, 10) || 0) +
+        (parseInt(row.student_sent_last2, 10) || 0) +
+        (parseInt(row.student_sent_last3, 10) || 0),
+    }));
+
+    res.json({ schoolData });
+  } catch (error) {
+    console.error("Error fetching school student data:", error);
+    res.status(500).json({ error: "Failed to fetch school student data" });
+  }
+};
+
+
+
 
 
 

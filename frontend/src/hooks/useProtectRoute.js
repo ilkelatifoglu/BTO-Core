@@ -1,5 +1,4 @@
-import { useEffect, useContext, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 
 // Helper function to check if user_type matches any of the required roles
@@ -17,17 +16,10 @@ const checkAuthorization = (userType, requiredRoles) => {
   return userType === requiredRoles;
 };
 
-const useProtectRoute = (redirectPath = "/login", requiredRoles = null) => {
-  const navigate = useNavigate();
+const useProtectRoute = (requiredRoles = null) => {
   const { user } = useContext(AuthContext);
 
   const isAuthorized = checkAuthorization(user?.user_type, requiredRoles);
-
-  useEffect(() => {
-    if (!isAuthorized) {
-      navigate(redirectPath);
-    }
-  }, [isAuthorized, navigate, redirectPath]);
 
   return isAuthorized;
 };

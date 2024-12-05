@@ -116,8 +116,8 @@ exports.getProfilePicture = async (req, res) => {
         const result = await db.query(
             `
             SELECT 
-                profile_picture_data AS "data",
-                profile_picture_mime_type AS "mimeType"
+                profile_picture_data AS "profile_picture_data",
+                profile_picture_mime_type AS "profile_picture_mime_type"
             FROM profile_picture
             WHERE user_id = $1
             `,

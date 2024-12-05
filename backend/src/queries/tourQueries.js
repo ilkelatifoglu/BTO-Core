@@ -234,6 +234,8 @@ exports.getReadyTours = async () => {
   }));
 };
 
+
+
 exports.fetchCandidateGuides = async () => {
   const result = await query(
     `SELECT user_id AS id, full_name AS name

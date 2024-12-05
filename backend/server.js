@@ -16,6 +16,7 @@ const schoolRoutes = require("./src/routes/schoolRoutes");
 const advisorRoutes = require("./src/routes/advisorRoutes");
 const userManagementRoutes = require("./src/routes/userManagementRoutes");
 const dataRoutes = require("./src/routes/dataRoutes");
+const feedbackRoutes = require("./src/routes/feedbackRoutes");
 
 const app = express();
 const server = http.createServer(app);
@@ -40,12 +41,12 @@ const upload = multer ({
     storage: multerS3({
         s3: s3,
         bucket: BUCKET_NAME,
-        metadata: function(req, file, cb){
-            cb:(null, {fieldName: file.fieldname});
-          },
-          key: function (req, file, cb){
-            cb: (null, file.originalname)
-          }
+        metadata: function (req, file, cb) {
+          cb(null, { fieldName: file.fieldname }); 
+        },
+        key: function (req, file, cb) {
+            cb(null, file.originalname); 
+        }    
     })
 });
 
@@ -62,6 +63,7 @@ app.use("/school", schoolRoutes);
 app.use("/advisors", advisorRoutes);
 app.use("/user-management", userManagementRoutes);
 app.use("/", dataRoutes);
+app.use("/feedback", feedbackRoutes);
 
 io.on("connection", (socket) => {
   console.log("New client connected:", socket.id);

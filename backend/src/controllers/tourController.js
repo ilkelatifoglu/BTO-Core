@@ -17,7 +17,7 @@ const {
   approveTour,
   rejectTour,
   updateTime,
-  updateClassRoom,
+  updateClassroom,
 } = require("../queries/tourQueries");
 
 const { getSchoolId } = require("../queries/schoolQueries"); // Import from school queries
@@ -400,16 +400,16 @@ exports.cancelTour = async (req, res) => {
 };
 
 
-exports.updateClassRoom = async (req, res) => {
+exports.updateClassroom = async (req, res) => {
   const { id } = req.params;
-  const { classRoom } = req.body;
+  const { classroom } = req.body;
 
-  if (!classRoom) {
+  if (!classroom) {
     return res.status(400).json({ message: "Classroom is required" });
   }
 
   try {
-    await updateClassRoom(id, classRoom);
+    await updateClassroom(id, classroom);
     res.status(200).json({ message: "Classroom updated successfully" });
   } catch (error) {
     console.error("Error updating classroom:", error.message || error);
@@ -445,8 +445,8 @@ exports.getMyTours = async (req, res) => {
   try {
     console.log("Logged-in user ID:", userId); // Debug the user ID
 
-      const result = await query(
-          `
+    const result = await query(
+      `
           SELECT t.id, t.date, t.day, t.time, t.classroom, t.tour_status,
                  s.school_name, s.city, t.tour_size, t.teacher_name,
                  STRING_AGG(u.first_name || ' ' || u.last_name, ', ') AS guide_names
@@ -458,12 +458,12 @@ exports.getMyTours = async (req, res) => {
           GROUP BY t.id, s.school_name, s.city, t.tour_size, t.teacher_name
           ORDER BY t.date, t.time
           `,
-          [userId]
-      );
-      res.status(200).json({ success: true, tours: result.rows });
+      [userId]
+    );
+    res.status(200).json({ success: true, tours: result.rows });
   } catch (error) {
-      console.error("Error fetching user tours:", error.message || error);
-      res.status(500).json({ success: false, message: "Server error" });
+    console.error("Error fetching user tours:", error.message || error);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
@@ -472,15 +472,15 @@ exports.withdrawFromTour = async (req, res) => {
   const { id: tourId } = req.params; // Retrieve tour ID from the route parameter
 
   try {
-      // Remove the user from the tour
-      await query(
-          `DELETE FROM tour_guide WHERE guide_id = $1 AND tour_id = $2`,
-          [userId, tourId]
-      );
+    // Remove the user from the tour
+    await query(
+      `DELETE FROM tour_guide WHERE guide_id = $1 AND tour_id = $2`,
+      [userId, tourId]
+    );
 
-      res.status(200).json({ success: true, message: "Successfully withdrawn from the tour" });
+    res.status(200).json({ success: true, message: "Successfully withdrawn from the tour" });
   } catch (error) {
-      console.error("Error withdrawing from tour:", error.message || error);
-      res.status(500).json({ success: false, message: "Server error" });
+    console.error("Error withdrawing from tour:", error.message || error);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };

@@ -9,7 +9,7 @@ const { addTour,
     getAllTours,
     approveTour,
     rejectTour,
-    updateClassRoom,
+    updateClassroom,
     updateTime,
     getMyTours,
     withdrawFromTour,
@@ -28,7 +28,7 @@ router.get("/candidateGuides", getCandidateGuides);
 router.get("/allTours", getAllTours);
 router.put("/approve/:id", approveTour);
 router.put("/reject/:id", rejectTour);
-router.put("/updateClassRoom/:id", updateClassRoom);
+router.put("/:id/updateClassroom", updateClassroom);
 router.put("/updateTime/:id", updateTime);
 router.get("/myTours", authenticateToken, getMyTours); // Ensure `authenticateUser` middleware is implemented
 router.delete("/withdraw/:id", authenticateToken, withdrawFromTour);

@@ -1,70 +1,95 @@
-/* Profile Settings Title */
-.profile-settings-title {
-    font-size: 25px;
+/* Container */
+.profile-settings-container {
+    width: 100%; /* Fill the available width */
+    padding: 40px; /* You can adjust the padding as needed */
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Apply shadow to the container */
+    margin: 0; /* Remove margins */
+}
+
+/* Header */
+.profile-settings-header {
+    font-size: 1.5rem;
     font-weight: bold;
-    color: #000000;
-    margin-bottom: 40px;
+    margin-bottom: 20px;
+    color: #000;
+    text-align: left;
 }
 
-/* Profile Settings Card */
-.profile-settings-card {
-    background-color: #ffffff;
-    border-radius: 12px;
-    padding: 40px;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-    max-width: 900px;
-    margin: 0 auto;
-    min-height: 600px;
+/* Form */
+.profile-settings-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
-/* Profile Details Section */
-.profile-details-section {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 30px;
-    font-size: 20px;
-    row-gap: 30px; /* Add spacing between rows */
+/* Input Group */
+.input-group {
+    display: flex;
+    flex-direction: column;
 }
 
-/* Input and Dropdown Fields */
-.large-input {
+.input-group label {
+    margin-bottom: 5px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #000;
+}
+
+.input-field {
     padding: 12px;
-    font-size: 16px;
+    font-size: 1rem;
     border-radius: 8px;
-    border: 1px solid #ccc;
-    width: 100%; /* Ensure the input field takes the full width */
-    box-sizing: border-box; /* Prevent content overflow */
-}
-
-.large-dropdown {
+    border: 1px solid #ddd;
     width: 100%;
-    font-size: 16px;
-    margin-top: 10px; /* Add spacing from label */
+    box-sizing: border-box;
 }
 
-/* Save Button */
-.save-buttonaccount {
-    grid-column: span 2;
-    margin-top: 15px;
-    margin-left: 0; 
-    padding: 12px 24px; 
-    font-size: 14px; 
-    border: none;
-    border-radius: 6px; 
-    background-color: #5a6268;
-    color: #ffffff;
+/* Dropdown */
+.dropdown-field {
+    width: 100%;
+    font-size: 1rem;
+}
+
+/* Button Group */
+.button-group {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.save-button,
+.cancel-button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    border-radius: 5px;
     cursor: pointer;
-    text-align: center;
-    align-self: start; 
-    justify-self: start; 
-    transition: background-color 0.3s ease, transform 0.2s ease;
-  }
-  
-  .save-buttonaccount:hover {
-    background-color: #515c67; 
-  }
-  
-  .save-buttonaccount:active {
-    transform: translateX(-1px) translateY(1px); 
-  }
-  
+    border: none;
+}
+
+.save-button {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.save-button:hover {
+    background-color: #0056b3;
+}
+
+.cancel-button {
+    background-color: #6c757d;
+    color: #fff;
+}
+
+.cancel-button:hover {
+    background-color: #5a6268;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .profile-settings-container {
+        padding: 15px;
+    }
+}

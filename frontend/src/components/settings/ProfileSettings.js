@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { fetchProfileData, updateProfileData } from '../../services/ProfileSettingsService';
 import { Dropdown } from 'primereact/dropdown';
-import 'primereact/resources/themes/saga-blue/theme.css';
-import 'primereact/resources/primereact.min.css';
+import { Toast } from 'primereact/toast';
 import './ProfileSettings.css';
+import { InputText } from 'primereact/inputtext';
+import { Button } from 'primereact/button';
 
 const departments = [
     { label: "American Culture and Literature", value: "American Culture and Literature" },
@@ -39,14 +40,12 @@ const departments = [
 
 const ProfileSettings = () => {
     const token = localStorage.getItem('tempToken');
+    const toast = useRef(null);
 
     const [userData, setUserData] = useState({
         firstName: '',
         lastName: '',
         email: '',
-        phone_number: '',
-        iban: '',
-        department: '',
     });
 
     const [editData, setEditData] = useState({
@@ -70,9 +69,6 @@ const ProfileSettings = () => {
                 firstName: data.firstName || '',
                 lastName: data.lastName || '',
                 email: data.email || '',
-                phone_number: data.phone_number || '',
-                iban: data.iban || 'TR',
-                department: data.department || '',
             });
             setEditData({
                 phone_number: data.phone_number || '',
@@ -81,6 +77,12 @@ const ProfileSettings = () => {
             });
         } catch (error) {
             console.error('Error fetching profile data:', error);
+            toast.current.show({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'Failed to fetch profile data.',
+                life: 3000,
+            });
         }
     };
 
@@ -104,93 +106,136 @@ const ProfileSettings = () => {
         setEditData({ ...editData, phone_number: formattedNumber });
     };
 
-const handleIBANChange = (e) => {
-    let input = e.target.value.toUpperCase().replace(/[^0-9]/g, ''); 
-    input = input.substring(0, 24); 
-    let formattedIBAN = 'TR'; 
-    const parts = input.match(/.{1,4}/g); 
-    if (parts) {
-        formattedIBAN += ' ' + parts.join(' ');
-    }
+    const handleIBANChange = (e) => {
+        let input = e.target.value.toUpperCase().replace(/[^0-9]/g, ''); 
+        input = input.substring(0, 24); 
+        let formattedIBAN = 'TR'; 
+        const parts = input.match(/.{1,4}/g); 
+        if (parts) {
+            formattedIBAN += ' ' + parts.join(' ');
+        }
 
-    setEditData({ ...editData, iban: formattedIBAN });
-};
+        setEditData({ ...editData, iban: formattedIBAN });
+    };
 
-useEffect(() => {
-    if (!editData.iban.startsWith('TR')) {
-        setEditData((prevData) => ({ ...prevData, iban: 'TR' }));
-    }
-}, []);
-
+    useEffect(() => {
+        if (!editData.iban.startsWith('TR')) {
+            setEditData((prevData) => ({ ...prevData, iban: 'TR' }));
+        }
+    }, []);
 
     const handleSave = async () => {
         try {
             await updateProfileData(token, editData);
             fetchData();
-            alert('Profile updated successfully!');
+            toast.current.show({
+                severity: 'success',
+                summary: 'Success',
+                detail: 'Profile updated successfully!',
+                life: 3000,
+            });
         } catch (error) {
             console.error('Error updating profile data:', error);
-            alert('Failed to update profile.');
+            toast.current.show({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'Failed to update profile.',
+                life: 3000,
+            });
         }
     };
 
+    const handleCancel = () => {
+        // Reset editData to original userData
+        setEditData({
+            phone_number: userData.phone_number || '',
+            iban: userData.iban || 'TR',
+            department: userData.department || '',
+        });
+    };
+
     return (
-        <div className="profile-settings-card">
-            <h1 className="profile-settings-title">Account</h1>
-
-            <div className="profile-details-section">
-                <div>
-                    <label>First Name: </label>
-                    <span>{userData.firstName || 'N/A'}</span>
+        <div className="profile-settings-container">
+            <Toast ref={toast} position="top-right" />
+            <h2 className="profile-settings-header">Account</h2>
+            <form className="profile-settings-form" onSubmit={(e) => e.preventDefault()}>
+                <div className="input-group">
+                    <label htmlFor="firstName">First Name:</label>
+                    <InputText
+                        id="firstName"
+                        value={userData.firstName}
+                        disabled
+                        className="input-field"
+                    />
                 </div>
-                <div>
-                    <label>Last Name: </label>
-                    <span>{userData.lastName || 'N/A'}</span>
+                <div className="input-group">
+                    <label htmlFor="lastName">Last Name:</label>
+                    <InputText
+                        id="lastName"
+                        value={userData.lastName}
+                        disabled
+                        className="input-field"
+                    />
                 </div>
-                <div>
-                    <label>Email Address:</label>
-                    <span>{userData.email || 'N/A'}</span>
+                <div className="input-group">
+                    <label htmlFor="email">Email Address:</label>
+                    <InputText
+                        id="email"
+                        value={userData.email}
+                        disabled
+                        className="input-field"
+                    />
                 </div>
-
-                <div>
-                    <label>Phone:</label>
-                    <input
+                <div className="input-group">
+                    <label htmlFor="phone">Phone:</label>
+                    <InputText
+                        id="phone"
                         type="text"
-                        name="phone_number"
                         placeholder="0 XXX XXX XX XX"
                         value={editData.phone_number}
                         onChange={handlePhoneNumberChange}
-                        className="large-input"
+                        className="input-field"
                     />
                 </div>
-                <div>
-                    <label>IBAN:</label>
-                    <input
+                <div className="input-group">
+                    <label htmlFor="iban">IBAN:</label>
+                    <InputText
+                        id="iban"
                         type="text"
-                        name="iban"
                         placeholder="TRXX XXXX XXXX XXXX XXXX XXXX XX"
                         value={editData.iban}
                         onChange={handleIBANChange}
-                        className="large-input"
+                        className="input-field"
                     />
                 </div>
-                <div>
-                    <label>Department:</label>
+                <div className="input-group">
+                    <label htmlFor="department">Department:</label>
                     <Dropdown
+                        id="department"
                         value={editData.department}
                         options={departments}
                         onChange={(e) => setEditData({ ...editData, department: e.value })}
                         placeholder="Select Department"
-                        className="large-dropdown"
+                        className="dropdown-field"
                         showClear
                         filter
                     />
                 </div>
-
-                <button className="save-buttonaccount" onClick={handleSave}>
-                    Save
-                </button>
-            </div>
+                <div className="button-group">
+                    <Button
+                        label="Save"
+                        icon="pi pi-check"
+                        className="save-button"
+                        onClick={handleSave}
+                    />
+                    <Button
+                        label="Cancel"
+                        icon="pi pi-times"
+                        className="cancel-button"
+                        onClick={handleCancel}
+                    />
+                </div>
+            </form>
         </div>
     );
 };

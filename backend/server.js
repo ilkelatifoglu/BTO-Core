@@ -15,6 +15,7 @@ const userManagementRoutes = require("./src/routes/userManagementRoutes");
 const dataRoutes = require("./src/routes/dataRoutes");
 const scheduleRoutes = require('./src/routes/scheduleRoutes');
 const profileRoutes = require('./src/routes/profileRoutes');
+const fairRoutes = require("./src/routes/fairRoutes"); 
 
 const app = express();
 const server = http.createServer(app);
@@ -41,6 +42,8 @@ app.use("/advisors", advisorRoutes);
 app.use("/user-management", userManagementRoutes);
 app.use('/schedule', scheduleRoutes);
 app.use('/data', dataRoutes); 
+
+app.use("/fairs", fairRoutes); // Matches /fairs/*
 
 io.on("connection", (socket) => {
   console.log("New client connected:", socket.id);

@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "nodemailer": "^6.9.16",
     "chart.js": "^4.4.7",
     "primeflex": "^3.3.1",
     "primeicons": "^7.0.0",

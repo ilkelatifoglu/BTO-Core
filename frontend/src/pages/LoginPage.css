@@ -1,20 +1,23 @@
-/* Container to split the screen */
+.outer-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* Yukarı hizalamak için kullanılır */
+  height: 100vh;
+  position: relative; /* Aşağı kaydırma için position gerekli */
+}
+
 .container {
   display: flex;
   height: 85vh;
   width: 85vw;
-  border-radius: 16px; /* Rounded corners for the entire container */
-  overflow: hidden; /* Clip content to fit within rounded corners */
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
-  margin: 0 auto; /* Center the container */
+  border-radius: 16px; /* Köşeleri yuvarlat */
+  overflow: hidden; /* Taşan içerikleri kes */
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3); /* Gölge efekti */
+  background-color: white;
+  margin-top: 50px; /* Container'ı aşağı kaydır */
+  margin-left: 110px;
 }
 
-.outer-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-}
 
 .left-side {
   width: 40%;

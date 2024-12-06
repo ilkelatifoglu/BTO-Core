@@ -1,8 +1,11 @@
+// pages/GuideInfoPage.js
+
 import React, { useState, useEffect } from 'react';
 import Sidebar from "../components/common/Sidebar";
 import GuideFilterBar from '../components/guideInfo/GuideFilterBar';
 import GuideInfoTable from '../components/guideInfo/GuideInfoTable';
 import { fetchGuideInfo } from '../services/guideInfoService';
+import './GuideInfoPage.css';
 
 const GuideInfoPage = () => {
     const [guides, setGuides] = useState([]);
@@ -17,8 +20,9 @@ const GuideInfoPage = () => {
         const loadGuides = async () => {
             setLoading(true);
             try {
+                // Fetch guide info without schedule data
                 const data = await fetchGuideInfo(filters);
-                setGuides(data); // Ensure this includes `schedule_url`.
+                setGuides(data);
             } catch (error) {
                 console.error(error);
             }

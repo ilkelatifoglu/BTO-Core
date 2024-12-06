@@ -16,6 +16,9 @@ import UserManagementPage from "../pages/UserManagementPage";
 import TourApprovalPage from "../pages/TourApproval";
 import DataInsightPage from "../pages/DataInsightPage";
 import FeedbackPage from "../pages/FeedbackPage";
+import MyTours from "../components/myTours/MyTours";
+
+import CancellationPage from "../pages/CancellationPage";
 
 const AppRoutes = () => {
   return (
@@ -23,7 +26,7 @@ const AppRoutes = () => {
       <Route path="/home" element={<HomePage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/dashboard" element={<DashboardPage />} />
-      <Route path="/settings" element={<SettingsPage />} />
+      <Route path="/Settings" element={<SettingsPage />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="*" element={<NotFound />} />
       <Route path="/" element={<Navigate replace to="/home" />} />
@@ -37,7 +40,9 @@ const AppRoutes = () => {
       <Route path="/data-insight" element={<DataInsightPage />} />
       <Route path="/approve-tour" element={<TourApprovalPage />} />
       <Route path="/feedback" element={<FeedbackPage />} />
-     
+
+      <Route path="/my-tours" element={<MyTours />} />
+      <Route path="/tours/cancel" element={<CancellationPage />} />
     </Routes>
   );
 };

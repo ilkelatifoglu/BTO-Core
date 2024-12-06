@@ -18,6 +18,8 @@ import DataInsightPage from "../pages/DataInsightPage";
 import MyTours from "../components/myTours/MyTours";
 import FairApprovalPage from "../pages/FairApprovalPage";
 import FairAssignmentPage from "../pages/FairAssignmentPage";
+import CancellationPage from "../pages/CancellationPage";
+
 const AppRoutes = () => {
   return (
     <Routes>
@@ -40,10 +42,7 @@ const AppRoutes = () => {
       <Route path="/my-tours" element={<MyTours />} />
       <Route path="/approve-fair" element={<FairApprovalPage />} />
       <Route path="/assign-fair" element={<FairAssignmentPage />} />
-
-
-
-
+      <Route path="/tours/cancel" element={<CancellationPage />} />
     </Routes>
   );
 };

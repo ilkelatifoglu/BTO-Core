@@ -1,32 +1,57 @@
+/* components/guideInfo/GuideInfoTable.css */
+
 .guide-info-table {
-    margin-left: auto; 
-    margin-right: 20px; 
-    max-width: 80%; 
-    min-height: 400px; 
+    justify-content: center;
+    align-items: center;
+    max-width: 100%;
+    min-height: 400px;
 }
 
 .p-datatable {
-    min-width: 600px; 
-    width: 100%; 
-    height: auto; 
+    min-width: 600px;
+    width: 100%;
+    height: auto;
 }
 
 .p-datatable-tbody > tr > td {
-    padding: 10px; 
+    padding: 10px;
 }
 
 .p-datatable-thead > tr > th {
     padding: 10px;
-    font-size: 14px; 
+    font-size: 14px;
 }
 
 .p-datatable-header {
     padding: 10px;
-    font-size: 16px; 
+    font-size: 16px;
     text-align: left;
 }
 
 .p-paginator {
     font-size: 14px;
-    padding: 10px; 
+    padding: 10px;
+}
+
+/* Styles for the download button */
+.guide-info-table .p-button {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    color: #007bff;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+.guide-info-table .p-button:hover {
+    text-decoration: underline;
+}
+
+.guide-info-table .p-button:disabled {
+    color: #ccc;
+    cursor: not-allowed;
+}
+
+.guide-info-table .p-button:active {
+    color: #0056b3;
 }

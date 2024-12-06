@@ -8,7 +8,47 @@
     text-align: left;
     overflow: hidden; 
   }
+  /* chart.css */
+  .navigation-buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 8px;
+  }
   
+  .navigation-buttons button {
+    margin: 0 5px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: #5a6268;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .navigation-buttons button:hover {
+    background-color: #515c67; /* Daha koyu mavi */
+    transform: translateY(-2px); /* Hafif yukarı hareket */
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .navigation-buttons button:active {
+    transform: translateY(0); /* Düğmeye basıldığında normale döner */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .navigation-buttons button:disabled {
+    background-color: #cccccc;
+    color: #666666;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+  }
+  
+
   .chart-title {
     margin-bottom: 15px;
     font-size: 16px;
@@ -23,9 +63,11 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  align-items: flex-start;
   position: relative; 
   padding-left: 60px; 
+}
+.bar-container {
+  margin-bottom: 5px;
 }
 
 .bar span {

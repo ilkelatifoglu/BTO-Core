@@ -1,93 +1,61 @@
-const db = require('../config/database');
+// src/controllers/guideInfoController.js
+
+const { getGuideInfo } = require('../queries/guideInfoQueries');
+require('dotenv').config();
 
 exports.getGuideInfo = async (req, res) => {
-    try {
-        const { name, role, department, sort_by = 'first_name', order = 'asc', page = 1, limit = 10 } = req.query;
+  try {
+    const {
+      name,
+      role,
+      department,
+      sort_by = 'first_name',
+      order = 'asc',
+      page = 1,
+      limit = 10,
+      include_schedule = false, // Query parameter to include schedule data
+    } = req.query;
 
-        const { user_type } = req.user; // Extract user_type from the decoded token
+    // Parse pagination parameters
+    const parsedPage = parseInt(page, 10) || 1;
+    const parsedLimit = parseInt(limit, 10) || 10;
 
-        console.log('Decoded user_type:', typeof user_type, user_type); // Should log: "number 4"
+    // Fetch guide information from the database
+    const guides = await getGuideInfo({
+      name,
+      role,
+      department,
+      sort_by,
+      order,
+      page: parsedPage,
+      limit: parsedLimit,
+    });
 
-        // Calculate offset for pagination
-        const offset = (page - 1) * limit;
+    // Map over the results to include or exclude schedule data
+    const formattedResult = guides.map((row) => {
+      if (include_schedule === 'true' && row.schedule_data) {
+        // Include schedule data
+        row.schedule_base64 = row.schedule_data;
+        // Include MIME type if necessary
+        row.schedule_mime_type = 'image/png'; // Adjust if using different formats
+      } else {
+        row.schedule_base64 = null;
+        row.schedule_mime_type = null;
+      }
+      // Remove schedule_data from the response
+      delete row.schedule_data;
+      return row;
+    });
 
-        // Base query to fetch guide info
-        let query = `
-            SELECT 
-                u.first_name, 
-                u.last_name, 
-                u.email, 
-                u.role, 
-                u.department, 
-                u.phone_number, 
-                s.schedule_file
-        `;
+    // Send the result as JSON
+    return res.status(200).json(formattedResult);
+  } catch (err) {
+    // Log the error for debugging
+    console.error('Error in getGuideInfo:', err.message);
 
-        // Include iban and crew_no only if user_type is 4
-        if (user_type === 4) {
-            query += `, u.iban, u.crew_no `;
-        }
-
-        query += `
-            FROM users u
-            LEFT JOIN schedules s ON u.id = s.user_id
-            WHERE u.role IN ('guide', 'advisor', 'coordinator')
-        `;
-
-
-        // Initialize query parameters array
-        const queryParams = [];
-        let paramIndex = 1; // Keep track of parameter index for placeholders ($1, $2, etc.)
-
-        // Apply filters if provided
-        if (name) {
-            query += ` AND (u.first_name ILIKE $${paramIndex} OR u.last_name ILIKE $${paramIndex})`;
-            queryParams.push(`%${name}%`);
-            paramIndex++;
-        }
-
-        if (role) {
-            query += ` AND u.role ILIKE $${paramIndex}`;
-            queryParams.push(`%${role}%`);
-            paramIndex++;
-        }
-
-        if (department) {
-            query += ` AND u.department ILIKE $${paramIndex}`;
-            queryParams.push(`%${department}%`);
-            paramIndex++;
-        }
-
-        // Apply sorting
-        query += ` ORDER BY ${sort_by} ${order.toUpperCase()}`;
-
-        // Apply pagination
-        query += ` LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
-        queryParams.push(limit, offset);
-
-        // Execute the query
-        const result = await db.query(query, queryParams);
-
-         // Map the result to add a URL for the schedule
-         const formattedResult = result.rows.map(row => {
-            if (row.schedule_file) {
-                row.schedule_url = `http://localhost:3001/schedules/${row.schedule_file}`;
-            } else {
-                row.schedule_url = null;
-            }
-            return row;
-        });
-        console.log('Data being sent to frontend:', formattedResult);
-
-        
-        // Send the result as JSON
-        // Send the result as JSON
-        return res.status(200).json(formattedResult);
-    } catch (err) {
-        // Log the error for debugging
-        console.error('Error in getGuideInfo:', err.message);
-
-        // Send a generic error response
-        return res.status(500).json({ error: 'An error occurred while fetching guide information.' });
-    }
+    // Send a generic error response
+    return res.status(500).json({
+      error: 'An error occurred while fetching guide information.',
+    });
+  }
 };

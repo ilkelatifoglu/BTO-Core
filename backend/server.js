@@ -44,8 +44,7 @@ app.use("/user-management", userManagementRoutes);
 app.use('/schedule', scheduleRoutes);
 app.use('/data', dataRoutes);
 app.use('/individual-tours', individualTourRoutes);
-
-app.use("/fairs", fairRoutes); // Matches /fairs/*
+app.use("/fairs", fairRoutes); 
 
 io.on("connection", (socket) => {
   console.log("New client connected:", socket.id);

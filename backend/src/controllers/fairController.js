@@ -37,7 +37,7 @@ exports.createFair = async (req, res) => {
     try {
         const result = await db.query(
             `INSERT INTO fairs (date, organization_name, city, applicant_name, applicant_email, applicant_phone, status)
-             VALUES ($1, $2, $3, $4, $5, $6, 'PENDING') RETURNING *`,
+             VALUES ($1, $2, $3, $4, $5, $6, 'WAITING') RETURNING *`,
             [date, organization_name, city, applicant_name, applicant_email, applicant_phone]
         );
         res.status(201).json(result.rows[0]);

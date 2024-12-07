@@ -17,7 +17,7 @@ const {
   approveTour,
   rejectTour,
   updateTime,
-  updateClassRoom,
+  updateClassroom,
   getDoneTours
 } = require("../queries/tourQueries");
 
@@ -401,16 +401,16 @@ exports.cancelTour = async (req, res) => {
 };
 
 
-exports.updateClassRoom = async (req, res) => {
+exports.updateClassroom = async (req, res) => {
   const { id } = req.params;
-  const { classRoom } = req.body;
+  const { classroom } = req.body;
 
-  if (!classRoom) {
+  if (!classroom) {
     return res.status(400).json({ message: "Classroom is required" });
   }
 
   try {
-    await updateClassRoom(id, classRoom);
+    await updateClassroom(id, classroom);
     res.status(200).json({ message: "Classroom updated successfully" });
   } catch (error) {
     console.error("Error updating classroom:", error.message || error);

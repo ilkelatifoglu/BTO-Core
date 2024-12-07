@@ -125,6 +125,17 @@ const AssignTourService = {
       console.error("Error fetching users by tour ID:", error);
       throw new Error("Unable to fetch users by tour ID");
     }
+  }, updateClassroom: async (tourId, classroomInput) => {
+    try {
+      const response = await axios.put(`${API_BASE_URL}/tour/${tourId}/updateClassroom`, {
+        classroom: classroomInput
+      });
+
+      return response.data; // Assuming the response contains a message
+    } catch (error) {
+      console.error('Error updating classroom:', error);
+      throw new Error(error.response?.data?.message || 'Something went wrong');
+    }
   },
 
 };

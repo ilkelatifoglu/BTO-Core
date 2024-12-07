@@ -16,7 +16,9 @@ import UserManagementPage from "../pages/UserManagementPage";
 import TourApprovalPage from "../pages/TourApproval";
 import DataInsightPage from "../pages/DataInsightPage";
 import MyTours from "../components/myTours/MyTours";
-import IndividualTourPage from "../pages/IndividualTourPage"
+import FairApprovalPage from "../pages/FairApprovalPage";
+import FairAssignmentPage from "../pages/FairAssignmentPage";
+import IndividualTourPage from "../pages/IndividualTourPage";
 
 import CancellationPage from "../pages/CancellationPage";
 
@@ -40,6 +42,8 @@ const AppRoutes = () => {
       <Route path="/data-insight" element={<DataInsightPage />} />
       <Route path="/approve-tour" element={<TourApprovalPage />} />
       <Route path="/my-tours" element={<MyTours />} />
+      <Route path="/approve-fair" element={<FairApprovalPage />} />
+      <Route path="/assign-fair" element={<FairAssignmentPage />} />
       <Route path="/tours/cancel" element={<CancellationPage />} />
       <Route path="/individual-tours" element={<IndividualTourPage />} />
     </Routes>

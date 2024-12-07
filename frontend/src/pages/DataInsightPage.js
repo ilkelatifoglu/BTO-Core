@@ -3,17 +3,25 @@ import Sidebar from "../components/common/Sidebar";
 import TourDaysChart from "../components/data/TourDaysChart";
 import CancellationStatsPieChart from "../components/data/CancellationStatsChart";
 import ToursByCityChart from "../components/data/ToursByCityChart"; // Import the new component
-import { fetchTourData } from "../services/DataService"; // Import the data fetching function
+import SchoolStudentChart from "../components/data/SchoolStudent"; // Yeni komponenti ekliyoruz
+import { fetchTourData, fetchSchoolStudentData } from "../services/DataService";
 import "./DataInsightPage.css";
+
 
 const DataInsightPage = () => {
   const [filter, setFilter] = useState("weekly");
+  const [periodIndex, setPeriodIndex] = useState(0);
   const [tourData, setTourData] = useState(null);
+  const [schoolStudentData, setSchoolStudentData] = useState(null);
+
+  useEffect(() => {
+    setPeriodIndex(0); 
+  }, [filter]);
 
   useEffect(() => {
     const getData = async () => {
       try {
-        const data = await fetchTourData(filter);
+        const data = await fetchTourData(filter, periodIndex);
         setTourData(data);
       } catch (error) {
         console.error("Error fetching tour data:", error);
@@ -21,7 +29,35 @@ const DataInsightPage = () => {
     };
 
     getData();
-  }, [filter]);
+  }, [filter, periodIndex]);
+
+  useEffect(() => {
+    const getSchoolData = async () => {
+      try {
+        const data = await fetchSchoolStudentData();
+        setSchoolStudentData(data.schoolData);
+      } catch (error) {
+        console.error("Error fetching school student data:", error);
+      }
+    };
+
+    getSchoolData();
+  }, []);
+
+  const maxPeriod =
+    filter === "weekly" ? 3 : filter === "monthly" ? 11 : filter === "yearly" ? 5 : 0;
+
+  const handlePrevious = () => {
+    if (periodIndex < maxPeriod) {
+      setPeriodIndex(periodIndex + 1);
+    }
+  };
+
+  const handleNext = () => {
+    if (periodIndex > 0) {
+      setPeriodIndex(periodIndex - 1);
+    }
+  };
 
   return (
     <div className="data-insight-page">
@@ -42,9 +78,39 @@ const DataInsightPage = () => {
         <div className="charts">
           {tourData ? (
             <>
-              <TourDaysChart data={tourData.tourDays} />
-              <CancellationStatsPieChart data={tourData.tourStatusData} />
-              <ToursByCityChart data={tourData.toursByCity} /> {/* Add the new chart */}
+              <TourDaysChart
+                data={tourData.tourDays}
+                startDate={tourData.startDate}
+                endDate={tourData.endDate}
+                periodIndex={periodIndex}
+                handlePrevious={handlePrevious}
+                handleNext={handleNext}
+                maxPeriod={maxPeriod}
+              />
+              <CancellationStatsPieChart
+                data={tourData.tourStatusData}
+                startDate={tourData.startDate}
+                endDate={tourData.endDate}
+                periodIndex={periodIndex}
+                handlePrevious={handlePrevious}
+                handleNext={handleNext}
+                maxPeriod={maxPeriod}
+              />
+              <ToursByCityChart
+                data={tourData.toursByCity}
+                startDate={tourData.startDate}
+                endDate={tourData.endDate}
+                periodIndex={periodIndex}
+                handlePrevious={handlePrevious}
+                handleNext={handleNext}
+                maxPeriod={maxPeriod}
+              />
+               {schoolStudentData ? (
+                <SchoolStudentChart data={schoolStudentData} />
+              ) : (
+                <p>Loading school data...</p>
+              )}
+
             </>
           ) : (
             <p>Loading...</p>
@@ -56,4 +122,3 @@ const DataInsightPage = () => {
 };
 
 export default DataInsightPage;
-

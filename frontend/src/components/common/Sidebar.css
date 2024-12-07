@@ -1,93 +1,26 @@
+/* Sidebar.css */
+
+/* Sidebar Container */
 .sidebar {
-    width: 250px; /* Keep consistent width */
-    height: 100vh; /* Full height */
+    width: 250px; /* Sabit genişlik */
+    height: 100vh; /* Tam yükseklik */
     display: flex;
     flex-direction: column;
     background-color: #ffffff;
-    border-right: 1px solid #ddd; /* Subtle divider */
-    padding-top: 10px; /* Add some padding for spacing */
-    position: fixed; /* Sidebar remains fixed */
-    justify-content: space-between;
+    border-right: 1px solid #ddd;
+    position: fixed;
+    justify-content: space-between; /* Footer'ı alta it */
+    overflow: hidden; /* Taşma durumlarını gizle */
+    padding-bottom: 5px; /* Reduced padding to save space */
+    transition: width 0.3s ease;
+    transform: translateY(-10px); 
 }
 
 .sidebar.collapsed {
     width: 80px; /* Collapsed width */
 }
-.sidebar__toggle {
-    background: none;
-    border: none;
-    color: #ecf0f1;
-    cursor: pointer;
-    padding: 10px;
-    text-align: right;
-    width: 100%;
-}
 
-.sidebar__header {
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    padding: 10px 15px; /* Keep padding for spacing */
-    margin-top: 0px; /* Reduce or remove margin to move header up */
-    background-color: #ffffff;
-    color: #000000;
-    text-align: center;
-    font-weight: bold;
-    position: relative;
-}
-
-
-.sidebar__header img {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    margin-bottom: 10px; /* Adjust margin between profile picture and user name */
-    object-fit: cover;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.sidebar__header h2 {
-    font-size: 1rem;
-    font-weight: bold;
-    margin: 5px 0; /* Adjust margin for spacing */
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-
-.sidebar__header h2::after {
-    content: ''; /* Creates a decorative line */
-    position: absolute;
-    bottom: -1px; /* Move the border further down */
-    left: 14px;
-    width: 94%; /* Makes the border span the entire width */
-    height: 1px; /* Adjust the thickness of the border */
-    background-color: #ddd; /* Border color */
-}
-
-.sidebar__dashboard {
-    font-size: 1.5rem;
-    font-weight: normal;
-    color: #000000;
-    margin: 5px 0 10px 0; /* Adjust spacing for "Dashboard" text */
-    margin: 10px 0 10px 15px; /* Adjust spacing for "Dashboard" text */
-    text-align: center;
-}
-
-.sidebar.collapsed .sidebar__header h2 {
-    display: none; /* Hide text when collapsed */
-}
-
-.sidebar__dashboard::after {
-    content: '';
-    display: block;
-    width: 100%; /* Adjust the width of the line as needed */
-    height: 1px; /* Thickness of the line */
-    background-color: #ddd; /* Color of the line */
-    margin-top: 5px; /* Space between the text and the line */
-}
-
+/* Toggle Button */
 .sidebar__toggle {
     background: none;
     border: none;
@@ -95,7 +28,7 @@
     cursor: pointer;
     margin-top: 10px;
     font-size: 1.2em;
-    padding: px;
+    padding: 0;
     margin-left: auto; /* Align toggle to the right */
     transition: color 0.3s;
 }
@@ -105,6 +38,126 @@
     color: #000000;
 }
 
+/* Sidebar Header */
+.sidebar__header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1px 2px; /* Keep padding for spacing */
+    margin-top: 0px; /* Reduce or remove margin to move header up */
+    background-color: #ffffff;
+    color: #000000;
+    text-align: center;
+    font-weight: bold;
+    position: relative;
+}
+
+/* Profile Container */
+.profile-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Profile Picture Wrapper */
+.profile-picture-wrapper {
+    position: relative;
+    width: 50px;
+    height: 50px;
+    margin-bottom: 1px;
+    margin-top: -8px;
+    
+}
+
+/* Profile Picture */
+.profile-picture {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: filter 0.3s ease, opacity 0.3s ease;
+}
+
+.profile-picture-wrapper:hover .profile-picture {
+    filter: brightness(70%) blur(2px); /* Darken and blur on hover */
+}
+
+/* Refresh Button Overlay */
+.refresh-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(255, 255, 255, 0.8);
+    border: none;
+    border-radius: 50%;
+    padding: 5px;
+    display: none;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+}
+
+.profile-picture-wrapper:hover .refresh-button {
+    display: block; /* Show on hover */
+}
+
+.refresh-button i {
+    font-size: 1.2em;
+    color: #333;
+}
+
+.refresh-button:hover {
+    background-color: rgba(255, 255, 255, 1);
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Loading Spinner */
+.profile-loading {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+/* User Name */
+.sidebar__header h2 {
+    font-size: 0.9rem;
+    font-weight: bold;
+    margin: 3px 0; /* Adjust margin for spacing */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 12px;
+}
+
+/* Hide User Name when Sidebar is Collapsed */
+.sidebar.collapsed .sidebar__header h2 {
+    display: none; /* Hide text when collapsed */
+}
+
+/* Dashboard Title */
+.sidebar__dashboard {
+    font-size: 1.2rem;
+    font-weight: normal;
+    color: #000000;
+    margin: 10px; /* Adjust spacing for "Dashboard" text */
+    margin-bottom: -12px;
+    margin-top: 2px;
+    text-align: center;
+}
+
+/* Divider */
+.sidebar__divider {
+    width: 90%; /* Adjust width as needed */
+    border-top: 1px solid #ccc; /* Gray color */
+    margin: 6px auto 0 auto; /* 10px top margin, auto left/right */
+}
+
+/* Sidebar Menu */
 .sidebar__menu {
     list-style: none;
     padding: 10px 0;
@@ -112,6 +165,7 @@
     flex-grow: 1;
 }
 
+/* Menu Items */
 .menu__item {
     display: flex;
     align-items: center;
@@ -147,24 +201,31 @@
     display: none; /* Hide text in collapsed mode */
 }
 
+/* Sidebar Footer */
 .sidebar__footer {
-    padding: 10px;
-    border-top: 1px solid #ddd;
+    padding: 10px 15px;
+    border-top: 1px solid #ddd; /* Ayırıcı çizgi */
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 6px;
     align-items: center;
     background-color: #ffffff;
+    flex-shrink: 0; /* Footer'ın sabit kalmasını sağla */
 }
 
 .sidebar__footer .menu__item {
+    display: flex;
+    align-items: center;
     justify-content: center;
-    background-color: #ffffff;
-    border-radius: 8px;
-    width: 90%; /* Full width footer buttons */
+    width: 100%; /* Tam genişlik */
     padding: 10px;
-    text-align: center;
+    font-size: 0.95rem;
+    background-color: #ffffff;
+    color: #333;
+    border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: background 0.3s, box-shadow 0.3s;
 }
 
 .sidebar__footer .menu__item:hover {
@@ -172,12 +233,22 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
+.sidebar__footer .menu__item i {
+    font-size: 1.2rem;
+    color: #333;
+}
+
+.sidebar.collapsed .sidebar__footer {
+    align-items: center;
+    padding: 10px;
+}
+
 .sidebar__footer i {
     font-size: 1.2rem;
     color: #333;
 }
 
-/* Add spacing between text and icon in expanded mode */
+/* Spacing Between Text and Icon in Expanded Mode */
 .sidebar__menu .menu__item span {
     flex-grow: 1;
     text-align: left;

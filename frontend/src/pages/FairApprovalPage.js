@@ -19,6 +19,10 @@ export default function FairApprovalPage() {
             .catch((error) => console.error("Error fetching fairs:", error));
     }, []);
 
+    const rowClassName = (rowData) => {
+        return rowData.status === "CANCELLED" ? "cancelled-row" : ""; // Add 'cancelled-row' class for CANCELLED rows
+    };
+
     // Load available guides for a specific fair
     const loadGuides = async (fairId) => {
         if (!guides[fairId]) {
@@ -127,17 +131,18 @@ export default function FairApprovalPage() {
                 icon="pi pi-check"
                 className="p-button-success"
                 onClick={() => handleApproveFair(rowData.id)}
-                disabled={rowData.status === 'APPROVED'}
+                disabled={rowData.status === 'APPROVED' || rowData.status === 'CANCELLED'} // Disable if already approved or cancelled
             />
             <Button
                 label="Cancel"
                 icon="pi pi-times"
                 className="p-button-danger"
                 onClick={() => handleCancelFair(rowData.id)}
+                disabled={rowData.status === 'CANCELLED'} // Disable if cancelled
             />
         </div>
-    );  
-    
+    );
+
     const handleUnassignGuide = async (fairId, column) => {
         if (window.confirm("Are you sure you want to unassign this guide?")) {
             try {
@@ -160,43 +165,45 @@ export default function FairApprovalPage() {
         }
     };
     
-    return (
+     return (
         <div className="fair-approval-page">
             {/* Sidebar */}
             <Sidebar />
-    
+
             {/* Main Content */}
             <div className="fair-approval-content">
                 <h2>Fair Approval</h2>
-                <DataTable value={fairs} paginator rows={10} responsiveLayout="scroll">
+                <DataTable
+                    value={fairs}
+                    paginator
+                    rows={10}
+                    responsiveLayout="scroll"
+                    rowClassName={rowClassName} // Pass the rowClassName function here
+                >
                     <Column field="date" header="Date" />
                     <Column field="organization_name" header="Organization" />
                     <Column field="city" header="City" />
-                    {[{ id: "guide_1_id", nameField: "guide_1_name" },
-                    { id: "guide_2_id", nameField: "guide_2_name" },
-                    { id: "guide_3_id", nameField: "guide_3_name" }
-                    ].map(({ id, nameField }, index) => (
+                    {["guide_1_id", "guide_2_id", "guide_3_id"].map((column, index) => (
                         <Column
-                            key={id}
-                            field={id}
+                            key={column}
                             header={`Guide ${index + 1}`}
-                            body={(row) => (
-                            <DropdownOrText
-                                row={row}
-                                column={id}
-                                guideNameField={nameField}
-                                guides={guides}
-                                handleAssignGuide={handleAssignGuide}
-                                handleUnassignGuide={handleUnassignGuide}
-                                loadGuides={loadGuides}
-                            />
-                        )}
+                            body={(rowData) => (
+                                <DropdownOrText
+                                    row={rowData}
+                                    column={column}
+                                    guideNameField={`${column.replace("_id", "_name")}`}
+                                    guides={guides}
+                                    handleAssignGuide={handleAssignGuide}
+                                    handleUnassignGuide={handleUnassignGuide}
+                                    loadGuides={loadGuides}
+                                    disabled={rowData.status === "CANCELLED"} // Disable if the fair is cancelled
+                                />
+                            )}
                         />
                     ))}
                     <Column body={actionButtonsTemplate} header="Actions" />
                 </DataTable>
             </div>
         </div>
-    );    
-    
+    );
 }

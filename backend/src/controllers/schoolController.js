@@ -1,6 +1,15 @@
-const { query } = require("../config/database");
-const { getAllSchools } = require("../queries/schoolQueries");
+// src/controllers/schoolController.js
 
+const {
+  getAllSchools,
+  getSchoolById,
+  insertSchool,
+  updateSchool,
+  deleteSchool,
+  getSchoolId,
+} = require("../queries/schoolQueries");
+
+// Add a new school
 exports.addSchool = async (req, res) => {
   const {
     school_name,
@@ -11,44 +20,24 @@ exports.addSchool = async (req, res) => {
     student_sent_last1,
     student_sent_last2,
     student_sent_last3,
-    lgs_score
+    lgs_score,
   } = req.body;
 
   try {
     // Check for duplicate schools based on school name, city, and academic year start
-    const schoolCheck = await query(
-      "SELECT * FROM schools WHERE school_name = $1 AND city = $2 AND academic_year_start = $3",
-      [school_name, city, academic_year_start]
-    );
+    const existingId = await getSchoolId(school_name, city, academic_year_start);
 
-    if (schoolCheck.rows.length > 0) {
+    if (existingId) {
       return res.status(400).json({ message: "School already exists for the specified academic year" });
     }
 
     // Insert the school into the database
-    const result = await query(
-      `INSERT INTO schools 
-      (school_name, city, academic_year_start, academic_year_end, student_count, 
-       student_sent_last1, student_sent_last2, student_sent_last3, lgs_score)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-      RETURNING id`,
-      [
-        school_name,
-        city,
-        academic_year_start,
-        academic_year_end,
-        student_count,
-        student_sent_last1,
-        student_sent_last2,
-        student_sent_last3,
-        lgs_score
-      ]
-    );
+    const schoolId = await insertSchool(req.body);
 
-    res.status(200).json({
+    res.status(201).json({
       success: true,
       message: "School added successfully",
-      schoolId: result.rows[0].id
+      schoolId,
     });
   } catch (error) {
     console.error("Error adding school:", error);
@@ -56,6 +45,7 @@ exports.addSchool = async (req, res) => {
   }
 };
 
+// Retrieve all schools
 exports.getAllSchools = async (req, res) => {
   try {
     const schools = await getAllSchools();
@@ -66,6 +56,79 @@ exports.getAllSchools = async (req, res) => {
     });
   } catch (error) {
     console.error("Error retrieving schools:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+// Retrieve a single school by ID
+exports.getSchoolById = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const school = await getSchoolById(id);
+
+    if (!school) {
+      return res.status(404).json({ success: false, message: "School not found" });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: school,
+    });
+  } catch (error) {
+    console.error("Error retrieving school:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+// Update a school by ID
+exports.updateSchool = async (req, res) => {
+  const { id } = req.params;
+  const updateData = req.body;
+
+  try {
+    // Check if the school exists
+    const existingSchool = await getSchoolById(id);
+
+    if (!existingSchool) {
+      return res.status(404).json({ success: false, message: "School not found" });
+    }
+
+    // Update the school in the database
+    const updatedSchool = await updateSchool(id, updateData);
+
+    res.status(200).json({
+      success: true,
+      message: "School updated successfully",
+      data: updatedSchool,
+    });
+  } catch (error) {
+    console.error("Error updating school:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+// Delete a school by ID
+exports.deleteSchool = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // Check if the school exists
+    const existingSchool = await getSchoolById(id);
+
+    if (!existingSchool) {
+      return res.status(404).json({ success: false, message: "School not found" });
+    }
+
+    // Delete the school from the database
+    await deleteSchool(id);
+
+    res.status(200).json({
+      success: true,
+      message: "School deleted successfully",
+    });
+  } catch (error) {
+    console.error("Error deleting school:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };

@@ -1,5 +1,3 @@
-// Sidebar.js
-
 import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -24,6 +22,7 @@ const Sidebar = ({ setCurrentPage }) => {
   );
   const [isLoadingPicture, setIsLoadingPicture] = useState(false);
   const [isLoadingProfile, setIsLoadingProfile] = useState(false);
+  const [userType, setUserType] = useState(null);
   const toast = useRef(null);
 
   const toggleSidebar = () => {
@@ -157,6 +156,11 @@ const Sidebar = ({ setCurrentPage }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Empty dependency array ensures this runs once when the component mounts
 
+  useEffect(() => {
+    const storedUserType = localStorage.getItem("userType");
+    setUserType(parseInt(storedUserType, 10)); // `userType`'ı localStorage'dan al
+  }, []);
+  
   return (
     <div style={{ display: "flex" }}>
       <div className={`sidebar ${isExpanded ? "expanded" : "collapsed"}`}>
@@ -205,6 +209,7 @@ const Sidebar = ({ setCurrentPage }) => {
         {isExpanded && <p className="sidebar__dashboard">Dashboard</p>}
 
         <ul className="sidebar__menu">
+        {(userType === 4 || userType === 3 || userType === 2) && (
           <li
             className="menu__item"
             onClick={() => handleNavigation("assign-tour")}
@@ -212,6 +217,8 @@ const Sidebar = ({ setCurrentPage }) => {
             <i className="pi pi-table"></i>
             {isExpanded && <span>Tour Assignment</span>}
           </li>
+        )}
+        {(userType === 4 || userType === 3 || userType === 2) && (
           <li
             className="menu__item"
             onClick={() => handleNavigation("guideInfo")}
@@ -219,6 +226,8 @@ const Sidebar = ({ setCurrentPage }) => {
             <i className="pi pi-info-circle"></i>
             {isExpanded && <span>Guide Info</span>}
           </li>
+            )}
+             {(userType === 4 || userType === 3 || userType === 2) && (
           <li
             className="menu__item"
             onClick={() => handleNavigation("puantaj-page")}
@@ -226,6 +235,8 @@ const Sidebar = ({ setCurrentPage }) => {
             <i className="pi pi-calendar"></i>
             {isExpanded && <span>Puantaj Page</span>}
           </li>
+            )}
+             {(userType === 4 || userType === 3 || userType === 2) && (
           <li
             className="menu__item"
             onClick={() => handleNavigation("approve-tour")}
@@ -233,6 +244,8 @@ const Sidebar = ({ setCurrentPage }) => {
             <i className="pi pi-check"></i>
             {isExpanded && <span>Tour Approval</span>}
           </li>
+           )}
+             {userType === 4 && (
           <li
             className="menu__item"
             onClick={() => handleNavigation("data-insight")}
@@ -240,6 +253,8 @@ const Sidebar = ({ setCurrentPage }) => {
             <i className="pi pi-chart-line"></i>
             {isExpanded && <span>Data Insights</span>}
           </li>
+           )}
+            {(userType === 4 ) && (
           <li
             className="menu__item"
             onClick={() => handleNavigation("manageUser")}
@@ -247,6 +262,8 @@ const Sidebar = ({ setCurrentPage }) => {
             <i className="pi pi-user-plus"></i>
             {isExpanded && <span>User Management</span>}
           </li>
+            )}
+            {(userType === 4 || userType === 3 || userType === 2) && (
           <li
             className="menu__item"
             onClick={() => handleNavigation("RealTimeStatus")}
@@ -254,13 +271,17 @@ const Sidebar = ({ setCurrentPage }) => {
             <i className="pi pi-clock"></i>
             {isExpanded && <span>Real-time Status</span>}
           </li>
+           )}
+           {(userType === 4 || userType === 3 || userType === 2 || userType === 1 )&& ( 
           <li
             className="menu__item"
             onClick={() => handleNavigation("FeedbackPage")}
           >
             <i className="pi pi-comments"></i>
             {isExpanded && <span>Feedback Page</span>}
-          </li>
+          </li>      
+          )}
+          {(userType === 4 || userType === 3 || userType === 2) && (   
           <li
             className="menu__item"
             onClick={() => handleNavigation("advisors")}
@@ -268,6 +289,8 @@ const Sidebar = ({ setCurrentPage }) => {
             <i className="pi pi-briefcase"></i>
             {isExpanded && <span>Advisors</span>}
           </li>
+           )}
+            {(userType === 4 || userType === 3 || userType === 2 || userType === 1) && (   
           <li
             className="menu__item"
             onClick={() => handleNavigation("my-tours")}
@@ -275,13 +298,17 @@ const Sidebar = ({ setCurrentPage }) => {
             <i className="pi pi-map"></i>
             {isExpanded && <span>My Tours</span>}
           </li>
-          <li
-            className="menu__item"
-            onClick={() => handleNavigation("approve-fair")}
-          >
-            <i className="pi pi-check-circle"></i>
-            {isExpanded && <span>Fair Approval</span>}
-          </li>
+           )}
+          {userType === 4 && (
+            <li
+              className="menu__item"
+              onClick={() => handleNavigation("approve-fair")}
+            >
+              <i className="pi pi-check-circle"></i>
+              {isExpanded && <span>Fair Approval</span>}
+            </li>
+          )}
+           {(userType === 4 || userType === 3 || userType === 2) && ( 
           <li
             className="menu__item"
             onClick={() => handleNavigation("assign-fair")}
@@ -289,6 +316,8 @@ const Sidebar = ({ setCurrentPage }) => {
             <i className="pi pi-users"></i>
             {isExpanded && <span>Fair Assignment</span>}
           </li>
+           )}
+           {(userType === 4 || userType === 3 || userType === 2) && ( 
           <li
             className="menu__item"
             onClick={() => handleNavigation("individual-tours")}
@@ -296,6 +325,7 @@ const Sidebar = ({ setCurrentPage }) => {
             <i className="pi pi-user"></i>
             {isExpanded && <span>Individual Tours</span>}
           </li>
+            )}
           
         </ul>
         <div className="sidebar__footer">

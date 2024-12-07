@@ -22,7 +22,7 @@ exports.getPaginatedFeedback = async (limit, offset) => {
     JOIN tour_guide tg ON t.id = tg.tour_id
     JOIN users u ON tg.guide_id = u.id
     LEFT JOIN feedback f ON f.tour_id = t.id AND f.user_id = u.id
-    WHERE t.tour_status = 'COMPLETED'
+    WHERE t.tour_status = 'DONE'
     ORDER BY t.date DESC
     LIMIT $1 OFFSET $2;
   `;
@@ -41,4 +41,14 @@ exports.addFeedback = async (filename, fileType, fileSize, s3Url, userId, tourId
 exports.deleteFeedback = async (feedbackId) => {
   const sql = `DELETE FROM feedback WHERE id = $1 RETURNING s3_url;`;
   return await query(sql, [feedbackId]);
+};
+
+exports.createFeedback = async (userId, tourId) => {
+  const result = await query(
+    `INSERT INTO feedback (user_id, tour_id, filename, file_type, file_size, s3_url) 
+     VALUES ($1, $2, $3, $4, $5, $6) 
+     RETURNING id, user_id, tour_id, filename, file_type, file_size, s3_url`,
+    [userId, tourId, "", "", 0, ""]
+  );
+  return result.rows[0]; // Return the newly inserted feedback row
 };

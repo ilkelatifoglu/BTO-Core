@@ -18,8 +18,13 @@ const FeedbackTable = () => {
   const fetchFeedback = async (page) => {
     try {
       const data = await FeedbackService.getPaginatedFeedback(page, rowsPerPage);
-      setFeedback(data.data);
-      setTotalRecords(data.totalRecords || 500);
+      //console.log("Feedback Query Result:", data.data); // Log the full query result
+
+      // Extract rows (actual feedback data)
+      const feedbackArray = data.data.rows || []; // Safely access rows, default to an empty array if undefined
+
+      setFeedback(feedbackArray); // Update feedback state
+      setTotalRecords(data.totalRecords || 500); // Update total records if available
     } catch (error) {
       console.error("Error fetching feedback:", error);
     }
@@ -58,7 +63,16 @@ const FeedbackTable = () => {
     <div>
       <h2>Feedback Table</h2>
       <DataTable value={feedback} paginator rows={rowsPerPage} totalRecords={totalRecords}>
-        <Column field="tour_date" header="Date" />
+        <Column
+          field="tour_date"
+          header="Date"
+          body={(rowData) => {
+            const date = new Date(rowData.tour_date);
+            return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1)
+              .toString()
+              .padStart(2, '0')}/${date.getFullYear()}`;
+          }}
+        />
         <Column field="school_name" header="School" />
         <Column field="city" header="City" />
         <Column field="user_name" header="User" />

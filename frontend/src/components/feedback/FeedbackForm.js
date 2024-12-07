@@ -6,6 +6,9 @@ import { InputTextarea } from "primereact/inputtextarea";
 import { MultiSelect } from "primereact/multiselect";
 import { Dropdown } from "primereact/dropdown";
 import { Toast } from "primereact/toast";
+import AssignTourService from "../../services/AssignTourService";
+import UserService from "../../services/UserService";
+import FeedbackService from "../../services/FeedbackService";
 
 const FeedbackForm = () => {
   const [visible, setVisible] = useState(false);
@@ -21,25 +24,24 @@ const FeedbackForm = () => {
     // Fetch users and tours data
     const fetchData = async () => {
       try {
-        const [usersResponse, toursResponse] = await Promise.all([
-          fetch("/api/users"),
-          fetch("/api/tours"),
+        //const toursData = await AssignTourService.getDoneTours(); // No need to await here
+        const [usersData, toursData] = await Promise.all([
+          UserService.getAllUsers(),
+          AssignTourService.getDoneTours()
         ]);
-        const usersData = await usersResponse.json();
-        const toursData = await toursResponse.json();
+        //console.log("Tours Data:", toursData);
+        //console.log("Users:", usersData);
 
         // Format data for PrimeReact components
         const formattedUsers = usersData.map((user) => ({
-          label: user.name,
+          label: user.first_name + " " + user.last_name, // Concatenates with a space in between
           value: user.id,
         }));
+        //console.log(formattedUsers);
         const formattedTours = toursData.map((tour) => ({
-          label: `${tour.school_name} - ${new Date(
-            tour.date
-          ).toLocaleDateString()}`,
-          value: tour.id,
+          label: `${tour.school_name} - ${new Date(tour.date).toLocaleDateString()}`,
+          value: tour.tour_id,
         }));
-
         setUsers(formattedUsers);
         setTours(formattedTours);
       } catch (error) {
@@ -52,46 +54,50 @@ const FeedbackForm = () => {
         });
       }
     };
+
     fetchData();
   }, []);
 
+
   const handleSubmit = async () => {
     try {
-      const response = await fetch("/api/feedback", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          subject,
-          content,
-          taggedUsers: selectedUsers,
-          tourId: selectedTour,
-        }),
+      // Iterate over selectedUsers and create feedback for each user
+      const feedbackPromises = selectedUsers.map(async (userId) => {
+        const feedbackData = { user_id: userId, tour_id: selectedTour };
+        //console.log(feedbackData);
+        // Call the FeedbackService to create feedback
+        return await FeedbackService.createFeedback(feedbackData);
       });
 
-      if (response.ok) {
+      // Wait for all API calls to complete
+      const responses = await Promise.all(feedbackPromises);
+
+      // Check if all API calls were successful
+      const allSuccessful = responses.every((response) => response.success);
+
+      if (allSuccessful) {
         toast.current.show({
           severity: "success",
           summary: "Success",
-          detail: "Feedback submitted successfully",
+          detail: "Feedback submitted successfully for all users",
           life: 3000,
         });
         setVisible(false);
         resetForm();
       } else {
-        throw new Error("Failed to submit feedback");
+        throw new Error("Failed to submit feedback for some users");
       }
     } catch (error) {
       console.error("Error submitting feedback:", error);
       toast.current.show({
         severity: "error",
         summary: "Error",
-        detail: "Failed to submit feedback",
+        detail: error.message || "Failed to submit feedback",
         life: 3000,
       });
     }
   };
+
 
   const resetForm = () => {
     setSubject("");

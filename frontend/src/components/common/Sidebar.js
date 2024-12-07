@@ -275,7 +275,7 @@ const Sidebar = ({ setCurrentPage }) => {
            {(userType === 4 || userType === 3 || userType === 2 || userType === 1 )&& ( 
           <li
             className="menu__item"
-            onClick={() => handleNavigation("FeedbackPage")}
+            onClick={() => handleNavigation("feedback")}
           >
             <i className="pi pi-comments"></i>
             {isExpanded && <span>Feedback Page</span>}

@@ -71,6 +71,20 @@
 .add-work-button:hover {
     background-color: #45a049; /* Darker green on hover */
 }
+/* Align bottom section to the right */
+.add-work-container {
+    display: flex; /* Flex layout for proper alignment */
+    margin-left: 450px;  /* Push the content to the right */
+    margin-top: 20px; /* Add spacing from the top */
+    padding-right: 20px; /* Add some padding on the right */
+}
+
+/* Optional: Adjust button size and spacing for better visuals */
+.add-work-container button {
+    padding: 0.5rem 1.5rem; /* Adjust padding for the button */
+    font-size: 1rem; /* Adjust font size for better readability */
+    border-radius: 5px; /* Make the button look consistent */
+}
 
 /* Responsive design */
 @media screen and (max-width: 768px) {

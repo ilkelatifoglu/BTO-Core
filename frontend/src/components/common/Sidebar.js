@@ -60,16 +60,20 @@ const Sidebar = ({ setCurrentPage }) => {
     setIsLoadingPicture(true);
 
     try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/profile/get-profile-picture/${userId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${
-              localStorage.getItem("token") || localStorage.getItem("tempToken")
-            }`,
-          },
-        }
-      );
+      const token = localStorage.getItem("token") || localStorage.getItem("tempToken");
+
+    if (!token) {
+        throw new Error("Authentication token is missing.");
+    }
+
+    const url = `${process.env.REACT_APP_BACKEND_URL}/profile/get-profile-picture/${userId}`;
+
+    const response = await axios.get(url, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+
 
       const { profile_picture_data, profile_picture_mime_type } = response.data;
 

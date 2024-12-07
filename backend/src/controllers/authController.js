@@ -58,7 +58,7 @@ exports.login = async (req, res) => {
     });
   } catch (error) {
     console.log("Error in login function:", error);
-    return res.status(500).json({ message: "server error" });
+    return res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -79,7 +79,11 @@ exports.verifyOtp = async (req, res) => {
         .json({ message: "Invalid or expired verification code" });
     }
 
-    const accessToken = generateToken(decoded.userId, false);
+    if (typeof decoded.user_type !== "number") {
+      return res.status(401).json({ message: "Malformed token" });
+    }
+
+    const accessToken = generateToken(decoded.userId, decoded.user_type, false);
 
     res.json({
       message: "Verification successful",

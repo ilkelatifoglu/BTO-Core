@@ -66,3 +66,13 @@ export const cancelFair = async (fairId) => {
         throw error;
     }
 };
+
+export const unassignGuide = async (fairId, column) => {
+    try {
+        const response = await axios.put(`${BASE_URL}/${fairId}/unassign`, { column });
+        return response.data;
+    } catch (error) {
+        console.error("Error unassigning guide:", error);
+        throw error;
+    }
+};

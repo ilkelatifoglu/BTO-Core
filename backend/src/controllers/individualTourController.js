@@ -1,5 +1,52 @@
 // controllers/tourController.js
 const { query } = require("../config/database");
+const emailService = require('../services/EmailService');
+const {
+    insertIndividualTour,
+  } = require("../queries/individualTourQueries");
+
+exports.addIndividualTour = async (req, res) => {
+    const {
+        name,
+        major_of_interest,
+        tour_date,
+        time,
+        number_of_students,
+        contact_phone,
+        email,
+        visitor_notes,
+    } = req.body;
+
+    try{
+        const day = new Date(tour_date).toLocaleString("en-GB", { weekday: "long" });
+        const tourId = await insertIndividualTour({
+            name,
+            major_of_interest,
+            tour_date,
+            day: day.charAt(0).toUpperCase() + day.slice(1),
+            time,
+            number_of_students: parseInt(number_of_students, 10),
+            contact_phone,
+            email,
+            visitor_notes,
+          });
+          
+          await emailService.sendIndividualTourConfirmationEmail(email, {
+            name,
+            tour_date: tour_date,
+            time,
+          });
+
+          res.status(200).json({
+            success: true,
+            message: "Tour added successfully",
+            tourId,
+          });
+    } catch (error) {
+        console.error("Error adding tour:", error.message || error);
+        res.status(500).json({ success: false, message: "Server error" });
+    }
+};
 
 exports.getAllIndividualTours = async (req, res) => {
     try {

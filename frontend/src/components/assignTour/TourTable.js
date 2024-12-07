@@ -8,7 +8,7 @@ import AssignTourService from "../../services/AssignTourService";
 import "./ReadyToursTable.css";
 import io from "socket.io-client";
 import FilterBar from "./FilterBar"; // Import the FilterBar component
-
+const userType = parseInt(localStorage.getItem("userType"), 10);
 
 const socket = io("http://localhost:3001");
 
@@ -294,48 +294,50 @@ export default function ReadyToursTable() {
           }}
           style={{ width: "10%" }}
         ></Column>
+       
+       {(userType === 3 || userType === 4) && (
+  <Column
+    header="Assign Candidate"
+    body={(rowData) => {
+      if (rowData.tour_status === "READY") {
+        const selectedForTour = selectedCandidates[rowData.id] || [];
+        return (
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+            <MultiSelect
+              value={selectedForTour}
+              options={candidateGuideOptions}
+              onChange={(e) => {
+                setSelectedCandidates((prev) => ({
+                  ...prev,
+                  [rowData.id]: e.value,
+                }));
+              }}
+              placeholder="Select Candidates"
+              display="chip"
+              className="p-multiselect-dropdown scrollable-multiselect"
+              style={{ width: "100%", whiteSpace: "nowrap", maxWidth: "200px" }}
+            />
+            <Button
+              label="Confirm"
+              icon="pi pi-check"
+              className="p-button-sm p-button-rounded p-button-success"
+              onClick={() => handleAssignCandidates(rowData, selectedForTour)}
+              disabled={selectedForTour.length === 0}
+              style={{ alignSelf: "center", width: "60%" }}
+            />
+          </div>
+        );
+      }
+      return null;
+    }}
+    style={{ width: "20%" }}
+  />
+)}
+<Column
+  expander
+  style={{ width: '3rem' }} // Adjust width of the expander column
+/>
 
-        <Column
-          header="Assign Candidate"
-          body={(rowData) => {
-            if (rowData.tour_status === "READY") {
-              const selectedForTour = selectedCandidates[rowData.id] || [];
-              return (
-                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                  <MultiSelect
-                    value={selectedForTour}
-                    options={candidateGuideOptions}
-                    onChange={(e) => {
-                      setSelectedCandidates((prev) => ({
-                        ...prev,
-                        [rowData.id]: e.value,
-                      }));
-                    }}
-                    placeholder="Select Candidates"
-                    display="chip"
-                    className="p-multiselect-dropdown scrollable-multiselect"
-                    style={{ width: "100%", whiteSpace: "nowrap", maxWidth: "200px" }}
-                  />
-                  <Button
-                    label="Confirm"
-                    icon="pi pi-check"
-                    className="p-button-sm p-button-rounded p-button-success"
-                    onClick={() => handleAssignCandidates(rowData, selectedForTour)}
-                    disabled={selectedForTour.length === 0}
-                    style={{ alignSelf: "center", width: "60%" }}
-                  />
-                </div>
-              );
-            }
-            return null;
-          }}
-          style={{ width: "20%" }}
-        ></Column>
-
-        <Column
-          expander
-          style={{ width: '3rem' }} // Adjust width of the expander column
-        />
 
       </DataTable>
       </div>

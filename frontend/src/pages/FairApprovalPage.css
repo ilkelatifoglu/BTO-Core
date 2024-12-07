@@ -1,0 +1,20 @@
+.p-button-danger.p-button-sm {
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+    padding: 0;
+    border-radius: 50%;
+    box-shadow: none;
+}
+
+.unassign-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 10;
+    visibility: hidden;
+}
+
+div:hover .unassign-button {
+    visibility: visible; /* Show button only when hovering over the div */
+}

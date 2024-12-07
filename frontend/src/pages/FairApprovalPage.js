@@ -3,7 +3,8 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
-import { fetchFairs, fetchAvailableGuides, assignGuide, approveFair, cancelFair } from "../services/fairService";
+import { fetchFairs, fetchAvailableGuides, assignGuide, approveFair, cancelFair, unassignGuide } from "../services/fairService";
+import DropdownOrText from '../components/fair/DropdownOrText';
 import Sidebar from '../components/common/Sidebar';
 import "./FairApproval.css";
 
@@ -84,22 +85,7 @@ export default function FairApprovalPage() {
     
 
     // Dropdown template for guide selection
-    const dropdownOrTextTemplate = (row, column, guideNameField) => {
-        const assignedGuideName = row[guideNameField]; // Get guide name field
-        return assignedGuideName ? (
-            <span>{assignedGuideName}</span> // Display guide name if assigned
-        ) : (
-            <Dropdown
-                value={row[column]} // Current guide ID in the column
-                options={guides[row.id] || []} // Guides available for this fair
-                optionLabel="full_name" // Display full name of the guide
-                optionValue="id" // Use guide ID as value
-                placeholder="Select Guide"
-                onFocus={() => loadGuides(row.id)} // Fetch guides when dropdown is focused
-                onChange={(e) => handleAssignGuide(row.id, column, e.value)} // Assign guide on change
-            />
-        );
-    };
+    
 
     const handleApproveFair = async (fairId) => {
         if (window.confirm('Are you sure you want to approve this fair?')) {
@@ -131,7 +117,7 @@ export default function FairApprovalPage() {
                 console.error('Error cancelling fair:', error);
             }
         }
-    };
+    };    
     
     
     const actionButtonsTemplate = (rowData) => (
@@ -150,9 +136,29 @@ export default function FairApprovalPage() {
                 onClick={() => handleCancelFair(rowData.id)}
             />
         </div>
-    );
+    );  
     
-    
+    const handleUnassignGuide = async (fairId, column) => {
+        if (window.confirm("Are you sure you want to unassign this guide?")) {
+            try {
+                const result = await unassignGuide(fairId, column);
+                alert(result.message);
+                setFairs((prevFairs) =>
+                    prevFairs.map((fair) =>
+                        fair.id === fairId
+                            ? {
+                                  ...fair,
+                                  [column]: null, // Set guide ID to null
+                                  [`${column.replace("_id", "_name")}`]: null, // Remove guide name
+                              }
+                            : fair
+                    )
+                );
+            } catch (error) {
+                console.error("Error unassigning guide:", error);
+            }
+        }
+    };
     
     return (
         <div className="fair-approval-page">
@@ -174,14 +180,23 @@ export default function FairApprovalPage() {
                             key={id}
                             field={id}
                             header={`Guide ${index + 1}`}
-                            body={(row) => dropdownOrTextTemplate(row, id, nameField)}
+                            body={(row) => (
+                            <DropdownOrText
+                                row={row}
+                                column={id}
+                                guideNameField={nameField}
+                                guides={guides}
+                                handleAssignGuide={handleAssignGuide}
+                                handleUnassignGuide={handleUnassignGuide}
+                                loadGuides={loadGuides}
+                            />
+                        )}
                         />
                     ))}
                     <Column body={actionButtonsTemplate} header="Actions" />
                 </DataTable>
             </div>
         </div>
-    );
-    
+    );    
     
 }

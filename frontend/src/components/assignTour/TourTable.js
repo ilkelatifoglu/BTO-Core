@@ -8,7 +8,7 @@ import AssignTourService from "../../services/AssignTourService";
 import "./ReadyToursTable.css";
 import io from "socket.io-client";
 import FilterBar from "./FilterBar"; // Import the FilterBar component
-
+const userType = parseInt(localStorage.getItem("userType"), 10);
 
 const socket = io("http://localhost:3001");
 
@@ -330,6 +330,7 @@ export default function ReadyToursTable() {
             body={(rowData) =>
               `${rowData.assigned_guides || 0} / ${rowData.guide_count}`
             }
+            
             style={{ width: "10%" }}
           ></Column>
 

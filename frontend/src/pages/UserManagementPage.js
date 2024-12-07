@@ -2,6 +2,18 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./UserManagementPage.css"; // Include CSS for styling
 import Sidebar from "../components/common/Sidebar";
+import { MultiSelect } from "primereact/multiselect"; // Import MultiSelect component
+
+
+const daysOptions = [
+    { label: "Monday", value: "Monday" },
+    { label: "Tuesday", value: "Tuesday" },
+    { label: "Wednesday", value: "Wednesday" },
+    { label: "Thursday", value: "Thursday" },
+    { label: "Friday", value: "Friday" },
+    { label: "Weekend", value: "Weekend" },
+];
+
 
 const UserManagementPage = () => {
     const [action, setAction] = useState("register"); // Default to "register"
@@ -57,6 +69,10 @@ const UserManagementPage = () => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
+    const handleDaysChange = (e) => {
+        setFormData({ ...formData, days: e.value });
+    };
+
     const resetForm = () => {
         setFormData({
             first_name: "",
@@ -77,41 +93,34 @@ const UserManagementPage = () => {
         e.preventDefault();
 
         // Ensure required fields based on the role
-        if (formData.role === "advisor" && !formData.days) {
-            alert("Advisor role requires 'days'.");
+        if (formData.role === "advisor" && (!formData.days || formData.days.length === 0)) {
+            alert("Advisor role requires selecting days.");
             return;
         }
+        
         if (formData.role === "candidate guide" && !formData.advisor_name) {
             alert("Candidate guide role requires selecting an advisor.");
             return;
         }
 
         try {
-            const response = await axios.post("http://localhost:3001/auth/register", formData);
+            const response = await axios.post("http://localhost:3001/auth/register", {
+              ...formData,
+              days: formData.days, // Send days as an array
+            });
             alert(response.data.message);
             resetForm(); // Clear form after successful submission
-        } catch (error) {
+          } catch (error) {
             console.error("Error during registration:", error);
             alert(error.response?.data?.message || "An error occurred while registering.");
-        }
-    };
+          }
+        };
 
     return (
         <div>
             <Sidebar />
             <div className="user-management-page">
                 <h1>User Management</h1>
-                <div className="action-selector">
-                    <label htmlFor="action">Select Action:</label>
-                    <select id="action" value={action} onChange={handleActionChange}>
-                        <option value="">-- Select --</option>
-                        <option value="register">Register User</option>
-                        <option value="remove">Remove User</option>
-                        <option value="change">Change User Status</option>
-                        <option value="updateCrewNo">Update Crew Number</option>
-                    </select>
-                </div>
-
                 {action === "register" && (
                     <div className="form-container">
                         <h2>Register New User</h2>
@@ -176,37 +185,18 @@ const UserManagementPage = () => {
                                 >
                                     <option value="">Select Role</option>
                                     <option value="candidate guide">Candidate Guide</option>
-                                    <option value="guide">Guide</option>
                                     <option value="advisor">Advisor</option>
                                 </select>
                             </div>
-                            {additionalFields.includes("advisor_name") && (
-                                <div className="form-group">
-                                    <label>Advisor Name:</label>
-                                    <select
-                                        name="advisor_name"
-                                        value={formData.advisor_name}
-                                        onChange={handleChange}
-                                        required
-                                    >
-                                        <option value="">Select Advisor</option>
-                                        {advisors.map((advisor) => (
-                                            <option key={advisor.user_id} value={advisor.full_name}>
-                                                {advisor.full_name}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                            )}
-                            {additionalFields.includes("days") && (
+                            {formData.role === "advisor" && (
                                 <div className="form-group">
                                     <label>Days:</label>
-                                    <input
-                                        type="text"
-                                        name="days"
+                                    <MultiSelect
                                         value={formData.days}
-                                        onChange={handleChange}
-                                        required
+                                        options={daysOptions}
+                                        onChange={handleDaysChange}
+                                        placeholder="Select Days"
+                                        display="chip"
                                     />
                                 </div>
                             )}
@@ -218,5 +208,4 @@ const UserManagementPage = () => {
         </div>
     );
 };
-
 export default UserManagementPage;

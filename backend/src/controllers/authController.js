@@ -3,6 +3,7 @@ const emailService = require("../services/EmailService");
 const userService = require("../services/UserService");
 const otpService = require("../services/OtpService.js");
 
+
 exports.register = async (req, res) => {
   try {
     if (!req.body.email.endsWith("@ug.bilkent.edu.tr")) {
@@ -16,17 +17,22 @@ exports.register = async (req, res) => {
       return res.status(400).json({ message: "User already exists." });
     }
 
-    const { userId, password } = await userService.createUser(req.body);
+    // Ensure `days` is stored as an array in the database
+    const userPayload = {
+      ...req.body,
+      days: Array.isArray(req.body.days) ? req.body.days : [req.body.days],
+    };
+
+    const { userId, password } = await userService.createUser(userPayload);
     await emailService.sendRegistrationEmail(req.body.email, password);
 
-    res
-      .status(200)
-      .json({ success: true, message: "User registered successfully." });
+    res.status(200).json({ success: true, message: "User registered successfully." });
   } catch (error) {
     console.error("Error during registration:", error);
     res.status(500).json({ success: false, message: "Server error." });
   }
 };
+
 
 exports.login = async (req, res) => {
   const { email, password } = req.body;

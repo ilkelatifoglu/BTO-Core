@@ -234,6 +234,8 @@ exports.getReadyTours = async () => {
   }));
 };
 
+
+
 exports.fetchCandidateGuides = async () => {
   const result = await query(
     `SELECT user_id AS id, full_name AS name
@@ -354,4 +356,26 @@ exports.updateTime = async (tourId, selectedTime) => {
     `UPDATE tours SET time = $1 WHERE id = $2`,
     [selectedTime, tourId]
   );
+};
+exports.getDoneTours = async () => {
+  try {
+    const result = await query(
+      `SELECT 
+        t.id AS tour_id,
+        t.tour_status,
+        s.school_name,
+        s.city,
+        t.date,
+        t.day
+    FROM tours t
+    JOIN schools s ON t.school_id = s.id
+    WHERE t.tour_status = 'DONE' AND t.date IS NOT NULL
+    ORDER BY t.date ASC;
+    `
+    );
+    return result.rows;
+  } catch (error) {
+    console.error('Error fetching done tours:', error);
+    throw new Error('Database query failed');
+  }
 };

@@ -296,10 +296,10 @@ export default function ReadyToursTable() {
               if (
                 rowData.classroom === null &&
                 rowData.tour_status === "READY" &&
-                localStorage.getItem("userType") === "4"
+                (localStorage.getItem("userType") === "4" || localStorage.getItem("userType") === "3")
               ) {
                 return (
-                  <div style={{ display: "flex", alignItems: "center" }}>
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "10px" }}>
                     <input
                       type="text"
                       value={classroomInputs[rowData.id] || ""} // Get value for the specific row

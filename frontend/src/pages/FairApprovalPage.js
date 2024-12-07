@@ -3,7 +3,8 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
-import { fetchFairs, fetchAvailableGuides, assignGuide, approveFair, cancelFair } from "../services/fairService";
+import { fetchFairs, fetchAvailableGuides, assignGuide, approveFair, cancelFair, unassignGuide } from "../services/fairService";
+import DropdownOrText from '../components/fair/DropdownOrText';
 import Sidebar from '../components/common/Sidebar';
 import "./FairApproval.css";
 
@@ -17,6 +18,10 @@ export default function FairApprovalPage() {
             .then(setFairs)
             .catch((error) => console.error("Error fetching fairs:", error));
     }, []);
+
+    const rowClassName = (rowData) => {
+        return rowData.status === "CANCELLED" ? "cancelled-row" : ""; // Add 'cancelled-row' class for CANCELLED rows
+    };
 
     // Load available guides for a specific fair
     const loadGuides = async (fairId) => {
@@ -84,22 +89,7 @@ export default function FairApprovalPage() {
     
 
     // Dropdown template for guide selection
-    const dropdownOrTextTemplate = (row, column, guideNameField) => {
-        const assignedGuideName = row[guideNameField]; // Get guide name field
-        return assignedGuideName ? (
-            <span>{assignedGuideName}</span> // Display guide name if assigned
-        ) : (
-            <Dropdown
-                value={row[column]} // Current guide ID in the column
-                options={guides[row.id] || []} // Guides available for this fair
-                optionLabel="full_name" // Display full name of the guide
-                optionValue="id" // Use guide ID as value
-                placeholder="Select Guide"
-                onFocus={() => loadGuides(row.id)} // Fetch guides when dropdown is focused
-                onChange={(e) => handleAssignGuide(row.id, column, e.value)} // Assign guide on change
-            />
-        );
-    };
+    
 
     const handleApproveFair = async (fairId) => {
         if (window.confirm('Are you sure you want to approve this fair?')) {
@@ -131,7 +121,7 @@ export default function FairApprovalPage() {
                 console.error('Error cancelling fair:', error);
             }
         }
-    };
+    };    
     
     
     const actionButtonsTemplate = (rowData) => (
@@ -141,40 +131,74 @@ export default function FairApprovalPage() {
                 icon="pi pi-check"
                 className="p-button-success"
                 onClick={() => handleApproveFair(rowData.id)}
-                disabled={rowData.status === 'APPROVED'}
+                disabled={rowData.status === 'APPROVED' || rowData.status === 'CANCELLED'} // Disable if already approved or cancelled
             />
             <Button
                 label="Cancel"
                 icon="pi pi-times"
                 className="p-button-danger"
                 onClick={() => handleCancelFair(rowData.id)}
+                disabled={rowData.status === 'CANCELLED'} // Disable if cancelled
             />
         </div>
     );
+
+    const handleUnassignGuide = async (fairId, column) => {
+        if (window.confirm("Are you sure you want to unassign this guide?")) {
+            try {
+                const result = await unassignGuide(fairId, column);
+                alert(result.message);
+                setFairs((prevFairs) =>
+                    prevFairs.map((fair) =>
+                        fair.id === fairId
+                            ? {
+                                  ...fair,
+                                  [column]: null, // Set guide ID to null
+                                  [`${column.replace("_id", "_name")}`]: null, // Remove guide name
+                              }
+                            : fair
+                    )
+                );
+            } catch (error) {
+                console.error("Error unassigning guide:", error);
+            }
+        }
+    };
     
-    
-    
-    return (
+     return (
         <div className="fair-approval-page">
             {/* Sidebar */}
             <Sidebar />
-    
+
             {/* Main Content */}
             <div className="fair-approval-content">
                 <h2>Fair Approval</h2>
-                <DataTable value={fairs} paginator rows={10} responsiveLayout="scroll">
+                <DataTable
+                    value={fairs}
+                    paginator
+                    rows={10}
+                    responsiveLayout="scroll"
+                    rowClassName={rowClassName} // Pass the rowClassName function here
+                >
                     <Column field="date" header="Date" />
                     <Column field="organization_name" header="Organization" />
                     <Column field="city" header="City" />
-                    {[{ id: "guide_1_id", nameField: "guide_1_name" },
-                    { id: "guide_2_id", nameField: "guide_2_name" },
-                    { id: "guide_3_id", nameField: "guide_3_name" }
-                    ].map(({ id, nameField }, index) => (
+                    {["guide_1_id", "guide_2_id", "guide_3_id"].map((column, index) => (
                         <Column
-                            key={id}
-                            field={id}
+                            key={column}
                             header={`Guide ${index + 1}`}
-                            body={(row) => dropdownOrTextTemplate(row, id, nameField)}
+                            body={(rowData) => (
+                                <DropdownOrText
+                                    row={rowData}
+                                    column={column}
+                                    guideNameField={`${column.replace("_id", "_name")}`}
+                                    guides={guides}
+                                    handleAssignGuide={handleAssignGuide}
+                                    handleUnassignGuide={handleUnassignGuide}
+                                    loadGuides={loadGuides}
+                                    disabled={rowData.status === "CANCELLED"} // Disable if the fair is cancelled
+                                />
+                            )}
                         />
                     ))}
                     <Column body={actionButtonsTemplate} header="Actions" />
@@ -182,6 +206,4 @@ export default function FairApprovalPage() {
             </div>
         </div>
     );
-    
-    
 }

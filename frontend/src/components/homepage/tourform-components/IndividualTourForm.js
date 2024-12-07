@@ -8,18 +8,20 @@ import './TourForm.css'; // Reuse styles from TourForm
 
 const IndividualTourForm = ({ onClose }) => {
   const [name, setName] = useState('');
-  const [majorOfInterest, setMajorOfInterest] = useState('');
+  const [majorOfInterest, setMajorOfInterest] = useState({ value: 'Computer Engineering', label: 'Computer Engineering' });
   const [tourDate, setTourDate] = useState('');
   const [selectedTimes, setSelectedTimes] = useState('');
   const [numberOfStudents, setNumberOfStudents] = useState('');
   const [contactPhone, setContactPhone] = useState('');
   const [email, setEmail] = useState('');
+  const [visitorNotes, setVisitorNotes] = useState('');
+
   const toastRef = useRef(null);
 
   const handleClear = () => {
     // Reset LeftForm fields
     setName('');
-    setMajorOfInterest('');
+    setMajorOfInterest({ value: 'Computer Engineering', label: 'Computer Engineering' });
     setTourDate('');
     setSelectedTimes('');
 
@@ -27,6 +29,7 @@ const IndividualTourForm = ({ onClose }) => {
     setNumberOfStudents('');
     setContactPhone('');
     setEmail('');
+    setVisitorNotes('');
   };
 
   const handleSubmit = async (e) => {
@@ -34,16 +37,17 @@ const IndividualTourForm = ({ onClose }) => {
 
     const submissionData = {
       name: name,
-      major_of_interest: majorOfInterest,
+      major_of_interest: majorOfInterest.value,
       tour_date: tourDate,
       time: selectedTimes,
       number_of_students: numberOfStudents,
       contact_phone: contactPhone.replace(/\s/g, ''), // Remove spaces
       email: email,
+      visitor_notes: visitorNotes,
     };
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/individualTour/add`, {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/individual-tours/addIndividualTour`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(submissionData),
@@ -103,6 +107,8 @@ const IndividualTourForm = ({ onClose }) => {
               setContactPhone={setContactPhone}
               email={email}
               setEmail={setEmail}
+              visitorNotes={visitorNotes}
+              setVisitorNotes={setVisitorNotes}
             />
           </div>
           <Buttons handleClear={handleClear} />

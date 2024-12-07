@@ -3,6 +3,7 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import AssignTourService from "../../services/AssignTourService";
 import "./MyTours.css";
+import Sidebar from '../../components/common/Sidebar';
 
 export default function MyTours() {
     const [myTours, setMyTours] = useState([]);
@@ -42,6 +43,8 @@ export default function MyTours() {
 
     return (
         <div className="my-tours-container">
+            <Sidebar />
+            <div className="my-tours-content">
             <h1>My Tours</h1>
             {error && <p className="error-message">{error}</p>}
             <DataTable value={myTours} paginator rows={10}>
@@ -52,6 +55,7 @@ export default function MyTours() {
                 <Column body={withdrawButtonTemplate} header="Actions"></Column>
 
             </DataTable>
+        </div>
         </div>
     );
 }

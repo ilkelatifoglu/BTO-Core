@@ -4,6 +4,8 @@ import { Column } from "primereact/column";
 import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
 import { fetchFairs, fetchAvailableGuides, assignGuide, approveFair, cancelFair } from "../services/fairService";
+import Sidebar from '../components/common/Sidebar';
+import "./FairApproval.css";
 
 export default function FairApprovalPage() {
     const [fairs, setFairs] = useState([]);
@@ -154,25 +156,32 @@ export default function FairApprovalPage() {
     
     return (
         <div className="fair-approval-page">
-            <h2>Fair Approval</h2>
-            <DataTable value={fairs} paginator rows={10} responsiveLayout="scroll">
-                <Column field="date" header="Date" />
-                <Column field="organization_name" header="Organization" />
-                <Column field="city" header="City" />
-                {[{ id: "guide_1_id", nameField: "guide_1_name" },
-                { id: "guide_2_id", nameField: "guide_2_name" },
-                { id: "guide_3_id", nameField: "guide_3_name" }
-                ].map(({ id, nameField }, index) => (
-                    <Column
-                        key={id}
-                        field={id}
-                        header={`Guide ${index + 1}`}
-                        body={(row) => dropdownOrTextTemplate(row, id, nameField)}
-                    />
-                ))}
-                <Column body={actionButtonsTemplate} header="Actions" />
-            </DataTable>
+            {/* Sidebar */}
+            <Sidebar />
+    
+            {/* Main Content */}
+            <div className="fair-approval-content">
+                <h2>Fair Approval</h2>
+                <DataTable value={fairs} paginator rows={10} responsiveLayout="scroll">
+                    <Column field="date" header="Date" />
+                    <Column field="organization_name" header="Organization" />
+                    <Column field="city" header="City" />
+                    {[{ id: "guide_1_id", nameField: "guide_1_name" },
+                    { id: "guide_2_id", nameField: "guide_2_name" },
+                    { id: "guide_3_id", nameField: "guide_3_name" }
+                    ].map(({ id, nameField }, index) => (
+                        <Column
+                            key={id}
+                            field={id}
+                            header={`Guide ${index + 1}`}
+                            body={(row) => dropdownOrTextTemplate(row, id, nameField)}
+                        />
+                    ))}
+                    <Column body={actionButtonsTemplate} header="Actions" />
+                </DataTable>
+            </div>
         </div>
     );
+    
     
 }

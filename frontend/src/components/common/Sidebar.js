@@ -265,6 +265,27 @@ const Sidebar = ({ setCurrentPage }) => {
             <i className="pi pi-briefcase"></i>
             {isExpanded && <span>Advisors</span>}
           </li>
+          <li
+            className="menu__item"
+            onClick={() => handleNavigation("my-tours")}
+          >
+            <i className="pi pi-map"></i>
+            {isExpanded && <span>My Tours</span>}
+          </li>
+          <li
+            className="menu__item"
+            onClick={() => handleNavigation("approve-fair")}
+          >
+            <i className="pi pi-check-circle"></i>
+            {isExpanded && <span>Fair Approval</span>}
+          </li>
+          <li
+            className="menu__item"
+            onClick={() => handleNavigation("assign-fair")}
+          >
+            <i className="pi pi-users"></i>
+            {isExpanded && <span>Fair Assignment</span>}
+          </li>
         </ul>
         <div className="sidebar__footer">
           <button

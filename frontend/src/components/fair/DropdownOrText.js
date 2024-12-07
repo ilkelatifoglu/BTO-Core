@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
 
-const DropdownOrText = ({ row, column, guideNameField, guides, handleAssignGuide, handleUnassignGuide, loadGuides }) => {
+const DropdownOrText = ({ row, column, guideNameField, guides, handleAssignGuide, handleUnassignGuide, loadGuides, disabled }) => {
     const [showUnassign, setShowUnassign] = useState(false); // Manage unassign button visibility
 
     const handleUnassignClick = async () => {
@@ -54,6 +54,7 @@ const DropdownOrText = ({ row, column, guideNameField, guides, handleAssignGuide
             placeholder="Select Guide"
             onFocus={() => loadGuides(row.id)}
             onChange={(e) => handleAssignGuide(row.id, column, e.value)}
+            disabled={disabled} // Disable dropdown if the fair is cancelled
         />
     );
 };

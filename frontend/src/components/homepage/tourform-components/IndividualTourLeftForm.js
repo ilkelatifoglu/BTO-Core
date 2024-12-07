@@ -156,8 +156,10 @@ const IndividualTourLeftForm = ({
 IndividualTourLeftForm.propTypes = {
   name: PropTypes.string.isRequired,
   setName: PropTypes.func.isRequired,
-  majorOfInterest: PropTypes.string.isRequired,
-  setMajorOfInterest: PropTypes.func.isRequired,
+  majorOfInterest: PropTypes.shape({
+    value: PropTypes.string.isRequired,
+    label: PropTypes.string.isRequired,
+  }).isRequired,  setMajorOfInterest: PropTypes.func.isRequired,
   tourDate: PropTypes.string.isRequired,
   setTourDate: PropTypes.func.isRequired,
   selectedTimes: PropTypes.string.isRequired,

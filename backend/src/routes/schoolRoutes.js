@@ -6,7 +6,6 @@ const schoolController = require('../controllers/schoolController');
 
 const router = express.Router();
 
-// Validation rules for adding/updating a school
 const schoolValidationRules = [
   body('school_name')
     .exists().withMessage('School name is required')

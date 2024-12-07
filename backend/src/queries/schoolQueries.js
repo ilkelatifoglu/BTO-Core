@@ -24,9 +24,10 @@ exports.getAllSchools = async () => {
       student_sent_last1, 
       student_sent_last2, 
       student_sent_last3, 
-      lgs_score
+      lgs_score,
+      credit_score
      FROM schools
-     ORDER BY school_name ASC;`
+     ORDER BY credit_score DESC, school_name ASC;` // Order by credit_score descending
   );
   return result.rows;
 };
@@ -44,7 +45,8 @@ exports.getSchoolById = async (id) => {
       student_sent_last1, 
       student_sent_last2, 
       student_sent_last3, 
-      lgs_score
+      lgs_score,
+      credit_score
      FROM schools
      WHERE id = $1`,
     [id]
@@ -64,13 +66,14 @@ exports.insertSchool = async (schoolData) => {
     student_sent_last2,
     student_sent_last3,
     lgs_score,
+    credit_score, // Added credit_score
   } = schoolData;
 
   const result = await query(
     `INSERT INTO schools 
       (school_name, city, academic_year_start, academic_year_end, student_count, 
-       student_sent_last1, student_sent_last2, student_sent_last3, lgs_score)
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+       student_sent_last1, student_sent_last2, student_sent_last3, lgs_score, credit_score)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
     RETURNING id`,
     [
       school_name,
@@ -82,6 +85,7 @@ exports.insertSchool = async (schoolData) => {
       student_sent_last2,
       student_sent_last3,
       lgs_score,
+      credit_score, // Pass credit_score as parameter
     ]
   );
 
@@ -100,6 +104,7 @@ exports.updateSchool = async (id, updateData) => {
     student_sent_last2,
     student_sent_last3,
     lgs_score,
+    credit_score, // Include credit_score
   } = updateData;
 
   const result = await query(
@@ -112,8 +117,9 @@ exports.updateSchool = async (id, updateData) => {
       student_sent_last1 = $6,
       student_sent_last2 = $7,
       student_sent_last3 = $8,
-      lgs_score = $9
-    WHERE id = $10
+      lgs_score = $9,
+      credit_score = $10
+    WHERE id = $11
     RETURNING *`,
     [
       school_name,
@@ -125,6 +131,7 @@ exports.updateSchool = async (id, updateData) => {
       student_sent_last2,
       student_sent_last3,
       lgs_score,
+      credit_score, // Pass credit_score as parameter
       id,
     ]
   );

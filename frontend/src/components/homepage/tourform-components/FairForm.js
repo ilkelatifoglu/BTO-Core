@@ -38,7 +38,7 @@ const FairForm = ({ onClose }) => {
     };
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/fair/add`, {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/fairs/createFair`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(submissionData),

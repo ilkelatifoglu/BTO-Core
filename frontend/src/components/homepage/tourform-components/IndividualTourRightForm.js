@@ -9,6 +9,8 @@ const IndividualRightForm = ({
   setContactPhone,
   email,
   setEmail,
+  visitorNotes,
+  setVisitorNotes,
 }) => {
   // Handler for phone number input with formatting (e.g., 0 XXX XXX XX XX)
   const handleContactPhoneChange = (e) => {
@@ -36,7 +38,6 @@ const IndividualRightForm = ({
   // Handler for number of students input with validation
   const handleNumberOfStudentsChange = (e) => {
     const value = e.target.value;
-    // Allow only digits, and limit to values between 0 and 300
     if (/^\d{0,3}$/.test(value) && (value === '' || (Number(value) >= 0))) {
       setNumberOfStudents(value);
     }
@@ -88,6 +89,17 @@ const IndividualRightForm = ({
           required
         />
       </div>
+      <div className="form-group">
+        <label htmlFor="visitorNotes">Visitor Notes</label>
+        <textarea
+          id="visitorNotes"
+          name="visitorNotes"
+          className="form-control"
+          placeholder="If you have anything to share with us, please add it here."
+          value={visitorNotes}
+          onChange={(e) => setVisitorNotes(e.target.value)}
+        />
+      </div>
     </div>
   );
 };
@@ -100,6 +112,8 @@ IndividualRightForm.propTypes = {
   setContactPhone: PropTypes.func.isRequired,
   email: PropTypes.string.isRequired,
   setEmail: PropTypes.func.isRequired,
+  visitorNotes: PropTypes.string.isRequired,
+  setVisitorNotes: PropTypes.func.isRequired,
 };
 
 export default IndividualRightForm;

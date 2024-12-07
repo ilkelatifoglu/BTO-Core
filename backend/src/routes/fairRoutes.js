@@ -7,7 +7,7 @@ const {
 const router = express.Router();
 
 router.get('/', getFairs);
-router.post('/', createFair);
+router.post('/createFair', createFair);
 router.post('/fair-requests', createFairRequest);
 router.put('/:id/assign', assignGuide);
 router.get('/available-guides', getAvailableGuides);

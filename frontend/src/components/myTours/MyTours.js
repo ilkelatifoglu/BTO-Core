@@ -4,6 +4,7 @@ import { Column } from "primereact/column";
 import AssignTourService from "../../services/AssignTourService";
 import { fetchFairs, unassignGuide } from "../../services/fairService";
 import "./MyTours.css";
+import Sidebar from '../../components/common/Sidebar';
 
 export default function MyTours() {
     const [items, setItems] = useState([]); // Combined data of tours and fairs
@@ -92,6 +93,8 @@ export default function MyTours() {
 
     return (
         <div className="my-tours-container">
+            <Sidebar />
+            <div className="my-tours-content">
             <h1>My Assignments</h1>
             {error && <p className="error-message">{error}</p>}
             <DataTable value={items} paginator rows={10}>
@@ -101,6 +104,7 @@ export default function MyTours() {
                 <Column field="time" header="Time" body={timeTemplate}></Column>
                 <Column body={actionTemplate} header="Actions"></Column>
             </DataTable>
+        </div>
         </div>
     );
 }

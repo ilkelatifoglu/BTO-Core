@@ -60,16 +60,19 @@ const Sidebar = ({ setCurrentPage }) => {
     setIsLoadingPicture(true);
 
     try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/profile/get-profile-picture/${userId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${
-              localStorage.getItem("token") || localStorage.getItem("tempToken")
-            }`,
-          },
-        }
-      );
+      const token = localStorage.getItem("token") || localStorage.getItem("tempToken");
+
+      if (!token) {
+        throw new Error("Authentication token is missing.");
+      }
+  
+      const url = `${process.env.REACT_APP_BACKEND_URL}/profile/get-profile-picture/${userId}`;
+  
+      const response = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       const { profile_picture_data, profile_picture_mime_type } = response.data;
 
@@ -265,6 +268,35 @@ const Sidebar = ({ setCurrentPage }) => {
             <i className="pi pi-briefcase"></i>
             {isExpanded && <span>Advisors</span>}
           </li>
+          <li
+            className="menu__item"
+            onClick={() => handleNavigation("my-tours")}
+          >
+            <i className="pi pi-map"></i>
+            {isExpanded && <span>My Tours</span>}
+          </li>
+          <li
+            className="menu__item"
+            onClick={() => handleNavigation("approve-fair")}
+          >
+            <i className="pi pi-check-circle"></i>
+            {isExpanded && <span>Fair Approval</span>}
+          </li>
+          <li
+            className="menu__item"
+            onClick={() => handleNavigation("assign-fair")}
+          >
+            <i className="pi pi-users"></i>
+            {isExpanded && <span>Fair Assignment</span>}
+          </li>
+          <li
+            className="menu__item"
+            onClick={() => handleNavigation("individual-tours")}
+          >
+            <i className="pi pi-user"></i>
+            {isExpanded && <span>Individual Tours</span>}
+          </li>
+          
         </ul>
         <div className="sidebar__footer">
           <button

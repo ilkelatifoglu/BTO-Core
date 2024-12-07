@@ -3,6 +3,8 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
 import { fetchFairs, requestToJoinFair } from "../services/fairService";
+import Sidebar from '../components/common/Sidebar';
+import "./FairAssignment.css";
 
 export default function FairAssignmentPage() {
     const [fairs, setFairs] = useState([]);
@@ -53,13 +55,20 @@ export default function FairAssignmentPage() {
 
     return (
         <div className="fair-assignment-page">
-            <h2>Fair Assignment</h2>
-            <DataTable value={fairs} paginator rows={10} responsiveLayout="scroll">
-                <Column field="date" header="Date" />
-                <Column field="organization_name" header="Organization Name" />
-                <Column field="city" header="City" />
-                <Column body={actionTemplate} header="Actions" />
-            </DataTable>
+            {/* Sidebar */}
+            <Sidebar />
+    
+            {/* Main Content */}
+            <div className="fair-assignment-content">
+                <h2>Fair Assignment</h2>
+                <DataTable value={fairs} paginator rows={10} responsiveLayout="scroll">
+                    <Column field="date" header="Date" />
+                    <Column field="organization_name" header="Organization Name" />
+                    <Column field="city" header="City" />
+                    <Column body={actionTemplate} header="Actions" />
+                </DataTable>
+            </div>
         </div>
     );
+    
 }

@@ -15,7 +15,8 @@ const userManagementRoutes = require("./src/routes/userManagementRoutes");
 const dataRoutes = require("./src/routes/dataRoutes");
 const scheduleRoutes = require('./src/routes/scheduleRoutes');
 const profileRoutes = require('./src/routes/profileRoutes');
-const fairRoutes = require("./src/routes/fairRoutes"); 
+const fairRoutes = require("./src/routes/fairRoutes");
+const individualTourRoutes = require('./src/routes/individualTourRoutes');
 
 const app = express();
 const server = http.createServer(app);
@@ -31,7 +32,7 @@ app.use(cors());
 app.use(express.json());
 app.set("io", io);
 
-app.use('/uploads', express.static('uploads')); 
+app.use('/uploads', express.static('uploads'));
 app.use('/profile', profileRoutes);
 app.use("/auth", authRoutes);
 app.use("/guide-info", guideInfoRoutes);
@@ -41,7 +42,8 @@ app.use("/school", schoolRoutes);
 app.use("/advisors", advisorRoutes);
 app.use("/user-management", userManagementRoutes);
 app.use('/schedule', scheduleRoutes);
-app.use('/data', dataRoutes); 
+app.use('/data', dataRoutes);
+app.use('/individual-tours', individualTourRoutes);
 
 app.use("/fairs", fairRoutes); // Matches /fairs/*
 

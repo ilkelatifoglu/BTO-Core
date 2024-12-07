@@ -360,7 +360,7 @@ export default function ReadyToursTable() {
             }}
             style={{ width: "10%" }}
           ></Column>
-          {localStorage.getItem("userType") === '3' || localStorage.getItem("userType") === '3' ?
+          {localStorage.getItem("userType") === '3' || localStorage.getItem("userType") === '4' ?
             (<Column
               header="Assign Candidate"
               body={(rowData) => {

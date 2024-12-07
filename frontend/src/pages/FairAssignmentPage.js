@@ -28,16 +28,19 @@ export default function FairAssignmentPage() {
             console.error("Guide ID is missing");
             return;
         }
-        try {
-            await requestToJoinFair(fairId, guideId); // Send request to backend
-            setFairs((prevFairs) =>
-                prevFairs.map((f) => (f.id === fairId ? { ...f, requested: true } : f))
-            );
-        } catch (error) {
-            console.error("Error sending join request:", error);
+
+        if (window.confirm("Are you sure you want to send a request to join this fair?")) {
+            try {
+                await requestToJoinFair(fairId, guideId); // Send request to backend
+                setFairs((prevFairs) =>
+                    prevFairs.map((f) => (f.id === fairId ? { ...f, requested: true } : f))
+                );
+                alert("Request sent successfully!"); // Optional success message
+            } catch (error) {
+                console.error("Error sending join request:", error);
+            }
         }
     };
-    
 
     const actionTemplate = (rowData) => (
         <Button

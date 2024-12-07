@@ -149,13 +149,13 @@ const IndividualToursTable = () => {
     };
 
     return (
-        <div className="table-container">
+        <div className="table-wrapper" style={{ marginLeft: "200px", overflowX: "hidden" }}>
             <h1 style={{ textAlign: "center", margin: "20px 0" }}>Individual Tours</h1>
             <DataTable
                 value={tours}
                 paginator
                 rows={rows}
-                tableStyle={{ minWidth: "80rem" }}
+                tableStyle={{ width: "100%" }}
                 paginatorTemplate="FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
                 currentPageReportTemplate="{first} to {last} of {totalRecords}"
                 rowClassName={(data) => getRowClass(data.tour_status)} // Apply the dynamic row class

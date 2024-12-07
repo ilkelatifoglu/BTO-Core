@@ -286,6 +286,14 @@ const Sidebar = ({ setCurrentPage }) => {
             <i className="pi pi-users"></i>
             {isExpanded && <span>Fair Assignment</span>}
           </li>
+          <li
+            className="menu__item"
+            onClick={() => handleNavigation("individual-tours")}
+          >
+            <i className="pi pi-user"></i>
+            {isExpanded && <span>Individual Tours</span>}
+          </li>
+          
         </ul>
         <div className="sidebar__footer">
           <button

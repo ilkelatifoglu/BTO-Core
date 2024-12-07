@@ -169,7 +169,7 @@
 .menu__item {
     display: flex;
     align-items: center;
-    padding: 8px 12px;
+    padding: 6px 8px;
     cursor: pointer;
     transition: background 0.3s, box-shadow 0.3s;
     font-size: 0.95rem;
@@ -203,11 +203,11 @@
 
 /* Sidebar Footer */
 .sidebar__footer {
-    padding: 10px 15px;
+    padding: 5px 10px;
     border-top: 1px solid #ddd; /* Ayırıcı çizgi */
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 4px;
     align-items: center;
     background-color: #ffffff;
     flex-shrink: 0; /* Footer'ın sabit kalmasını sağla */

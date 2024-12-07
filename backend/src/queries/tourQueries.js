@@ -203,6 +203,7 @@ exports.getReadyTours = async () => {
         s.school_name,
         s.city,
         t.tour_size,
+        t.classroom,
         t.guide_count,
         (SELECT STRING_AGG(u.first_name || ' ' || u.last_name, ', ') 
         FROM tour_guide tg
@@ -335,10 +336,10 @@ exports.rejectTour = async (tourId) => {
 };
 
 // Update Classroom Function
-exports.updateClassRoom = async (tourId, classRoom) => {
+exports.updateClassroom = async (tourId, classroom) => {
   await query(
-    `UPDATE tours SET classRoom = $1 WHERE id = $2`,
-    [classRoom, tourId]
+    `UPDATE tours SET classroom = $1 WHERE id = $2`,
+    [classroom, tourId]
   );
 };
 

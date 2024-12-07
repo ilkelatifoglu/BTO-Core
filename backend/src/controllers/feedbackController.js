@@ -108,18 +108,30 @@ exports.deleteFeedback = async (req, res) => {
 };
 exports.createFeedback = async (req, res) => {
   try {
-    const { user_id, tour_id } = req.body; // Extract `user_id` and `tour_id` from the request body
+    const { user_ids, tour_id, text_feedback, sender_id } = req.body; // Extract `user_ids`, `tour_id`, `text_feedback`, and `sender_id`
 
     // Validate input
-    if (!user_id || !tour_id) {
+    if (!user_ids || !Array.isArray(user_ids) || user_ids.length === 0) {
       return res.status(400).json({
         success: false,
-        message: "User ID and Tour ID are required.",
+        message: "User IDs (user_ids) must be a non-empty array.",
+      });
+    }
+    if (!tour_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Tour ID is required.",
+      });
+    }
+    if (!sender_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Sender ID is required.",
       });
     }
 
     // Call query to insert feedback
-    const feedback = await createFeedback(user_id, tour_id);
+    const feedback = await createFeedback(user_ids, tour_id, text_feedback || null, sender_id);
 
     res.status(201).json({
       success: true,
@@ -134,3 +146,5 @@ exports.createFeedback = async (req, res) => {
     });
   }
 };
+
+

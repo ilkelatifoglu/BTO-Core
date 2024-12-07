@@ -50,18 +50,13 @@ const FeedbackService = {
       throw new Error("Unable to generate download link");
     }
   },
-  createFeedback: async ({ user_id, tour_id }) => {
+  createFeedback: async (feedbackData) => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/feedback/createFeedback`, {
-        user_id,
-        tour_id,
-      });
-      return response.data; // Return the response from the API
+      const response = await axios.post(`${API_BASE_URL}/feedback/createFeedback`, feedbackData);
+      return response.data; // Return the API response
     } catch (error) {
       console.error("Error creating feedback:", error.response?.data || error);
-      throw new Error(
-        error.response?.data?.message || "Unable to create feedback"
-      );
+      throw new Error(error.response?.data?.message || "Unable to create feedback");
     }
   },
 };

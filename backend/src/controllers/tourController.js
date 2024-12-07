@@ -500,3 +500,53 @@ exports.fetchDoneTours = async (req, res) => {
     });
   }
 };
+exports.getToursByUserId = async (req, res) => {
+  const { user_id } = req.query; // Expect a single user ID in the query parameter
+
+  if (!user_id) {
+    return res.status(400).json({ success: false, message: "No user ID provided" });
+  }
+
+  try {
+    const sql = `
+      SELECT DISTINCT t.id AS tour_id, t.date, s.school_name
+      FROM tours t
+      JOIN tour_guide tg ON t.id = tg.tour_id
+      JOIN schools s ON t.school_id = s.id
+      WHERE tg.guide_id = $1 AND t.tour_status = 'DONE';
+    `;
+
+    const result = await query(sql, [user_id]);
+    res.status(200).json({ success: true, data: result.rows });
+  } catch (error) {
+    console.error("Error fetching tours by user ID:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+exports.getUsersByTourId = async (req, res) => {
+  const { tour_id } = req.query; // Expect the tour ID in the query parameter
+
+  if (!tour_id) {
+    return res.status(400).json({ success: false, message: "No tour ID provided" });
+  }
+
+  try {
+    const sql = `
+      SELECT 
+        u.id AS user_id,
+        u.first_name,
+        u.last_name,
+        CASE WHEN u.user_type = 1 THEN 'Candidate' ELSE 'Guide' END AS role
+      FROM users u
+      JOIN tour_guide tg ON u.id = tg.guide_id
+      WHERE tg.tour_id = $1;
+    `;
+
+    const result = await query(sql, [tour_id]);
+    res.status(200).json({ success: true, data: result.rows });
+  } catch (error) {
+    console.error("Error fetching users by tour ID:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+

@@ -14,7 +14,9 @@ const { addTour,
     getMyTours,
     withdrawFromTour,
     cancelTour,
-    fetchDoneTours
+    fetchDoneTours,
+    getToursByUserId,
+    getUsersByTourId
 } = require("../controllers/tourController");
 const authenticateToken = require('../middleware/auth'); // Middleware for authentication
 
@@ -35,4 +37,6 @@ router.get("/myTours", authenticateToken, getMyTours); // Ensure `authenticateUs
 router.delete("/withdraw/:id", authenticateToken, withdrawFromTour);
 router.get("/doneTours", fetchDoneTours);
 router.get("/cancel", cancelTour);
+router.get("/getToursByUser", getToursByUserId);
+router.get("/getUsersByTour", getUsersByTourId);
 module.exports = router;

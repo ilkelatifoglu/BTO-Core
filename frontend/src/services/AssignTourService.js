@@ -104,8 +104,28 @@ const AssignTourService = {
       throw new Error(error.response?.data?.message || "Unable to fetch done tours");
     }
   },
-
-
+  getToursByUserId: async (userId) => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/tour/getToursByUser`, {
+        params: { user_id: userId }, // Use query parameters for a single user ID
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching tours by user ID:", error);
+      throw new Error("Unable to fetch tours by user ID");
+    }
+  },
+  getUsersByTourId: async (tourId) => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/tour/getUsersByTour`, {
+        params: { tour_id: tourId }, // Use query parameters for the API call
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching users by tour ID:", error);
+      throw new Error("Unable to fetch users by tour ID");
+    }
+  },
 
 };
 

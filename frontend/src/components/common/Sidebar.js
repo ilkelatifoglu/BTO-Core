@@ -236,7 +236,7 @@ const Sidebar = ({ setCurrentPage }) => {
             {isExpanded && <span>Puantaj Page</span>}
           </li>
             )}
-             {(userType === 4 || userType === 3 || userType === 2) && (
+             {(userType === 4) && (
           <li
             className="menu__item"
             onClick={() => handleNavigation("approve-tour")}

@@ -203,6 +203,7 @@ exports.getReadyTours = async () => {
         s.school_name,
         s.city,
         t.tour_size,
+        t.classroom,
         t.guide_count,
         (SELECT STRING_AGG(u.first_name || ' ' || u.last_name, ', ') 
         FROM tour_guide tg
@@ -233,6 +234,8 @@ exports.getReadyTours = async () => {
     assigned_guides: parseInt(row.assigned_guides || '0', 10),
   }));
 };
+
+
 
 exports.fetchCandidateGuides = async () => {
   const result = await query(
@@ -281,6 +284,7 @@ exports.getAllTours = async () => {
         s.school_name,
         s.city,
         t.date,
+        s.credit_score,
         t.day,
         t.tour_size,
         t.teacher_name,
@@ -333,10 +337,10 @@ exports.rejectTour = async (tourId) => {
 };
 
 // Update Classroom Function
-exports.updateClassRoom = async (tourId, classRoom) => {
+exports.updateClassroom = async (tourId, classroom) => {
   await query(
-    `UPDATE tours SET classRoom = $1 WHERE id = $2`,
-    [classRoom, tourId]
+    `UPDATE tours SET classroom = $1 WHERE id = $2`,
+    [classroom, tourId]
   );
 };
 
@@ -354,4 +358,26 @@ exports.updateTime = async (tourId, selectedTime) => {
     `UPDATE tours SET time = $1 WHERE id = $2`,
     [selectedTime, tourId]
   );
+};
+exports.getDoneTours = async () => {
+  try {
+    const result = await query(
+      `SELECT 
+        t.id AS tour_id,
+        t.tour_status,
+        s.school_name,
+        s.city,
+        t.date,
+        t.day
+    FROM tours t
+    JOIN schools s ON t.school_id = s.id
+    WHERE t.tour_status = 'DONE' AND t.date IS NOT NULL
+    ORDER BY t.date ASC;
+    `
+    );
+    return result.rows;
+  } catch (error) {
+    console.error('Error fetching done tours:', error);
+    throw new Error('Database query failed');
+  }
 };

@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const userRepository = require("../repositories/UserRepository");
+const pool = require("../config/database"); // Ensure the path to the database config is correct
 
 class UserService {
   async createUser(userData) {
@@ -104,7 +105,7 @@ class UserService {
     userId,
     { first_name, last_name, department, advisor_name }
   ) {
-    const advisor = await userRepository.findAdvisorByName(advisor_name);
+    const advisor = await this.findAdvisorByName(advisor_name);
     if (!advisor) throw new Error("Advisor not found");
 
     const advisorUserId = advisor.user_id;
@@ -126,6 +127,14 @@ class UserService {
   async hashPassword(password) {
     const salt = await bcrypt.genSalt(10);
     return await bcrypt.hash(password, salt);
+  }
+
+  async findAdvisorByName(advisorName) {
+    const result = await pool.query(
+      "SELECT * FROM advisors WHERE full_name = $1",
+      [advisorName]
+    );
+    return result.rows[0];
   }
 }
 

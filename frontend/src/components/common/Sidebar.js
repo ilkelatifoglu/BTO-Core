@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-// Sidebar.js
-
-=======
->>>>>>> 4da22dd97c86aadab89f12eda8be834d3f85beb5
 import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -27,10 +22,7 @@ const Sidebar = ({ setCurrentPage }) => {
   );
   const [isLoadingPicture, setIsLoadingPicture] = useState(false);
   const [isLoadingProfile, setIsLoadingProfile] = useState(false);
-<<<<<<< HEAD
-=======
   const [userType, setUserType] = useState(null);
->>>>>>> 4da22dd97c86aadab89f12eda8be834d3f85beb5
   const toast = useRef(null);
 
   const toggleSidebar = () => {
@@ -67,13 +59,6 @@ const Sidebar = ({ setCurrentPage }) => {
     setIsLoadingPicture(true);
 
     try {
-<<<<<<< HEAD
-      const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/profile/get-profile-picture/${userId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("tempToken")}`,
-=======
       const token = localStorage.getItem("token") || localStorage.getItem("tempToken");
 
       if (!token) {
@@ -132,94 +117,10 @@ const Sidebar = ({ setCurrentPage }) => {
             Authorization: `Bearer ${
               localStorage.getItem("token") || localStorage.getItem("tempToken")
             }`,
->>>>>>> 4da22dd97c86aadab89f12eda8be834d3f85beb5
           },
         }
       );
 
-<<<<<<< HEAD
-      const { profile_picture_data, profile_picture_mime_type } = response.data;
-
-      // Construct the data URL
-      const imageSrc = `data:${profile_picture_mime_type};base64,${profile_picture_data}`;
-
-      setProfileImage(imageSrc);
-      cachedProfileImage = imageSrc; // Cache the image
-    } catch (error) {
-      console.error("Error fetching profile picture:", error);
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Failed to load profile picture.",
-        life: 3000,
-      });
-      // Optionally, keep the default profile image
-    } finally {
-      setIsLoadingPicture(false);
-    }
-  };
-
-  // Function to fetch user profile from backend
-  const fetchUserProfile = async () => {
-    const userId = getUserId();
-    if (!userId) {
-      toast.current.show({
-        severity: "error",
-        summary: "User Not Found",
-        detail: "Please log in.",
-        life: 3000,
-      });
-      return;
-    }
-
-    setIsLoadingProfile(true);
-
-    try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/profile/getProfile`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("tempToken")}`,
-          },
-        }
-      );
-
-      const { firstName, lastName } = response.data;
-
-      setUserName(`${firstName} ${lastName}`);
-      cachedUserProfile = { firstName, lastName }; // Cache the profile
-    } catch (error) {
-      console.error("Error fetching user profile:", error);
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Failed to load user profile.",
-        life: 3000,
-      });
-      setUserName("User"); // Fallback to 'User'
-    } finally {
-      setIsLoadingProfile(false);
-    }
-  };
-
-  // Combined function to fetch both profile picture and user profile
-  const fetchUserData = async () => {
-    await Promise.all([fetchProfilePicture(), fetchUserProfile()]);
-  };
-
-  useEffect(() => {
-    if (!cachedProfileImage || !cachedUserProfile) {
-      fetchUserData();
-    } else {
-      setProfileImage(cachedProfileImage);
-      setUserName(
-        `${cachedUserProfile.firstName} ${cachedUserProfile.lastName}`
-      );
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Empty dependency array ensures this runs once when the component mounts
-
-=======
       const { firstName, lastName } = response.data;
 
       setUserName(`${firstName} ${lastName}`);
@@ -260,7 +161,6 @@ const Sidebar = ({ setCurrentPage }) => {
     setUserType(parseInt(storedUserType, 10)); // `userType`'ı localStorage'dan al
   }, []);
   
->>>>>>> 4da22dd97c86aadab89f12eda8be834d3f85beb5
   return (
     <div style={{ display: "flex" }}>
       <div className={`sidebar ${isExpanded ? "expanded" : "collapsed"}`}>
@@ -309,10 +209,7 @@ const Sidebar = ({ setCurrentPage }) => {
         {isExpanded && <p className="sidebar__dashboard">Dashboard</p>}
 
         <ul className="sidebar__menu">
-<<<<<<< HEAD
-=======
         {(userType === 4 || userType === 3 || userType === 2 || userType === 1) && (
->>>>>>> 4da22dd97c86aadab89f12eda8be834d3f85beb5
           <li
             className="menu__item"
             onClick={() => handleNavigation("assign-tour")}
@@ -320,11 +217,8 @@ const Sidebar = ({ setCurrentPage }) => {
             <i className="pi pi-table"></i>
             {isExpanded && <span>Tour Assignment</span>}
           </li>
-<<<<<<< HEAD
-=======
         )}
         {(userType === 4 || userType === 3 || userType === 2) && (
->>>>>>> 4da22dd97c86aadab89f12eda8be834d3f85beb5
           <li
             className="menu__item"
             onClick={() => handleNavigation("guideInfo")}
@@ -332,11 +226,8 @@ const Sidebar = ({ setCurrentPage }) => {
             <i className="pi pi-info-circle"></i>
             {isExpanded && <span>Guide Info</span>}
           </li>
-<<<<<<< HEAD
-=======
             )}
              {(userType === 4 || userType === 3 || userType === 2) && (
->>>>>>> 4da22dd97c86aadab89f12eda8be834d3f85beb5
           <li
             className="menu__item"
             onClick={() => handleNavigation("puantaj-page")}
@@ -344,11 +235,8 @@ const Sidebar = ({ setCurrentPage }) => {
             <i className="pi pi-calendar"></i>
             {isExpanded && <span>Puantaj Page</span>}
           </li>
-<<<<<<< HEAD
-=======
             )}
              {(userType === 4) && (
->>>>>>> 4da22dd97c86aadab89f12eda8be834d3f85beb5
           <li
             className="menu__item"
             onClick={() => handleNavigation("approve-tour")}
@@ -356,11 +244,8 @@ const Sidebar = ({ setCurrentPage }) => {
             <i className="pi pi-check"></i>
             {isExpanded && <span>Tour Approval</span>}
           </li>
-<<<<<<< HEAD
-=======
            )}
              {userType === 4 && (
->>>>>>> 4da22dd97c86aadab89f12eda8be834d3f85beb5
           <li
             className="menu__item"
             onClick={() => handleNavigation("data-insight")}
@@ -368,11 +253,8 @@ const Sidebar = ({ setCurrentPage }) => {
             <i className="pi pi-chart-line"></i>
             {isExpanded && <span>Data Insights</span>}
           </li>
-<<<<<<< HEAD
-=======
            )}
             {(userType === 4 ) && (
->>>>>>> 4da22dd97c86aadab89f12eda8be834d3f85beb5
           <li
             className="menu__item"
             onClick={() => handleNavigation("manageUser")}
@@ -380,27 +262,15 @@ const Sidebar = ({ setCurrentPage }) => {
             <i className="pi pi-user-plus"></i>
             {isExpanded && <span>User Management</span>}
           </li>
-<<<<<<< HEAD
-=======
             )}
             {(userType === 4 || userType === 3 || userType === 2) && (
->>>>>>> 4da22dd97c86aadab89f12eda8be834d3f85beb5
           <li
             className="menu__item"
-            onClick={() => handleNavigation("RealTimeStatus")}
+            onClick={() => handleNavigation("realtime-status")}
           >
             <i className="pi pi-clock"></i>
             {isExpanded && <span>Real-time Status</span>}
           </li>
-<<<<<<< HEAD
-          <li
-            className="menu__item"
-            onClick={() => handleNavigation("FeedbackPage")}
-          >
-            <i className="pi pi-comments"></i>
-            {isExpanded && <span>Feedback Page</span>}
-          </li>
-=======
            )}
            {(userType === 4 || userType === 3 || userType === 2 || userType === 1 )&& ( 
           <li
@@ -412,7 +282,6 @@ const Sidebar = ({ setCurrentPage }) => {
           </li>      
           )}
           {(userType === 4 || userType === 3 || userType === 2) && (   
->>>>>>> 4da22dd97c86aadab89f12eda8be834d3f85beb5
           <li
             className="menu__item"
             onClick={() => handleNavigation("advisors")}
@@ -420,8 +289,6 @@ const Sidebar = ({ setCurrentPage }) => {
             <i className="pi pi-briefcase"></i>
             {isExpanded && <span>Advisors</span>}
           </li>
-<<<<<<< HEAD
-=======
            )}
             {(userType === 4 || userType === 3 || userType === 2 || userType === 1) && (   
           <li
@@ -460,7 +327,6 @@ const Sidebar = ({ setCurrentPage }) => {
           </li>
             )}
           
->>>>>>> 4da22dd97c86aadab89f12eda8be834d3f85beb5
         </ul>
         <div className="sidebar__footer">
           <button

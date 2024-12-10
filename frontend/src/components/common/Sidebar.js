@@ -266,7 +266,7 @@ const Sidebar = ({ setCurrentPage }) => {
             {(userType === 4 || userType === 3 || userType === 2) && (
           <li
             className="menu__item"
-            onClick={() => handleNavigation("RealTimeStatus")}
+            onClick={() => handleNavigation("realtime-status")}
           >
             <i className="pi pi-clock"></i>
             {isExpanded && <span>Real-time Status</span>}

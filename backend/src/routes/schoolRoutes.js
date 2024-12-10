@@ -53,8 +53,6 @@ const validate = (req, res, next) => {
   next();
 };
 
-// Routes
-
 // Add a new school
 router.post(
   '/addSchool',

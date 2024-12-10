@@ -209,7 +209,7 @@ const Sidebar = ({ setCurrentPage }) => {
         {isExpanded && <p className="sidebar__dashboard">Dashboard</p>}
 
         <ul className="sidebar__menu">
-        {(userType === 4 || userType === 3 || userType === 2) && (
+        {(userType === 4 || userType === 3 || userType === 2 || userType === 1) && (
           <li
             className="menu__item"
             onClick={() => handleNavigation("assign-tour")}

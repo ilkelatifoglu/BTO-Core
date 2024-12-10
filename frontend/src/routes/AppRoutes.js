@@ -11,6 +11,7 @@ import OtpVerification from "../pages/OtpVerification";
 import GuideInfoPage from "../pages/GuideInfoPage";
 import PuantajPage from "../pages/PuantajPage";
 import TourAssignmentPage from "../pages/TourAssignment";
+import RealtimeStatus from "../pages/RealtimeStatus";
 import AdvisorPage from "../pages/AdvisorPage"; // Adjust path if necessar
 import UserManagementPage from "../pages/UserManagementPage";
 import TourApprovalPage from "../pages/TourApproval";
@@ -20,7 +21,6 @@ import MyTours from "../components/myTours/MyTours";
 import FairApprovalPage from "../pages/FairApprovalPage";
 import FairAssignmentPage from "../pages/FairAssignmentPage";
 import IndividualTourPage from "../pages/IndividualTourPage";
-import RealtimeStatus from "../pages/RealtimeStatus";
 import CancellationPage from "../pages/CancellationPage";
 
 const AppRoutes = () => {
@@ -38,6 +38,7 @@ const AppRoutes = () => {
       <Route path="/guideInfo" element={<GuideInfoPage />} />
       <Route path="/puantaj-page" element={<PuantajPage />} />
       <Route path="/assign-tour" element={<TourAssignmentPage />} />
+      <Route path="/realtime-status" element={<RealtimeStatus />} />
       <Route path="/advisors" element={<AdvisorPage />} />
       <Route path="/manageUser" element={<UserManagementPage />} />
       <Route path="/data-insight" element={<DataInsightPage />} />

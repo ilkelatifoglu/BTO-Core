@@ -210,104 +210,77 @@ const Sidebar = ({ setCurrentPage }) => {
         {isExpanded && <p className="sidebar__dashboard">Dashboard</p>}
 
         <ul className="sidebar__menu">
-          {(userType === 4 ||
-            userType === 3 ||
-            userType === 2 ||
-            userType === 1) && (
-            <li
-              className="menu__item"
-              onClick={() => handleNavigation("assign-tour")}
-            >
-              <i className="pi pi-table"></i>
-              {isExpanded && <span>Tour Assignment</span>}
-            </li>
-          )}
-          {(userType === 4 || userType === 3 || userType === 2) && (
-            <li
-              className="menu__item"
-              onClick={() => handleNavigation("guideInfo")}
-            >
-              <i className="pi pi-info-circle"></i>
-              {isExpanded && <span>Guide Info</span>}
-            </li>
-          )}
-          {(userType === 4 || userType === 3 || userType === 2) && (
-            <li
-              className="menu__item"
-              onClick={() => handleNavigation("puantaj-page")}
-            >
-              <i className="pi pi-calendar"></i>
-              {isExpanded && <span>Puantaj Page</span>}
-            </li>
-          )}
-          {userType === 4 && (
-            <li
-              className="menu__item"
-              onClick={() => handleNavigation("approve-tour")}
-            >
-              <i className="pi pi-check"></i>
-              {isExpanded && <span>Tour Approval</span>}
-            </li>
-          )}
-          {userType === 4 && (
-            <li
-              className="menu__item"
-              onClick={() => handleNavigation("data-insight")}
-            >
-              <i className="pi pi-chart-line"></i>
-              {isExpanded && <span>Data Insights</span>}
-            </li>
-          )}
-          {userType === 4 && (
-            <li
-              className="menu__item"
-              onClick={() => handleNavigation("manageUser")}
-            >
-              <i className="pi pi-user-plus"></i>
-              {isExpanded && <span>User Management</span>}
-            </li>
-          )}
-          {(userType === 4 || userType === 3 || userType === 2) && (
-            <li
-              className="menu__item"
-              onClick={() => handleNavigation("realtime-status")}
-            >
-              <i className="pi pi-clock"></i>
-              {isExpanded && <span>Real-time Status</span>}
-            </li>
-          )}
-          {(userType === 4 ||
-            userType === 3 ||
-            userType === 2 ||
-            userType === 1) && (
-            <li
-              className="menu__item"
-              onClick={() => handleNavigation("feedback")}
-            >
-              <i className="pi pi-comments"></i>
-              {isExpanded && <span>Feedback Page</span>}
-            </li>
-          )}
-          {(userType === 4 || userType === 3 || userType === 2) && (
-            <li
-              className="menu__item"
-              onClick={() => handleNavigation("advisors")}
-            >
-              <i className="pi pi-briefcase"></i>
-              {isExpanded && <span>Advisors</span>}
-            </li>
-          )}
-          {(userType === 4 ||
-            userType === 3 ||
-            userType === 2 ||
-            userType === 1) && (
-            <li
-              className="menu__item"
-              onClick={() => handleNavigation("my-tours")}
-            >
-              <i className="pi pi-map"></i>
-              {isExpanded && <span>My Tours</span>}
-            </li>
+        {(userType === 4 || userType === 3 || userType === 2 || userType === 1) && (
+          <li
+            className="menu__item"
+            onClick={() => handleNavigation("assign-tour")}
+          >
+            <i className="pi pi-table"></i>
+            {isExpanded && <span>Tour Assignment</span>}
+          </li>
+        )}
+        {(userType === 4 || userType === 3 || userType === 2) && (
+          <li
+            className="menu__item"
+            onClick={() => handleNavigation("guideInfo")}
+          >
+            <i className="pi pi-info-circle"></i>
+            {isExpanded && <span>Guide Info</span>}
+          </li>
+            )}
+             {(userType === 4 || userType === 3 || userType === 2) && (
+          <li
+            className="menu__item"
+            onClick={() => handleNavigation("puantaj-page")}
+          >
+            <i className="pi pi-calendar"></i>
+            {isExpanded && <span>Puantaj Page</span>}
+          </li>
+            )}
+             {(userType === 4) && (
+          <li
+            className="menu__item"
+            onClick={() => handleNavigation("approve-tour")}
+          >
+            <i className="pi pi-check"></i>
+            {isExpanded && <span>Tour Approval</span>}
+          </li>
+           )}
+             {userType === 4 && (
+          <li
+            className="menu__item"
+            onClick={() => handleNavigation("data-insight")}
+          >
+            <i className="pi pi-chart-line"></i>
+            {isExpanded && <span>Data Insights</span>}
+          </li>
+           )}
+            {(userType === 4 ) && (
+          <li
+            className="menu__item"
+            onClick={() => handleNavigation("manageUser")}
+          >
+            <i className="pi pi-user-plus"></i>
+            {isExpanded && <span>User Management</span>}
+          </li>
+            )}
+            {(userType === 4 || userType === 3 || userType === 2) && (
+          <li
+            className="menu__item"
+            onClick={() => handleNavigation("realtime-status")}
+          >
+            <i className="pi pi-clock"></i>
+            {isExpanded && <span>Real-time Status</span>}
+          </li>
+           )}
+           {(userType === 4 || userType === 3 || userType === 2 || userType === 1 )&& ( 
+          <li
+            className="menu__item"
+            onClick={() => handleNavigation("feedback")}
+          >
+            <i className="pi pi-comments"></i>
+            {isExpanded && <span>Feedback Page</span>}
+          </li>      
           )}
           {userType === 4 && (
             <li

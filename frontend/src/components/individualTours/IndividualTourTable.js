@@ -1,23 +1,27 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
-import { Dialog } from "primereact/dialog"; // Import Dialog from PrimeReact
-import { getIndividualTours, approveTour, rejectTour } from "../../services/IndividualTourService"; // Import the service
-import '../approveTour/TourApprovalTable.css'; // Assuming you saved the CSS in this file
+import { Dialog } from "primereact/dialog";
+import { Toast } from "primereact/toast"; 
+import { getIndividualTours, approveTour, rejectTour } from "../../services/IndividualTourService";
+import '../approveTour/TourApprovalTable.css';
+import './IndividualTourTable.css';
 
 const IndividualToursTable = () => {
     const [tours, setTours] = useState([]);
     const [rows, setRows] = useState(10);
-    const [visible, setVisible] = useState(false); // State for controlling the visibility of the popup
-    const [selectedNote, setSelectedNote] = useState(""); // State for storing selected note
-    const [userId, setUserId] = useState(localStorage.getItem("userId")); // Get userId from localStorage
-    const [userType, setUserType] = useState(localStorage.getItem("userType")); // Get userType from localStorage
+    const [visible, setVisible] = useState(false);
+    const [selectedNote, setSelectedNote] = useState("");
+    const [userId, setUserId] = useState(localStorage.getItem("userId"));
+    const [userType, setUserType] = useState(localStorage.getItem("userType"));
+
+    const toast = useRef(null); // (3) Toast ref
 
     // Function to fetch tours and set the state
     const fetchTours = async () => {
         try {
-            const data = await getIndividualTours(); // Call the service method
+            const data = await getIndividualTours();
             setTours(data);
 
             // Dynamically calculate rows to fit the screen
@@ -27,92 +31,130 @@ const IndividualToursTable = () => {
             const footerHeight = 80;
             const rowsToFit = Math.floor((availableHeight - headerHeight - footerHeight) / rowHeight);
             setRows(rowsToFit);
+
+            // Show success toast after loading
+            toast.current.clear();
+            toast.current.show({
+                severity: "success",
+                summary: "Success",
+                detail: "Individual tours loaded successfully.",
+                life: 3000,
+            });
         } catch (error) {
             console.error("Error fetching individual tours:", error);
+            toast.current.clear();
+            toast.current.show({
+                severity: "error",
+                summary: "Error",
+                detail: `Failed to load individual tours: ${error.message}`,
+                life: 3000,
+            });
         }
     };
 
     useEffect(() => {
-        fetchTours(); // Call fetchTours on component mount
+        fetchTours();
     }, []);
 
-    // Function to format the date to dd/mm/yyyy
+    // Format the date to dd/mm/yyyy
     const formatDate = (dateString) => {
         const date = new Date(dateString);
         const day = String(date.getDate()).padStart(2, "0");
         const month = String(date.getMonth() + 1).padStart(2, "0");
         const year = date.getFullYear();
-
         return `${day}/${month}/${year}`;
     };
 
     // Open the popup with the note content
     const showNote = (note) => {
-        setSelectedNote(note); // Set the selected note to show in the dialog
-        setVisible(true); // Show the dialog
+        setSelectedNote(note);
+        setVisible(true);
     };
 
     // Close the popup
     const hideNote = () => {
-        setVisible(false); // Close the dialog
+        setVisible(false);
     };
 
-    // Function to approve a tour by assigning it to the current user
+    // Approve a tour
     const handleApproveTour = async (tourId) => {
+        toast.current.clear();
         try {
-            await approveTour(tourId, userId); // Approve the tour by assigning the guide
-            alert("Tour approved successfully!"); // Success message
-            fetchTours(); // Refresh the table
+            await approveTour(tourId, userId);
+            toast.current.show({
+                severity: "success",
+                summary: "Success",
+                detail: `Tour ${tourId} approved successfully.`,
+                life: 3000,
+            });
+            fetchTours();
         } catch (error) {
             console.error("Error approving tour:", error);
-            alert("Failed to approve tour. Please try again."); // Failure message
+            toast.current.clear();
+            toast.current.show({
+                severity: "error",
+                summary: "Error",
+                detail: `Failed to approve tour ${tourId}: ${error.message}`,
+                life: 3000,
+            });
         }
     };
 
-    // Function to reject a tour
+    // Reject a tour
     const handleRejectTour = async (tourId) => {
+        toast.current.clear();
         try {
-            await rejectTour(tourId); // Reject the tour
-            alert("Tour rejected successfully!"); // Success message
-            fetchTours(); // Refresh the table
+            await rejectTour(tourId);
+            toast.current.show({
+                severity: "success",
+                summary: "Success",
+                detail: `Tour ${tourId} rejected successfully.`,
+                life: 3000,
+            });
+            fetchTours();
         } catch (error) {
             console.error("Error rejecting tour:", error);
-            alert("Failed to reject tour. Please try again."); // Failure message
+            toast.current.clear();
+            toast.current.show({
+                severity: "error",
+                summary: "Error",
+                detail: `Failed to reject tour ${tourId}: ${error.message}`,
+                life: 3000,
+            });
         }
     };
 
-    // Body content for the visitor_notes column
+    // Visitor notes column template
     const noteBodyTemplate = (rowData) => {
         if (rowData.visitor_notes) {
             return (
                 <Button
                     icon="pi pi-file"
-                    className="p-button-notes p-button-rounded" // Blue button class
+                    className="p-button-notes p-button-rounded"
                     onClick={() => showNote(rowData.visitor_notes)}
                     aria-label="Show Note"
                 />
             );
         } else {
-            return <span>No Note</span>; // Placeholder text when there is no note
+            return <span>No Note</span>;
         }
     };
 
-    // Body content for the new action column (+ and Reject buttons)
+    // Actions column template
     const actionBodyTemplate = (rowData) => {
         if (rowData.tour_status === "WAITING") {
             return (
                 <div>
                     <Button
                         icon="pi pi-check"
-                        className="p-button-success p-button-approve p-button-rounded" // Green button class for approve
+                        className="p-button-success p-button-approve p-button-rounded"
                         onClick={() => handleApproveTour(rowData.id)}
                         aria-label="Approve Tour"
                     />
-                    {/* Show reject button only for userType 3 and 4 */}
                     {(userType === "3" || userType === "4") && (
                         <Button
                             icon="pi pi-times"
-                            className="p-button-danger p-button-reject p-button-rounded" // Red button class for reject
+                            className="p-button-danger p-button-reject p-button-rounded"
                             onClick={() => handleRejectTour(rowData.id)}
                             aria-label="Reject Tour"
                         />
@@ -120,36 +162,37 @@ const IndividualToursTable = () => {
                 </div>
             );
         }
-        return <span>No action</span>; // No buttons if the tour is not in "WAITING" status
+        return <span>No action</span>;
     };
 
-    // Function to combine first and last name into one Guide Name
+    // Combine first and last name into one Guide Name
     const combineGuideName = (rowData) => {
         if (rowData.guide_id === null) {
-            return "No guide is assigned yet"; // Return placeholder text if guide_id is null
+            return "No guide is assigned yet";
         }
-        return `${rowData.guide_first_name} ${rowData.guide_last_name}`; // Return the actual guide name if guide_id is not null
+        return `${rowData.guide_first_name} ${rowData.guide_last_name}`;
     };
 
-    // Function to dynamically apply row color based on tour status
+    // Dynamic row class based on tour status
     const getRowClass = (tourStatus) => {
         switch (tourStatus) {
             case "APPROVED":
             case "READY":
             case "DONE":
-                return "green-row"; // Bright green for approved, ready, or done tours
+                return "green-row";
             case "WAITING":
-                return "yellow-row"; // Bright yellow for waiting tours
+                return "yellow-row";
             case "CANCELLED":
             case "REJECTED":
-                return "red-row"; // Bright red for cancelled or rejected tours
+                return "red-row";
             default:
                 return "";
         }
     };
 
     return (
-        <div className="table-wrapper" style={{ marginLeft: "200px", overflowX: "hidden" }}>
+        <div className="table-wrapper" style={{ marginLeft: "10px", overflowX: "hidden" }}>
+          <Toast ref={toast} /> {/* (5) Adding the Toast to the JSX */}
             <h1 style={{ textAlign: "center", margin: "20px 0" }}>Individual Tours</h1>
             <DataTable
                 value={tours}
@@ -158,24 +201,22 @@ const IndividualToursTable = () => {
                 tableStyle={{ width: "100%" }}
                 paginatorTemplate="FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
                 currentPageReportTemplate="{first} to {last} of {totalRecords}"
-                rowClassName={(data) => getRowClass(data.tour_status)} // Apply the dynamic row class
+                rowClassName={(data) => getRowClass(data.tour_status)}
             >
                 <Column field="id" header="ID" style={{ width: "5%" }}></Column>
                 <Column field="tour_status" header="Tour Status" style={{ width: "10%" }}></Column>
-                <Column field="date" header="Date" style={{ width: "10%" }} body={rowData => formatDate(rowData.date)}></Column>
+                <Column field="date" header="Date" style={{ width: "10%" }} body={(rowData) => formatDate(rowData.date)}></Column>
                 <Column field="day" header="Day" style={{ width: "10%" }}></Column>
                 <Column field="time" header="Time" style={{ width: "5%" }}></Column>
                 <Column field="tour_size" header="Tour Size" style={{ width: "5%" }}></Column>
                 <Column field="contact_name" header="Contact Name" style={{ width: "10%" }}></Column>
                 <Column field="contact_phone" header="Contact Phone" style={{ width: "10%" }}></Column>
-                {/* Guide Name column, combining first and last name */}
                 <Column field="major_of_interest" header="Major of Interest" style={{ width: "10%" }}></Column>
                 <Column field="visitor_notes" header="Visitor Notes" style={{ width: "5%" }} body={noteBodyTemplate}></Column>
                 <Column header="Guide Name" style={{ width: "10%" }} body={combineGuideName}></Column>
-                <Column body={actionBodyTemplate} header="Actions" style={{ width: "10%" }}></Column> {/* New column */}
+                <Column body={actionBodyTemplate} header="Actions" style={{ width: "10%" }}></Column>
             </DataTable>
 
-            {/* Dialog for displaying the note */}
             <Dialog visible={visible} onHide={hideNote} header="Visitor Notes" modal>
                 <p>{selectedNote}</p>
             </Dialog>

@@ -3,16 +3,19 @@
     display: flex; /* Flex layout to align sidebar and content side by side */
     height: 100vh; /* Full viewport height */
     overflow: hidden; /* Prevent content overflow */
-    background-color: #ffffff; /* Light background */
+    background-color: #f9f9f9; /* Light background */
 }
 
 /* Main content area */
 .puantaj-content {
-    flex-grow: 1; /* Take the remaining space */
-    padding: 20px; /* Add padding */
-    background-color: #ffffff; /* Match page background */
-    overflow-y: auto; /* Enable vertical scrolling if needed */
-    margin-left: 200px;
+    flex: 1;
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    margin: 20px 40px 20px auto;
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+    overflow-y: auto;
+    max-width: 80%;
 }
 
 /* Page title styling */

@@ -10,8 +10,7 @@
 .sidebar-container {
     flex-shrink: 0; /* Sidebar should not resize */
     width: 240px; /* Fixed width for sidebar */
-    background-color: #f8f9fa; /* Light gray for sidebar */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow for separation */
+    background-color: #f9f9f9; /* Light gray for sidebar */
     z-index: 1;
 }
 
@@ -20,7 +19,7 @@
     flex-grow: 1; /* Take up remaining space */
     overflow-x: auto; /* Allow horizontal scrolling */
     padding: 20px; /* Spacing around the table */
-    background-color: #ffffff; /* White background for the content */
+    background-color: #f9f9f9; /* White background for the content */
 }
 
 /* Table Container */

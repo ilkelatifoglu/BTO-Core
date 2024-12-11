@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
@@ -8,28 +8,35 @@ import AssignTourService from "../../services/AssignTourService";
 import "./ReadyToursTable.css";
 import io from "socket.io-client";
 import FilterBar from "./FilterBar"; // Import the FilterBar component
-const userType = parseInt(localStorage.getItem("userType"), 10);
+import { Toast } from "primereact/toast"; // Import Toast
 
+const userType = parseInt(localStorage.getItem("userType"), 10);
 const socket = io("http://localhost:3001");
 
 export default function ReadyToursTable() {
   const [tours, setTours] = useState([]);
-  const [filteredTours, setFilteredTours] = useState([]); // State to store filtered tours
-  const [message, setMessage] = useState(null);
-  const [expandedRows, setExpandedRows] = useState(null); // For expandable rows
-  const [selectedCandidates, setSelectedCandidates] = useState({}); // Tracks MultiSelect values
-  const [candidateGuideOptions, setCandidateGuideOptions] = useState([]); // Dropdown options
-  const [classroomInputs, setClassroomInputs] = useState({}); // State to track classroom inputs per row
-
+  const [filteredTours, setFilteredTours] = useState([]); 
+  const [expandedRows, setExpandedRows] = useState(null); 
+  const [selectedCandidates, setSelectedCandidates] = useState({});
+  const [candidateGuideOptions, setCandidateGuideOptions] = useState([]);
+  const [classroomInputs, setClassroomInputs] = useState({});
+  const toast = useRef(null); // Create a ref for Toast
 
   useEffect(() => {
     const fetchTours = async () => {
       try {
         const data = await AssignTourService.getReadyTours();
         setTours(data);
-        setFilteredTours(data); // Initialize filtered tours
+        setFilteredTours(data); 
       } catch (error) {
         console.error("Error fetching tours:", error);
+        toast.current.clear();
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: error.message || "Error fetching tours.",
+          life: 3000,
+        });
       }
     };
 
@@ -39,24 +46,22 @@ export default function ReadyToursTable() {
       setTours((prevTours) =>
         prevTours.map((tour) =>
           tour.id === tourId
-            ? { ...tour, candidate_names, assignedCandidates }  // Update both names and count
+            ? { ...tour, candidate_names, assignedCandidates }
             : tour
         )
       );
     });
 
-    // Listen for guide assignments from the backend
     socket.on("guideAssigned", ({ tourId, guide_names, assignedGuides }) => {
       setTours((prevTours) =>
         prevTours.map((tour) =>
           tour.id === tourId
-            ? { ...tour, guide_names, assignedGuides }  // Update both names and count
+            ? { ...tour, guide_names, assignedGuides }
             : tour
         )
       );
     });
 
-    // Cleanup on component unmount or change
     return () => {
       socket.off("guideAssigned");
       socket.off("candidateAssigned");
@@ -68,34 +73,33 @@ export default function ReadyToursTable() {
       try {
         const candidates = await AssignTourService.getCandidateGuides();
         const formattedCandidates = candidates.map(candidate => ({
-          label: candidate.name, // Display name
-          value: candidate.id,   // Unique value
+          label: candidate.name,
+          value: candidate.id,
         }));
-        setCandidateGuideOptions(formattedCandidates); // Update state
+        setCandidateGuideOptions(formattedCandidates);
       } catch (error) {
         console.error("Error fetching candidate guides:", error);
+        toast.current.clear();
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: error.message || "Error fetching candidate guides.",
+          life: 3000,
+        });
       }
     };
-
     fetchCandidates();
   }, []);
 
-
   const handleFilterChange = (filters) => {
     const filtered = tours.filter((tour) => {
-      const matchDate =
-        !filters.date ||
-        new Date(tour.date).toDateString() === filters.date.toDateString();
+      const matchDate = !filters.date || new Date(tour.date).toDateString() === filters.date.toDateString();
       const matchDay = !filters.day || tour.day === filters.day;
       const matchTime = !filters.time || tour.time.includes(filters.time);
-      const matchSchool =
-        !filters.school || tour.school_name.toLowerCase().includes(filters.school.toLowerCase());
-      const matchCity =
-        !filters.city || tour.city.toLowerCase().includes(filters.city.toLowerCase());
-      const matchGuide =
-        !filters.guide ||
-        (tour.guide_names &&
-          tour.guide_names.toLowerCase().includes(filters.guide.toLowerCase()));
+      const matchSchool = !filters.school || tour.school_name.toLowerCase().includes(filters.school.toLowerCase());
+      const matchCity = !filters.city || tour.city.toLowerCase().includes(filters.city.toLowerCase());
+      const matchGuide = !filters.guide ||
+        (tour.guide_names && tour.guide_names.toLowerCase().includes(filters.guide.toLowerCase()));
 
       return matchDate && matchDay && matchTime && matchSchool && matchCity && matchGuide;
     });
@@ -116,21 +120,31 @@ export default function ReadyToursTable() {
         user_id: userId,
         user_type: userType
       });
-      setMessage(response.message);
+      toast.current.clear();
+      toast.current.show({
+        severity: "success",
+        summary: "Success",
+        detail: response.message,
+        life: 3000,
+      });
 
       const updatedTours = await AssignTourService.getReadyTours();
       setTours(updatedTours);
+      setFilteredTours(updatedTours);
     } catch (error) {
-      setMessage(error.message || "Error assigning guide");
+      console.error("Error assigning guide:", error);
+      toast.current.clear();
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: error.message || "Error assigning guide.",
+        life: 3000,
+      });
     }
   };
 
-
   const handleAssignCandidates = async (rowData, selectedCandidates) => {
     const { school_name, city, date, time } = rowData;
-    console.log("Attempting to assign candidates:", selectedCandidates);
-    console.log("Current assigned candidates:", rowData.assigned_candidates);
-    console.log("Guide count / Max candidates allowed:", rowData.guide_count);
 
     try {
       const response = await AssignTourService.assignCandidateGuidesToTour({
@@ -140,20 +154,32 @@ export default function ReadyToursTable() {
         time,
         user_ids: selectedCandidates,
       });
-      setMessage(response.message);
+      toast.current.clear();
+      toast.current.show({
+        severity: "success",
+        summary: "Success",
+        detail: response.message,
+        life: 3000,
+      });
 
       const updatedTours = await AssignTourService.getReadyTours();
       setTours(updatedTours);
       setFilteredTours(updatedTours);
       setSelectedCandidates(prevState => ({
         ...prevState,
-        [rowData.id]: [] // Clear the selected candidates for this tour
+        [rowData.id]: []
       }));
     } catch (error) {
-      setMessage(error.message || "Error assigning candidate guides");
+      console.error("Error assigning candidate guides:", error);
+      toast.current.clear();
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: error.message || "Error assigning candidate guides.",
+        life: 3000,
+      });
     }
   };
-
 
   const handleInputChange = (id, value) => {
     setClassroomInputs((prev) => ({
@@ -164,45 +190,66 @@ export default function ReadyToursTable() {
 
   const handleClassroomUpdate = async (tourId) => {
     try {
-      const classroom = classroomInputs[tourId]; // Get the input value for the specific row
+      const classroom = classroomInputs[tourId];
       if (!classroom) {
-        setMessage("Classroom input cannot be empty.");
+        toast.current.clear();
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Classroom input cannot be empty.",
+          life: 3000,
+        });
         return;
       }
 
       const response = await AssignTourService.updateClassroom(tourId, classroom);
-      setMessage(response.message);
+      toast.current.clear();
+      toast.current.show({
+        severity: "success",
+        summary: "Success",
+        detail: response.message,
+        life: 3000,
+      });
 
-      // Clear input for the specific row after save
       setClassroomInputs((prev) => ({
         ...prev,
         [tourId]: "",
       }));
 
-      // Update tours after saving
       const updatedTours = await AssignTourService.getReadyTours();
       setTours(updatedTours);
       setFilteredTours(updatedTours);
     } catch (error) {
-      setMessage(error.message || "Error updating classroom");
+      console.error("Error updating classroom:", error);
+      toast.current.clear();
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: error.message || "Error updating classroom.",
+        life: 3000,
+      });
     }
   };
+
   const formatTime = (time) => {
-    return time.slice(0, 5); // Extract HH:mm
+    if (typeof time !== 'string') {
+      return '';
+    }
+    return time.slice(0, 5);
   };
 
   const rowExpansionTemplate = (data) => {
-    // Assuming data is an object containing guide_names and candidate_names
     const guideNames = data.guide_names || "No guides assigned yet.";
     const candidateNames = data.candidate_names || "No candidates assigned yet.";
 
-    // Creating the "pseudo links" for guides and candidates
-    const guideLinks = guideNames.split(',').map((name, index) => (
-      `<a href="#guide-${index}" class="guide-link">${name.trim()}</a>`
-    )).join(', '); // Join them with commas
-    const candidateLinks = candidateNames.split(',').map((name, index) => (
-      `<a href="#candidate-${index}" class="candidate-link">${name.trim()}</a>`
-    )).join(', '); // Join them with commas
+    const guideLinks = guideNames
+      .split(',')
+      .map((name, index) => `<a href="#guide-${index}" class="guide-link">${name.trim()}</a>`)
+      .join(', ');
+    const candidateLinks = candidateNames
+      .split(',')
+      .map((name, index) => `<a href="#candidate-${index}" class="candidate-link">${name.trim()}</a>`)
+      .join(', ');
 
     return (
       <div className="p-3">
@@ -215,42 +262,19 @@ export default function ReadyToursTable() {
     );
   };
 
-
-  const handleAssignCandidatesDropdown = (rowData) => {
-    const assignedCandidateIds = rowData.assigned_candidates.map(c => c.id);
-    const unassignedCandidates = candidateGuideOptions.filter(candidate => !assignedCandidateIds.includes(candidate.value));
-
-    return (
-      <MultiSelect
-        value={selectedCandidates[rowData.id] || []}
-        options={unassignedCandidates} // Show only unassigned candidates
-        onChange={(e) => {
-          console.log("Selected candidates:", e.value); // Log selected IDs
-          setSelectedCandidates((prev) => ({
-            ...prev,
-            [rowData.id]: e.value,
-          }));
-        }}
-        placeholder="Select Candidates"
-        display="chip"
-        className="p-multiselect-dropdown scrollable-multiselect"
-        style={{ width: "100%", whiteSpace: "nowrap", maxWidth: "200px" }}
-      />
-    );
-  };
-
   const rowClassName = (data) => {
     if (data.tour_status === "CANCELLED") return "cancelled-row";
     if (data.tour_status === "DONE") return "done-row";
-    return ""; // Default for READY
+    return "";
   };
 
-
   return (
+    <div className="page-container">
     <div className="assign-tour-container">
+      <Toast ref={toast} /> {/* Added Toast here */}
       <h1 className="table-title">Tour Assignment</h1>
-      <FilterBar onFilterChange={handleFilterChange} /> {/* Render FilterBar */}
-      {message && <p className="message">{message}</p>}      <div className="assign-tour-table">
+      <FilterBar onFilterChange={handleFilterChange} />
+      <div className="assign-tour-table">
         <DataTable
           value={filteredTours}
           paginator
@@ -262,7 +286,6 @@ export default function ReadyToursTable() {
           onRowToggle={(e) => setExpandedRows(e.data)}
           rowExpansionTemplate={rowExpansionTemplate}
         >
-          {/* Date Column */}
           <Column
             field="date"
             header="Date"
@@ -270,59 +293,62 @@ export default function ReadyToursTable() {
             style={{ width: "10%" }}
           ></Column>
 
-          {/* Day Column */}
           <Column field="day" header="Day" style={{ width: "10%" }}></Column>
 
-          {/* Time Column */}
           <Column
             field="time"
             header="Time"
             body={(rowData) => formatTime(rowData.time)}
             style={{ width: "10%" }}
           ></Column>
-        {(localStorage.getItem("userType") === '3' || localStorage.getItem("userType") === '4' || localStorage.getItem("userType") === '2') && (
-          <>{/* School Column */}
-          <Column field="school_name" header="School" style={{ width: "20%" }}></Column>
-          
-          {/* City Column */}
-          <Column field="city" header="City" style={{ width: "10%" }}></Column>
-      
-          {/* Tour Size Column */}
-          <Column field="tour_size" header="Tour Size" style={{ width: "10%" }}></Column>
-          <Column
-            field="classroom"
-            header="Classroom"
-            body={(rowData) => {
-              if (
-                rowData.classroom === null &&
-                rowData.tour_status === "READY" &&
-                (localStorage.getItem("userType") === "4" || localStorage.getItem("userType") === "3")
-              ) {
-                return (
-                  <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "10px" }}>
-                    <input
-                      type="text"
-                      value={classroomInputs[rowData.id] || ""} // Get value for the specific row
-                      onChange={(e) => handleInputChange(rowData.id, e.target.value)} // Update the value for the specific row
-                      placeholder="Enter Classroom"
-                      style={{ marginRight: "10px" }}
-                    />
-                    <Button
-                      label="Save"
-                      icon="pi pi-check"
-                      className="p-button-sm p-button-success"
-                      onClick={() => handleClassroomUpdate(rowData.id)} // Pass the specific row ID
-                      disabled={!classroomInputs[rowData.id]} // Disable button if input is empty
-                    />
-                  </div>
-                );
-              }
-              return rowData.classroom || "Not Assigned";
-            }}
-            style={{ width: "15%" }}
-          /> </> )}
+     {(localStorage.getItem("userType") === '3' || localStorage.getItem("userType") === '4' || localStorage.getItem("userType") === '2') && (
+  <Column field="school_name" header="School" style={{ width: "20%" }}></Column>
+    )}  
 
+   {(localStorage.getItem("userType") === '3' || localStorage.getItem("userType") === '4' || localStorage.getItem("userType") === '2') && (
+  <Column field="city" header="City" style={{ width: "10%" }}></Column>
+   )}
+    {(localStorage.getItem("userType") === '3' || localStorage.getItem("userType") === '4' || localStorage.getItem("userType") === '2') && (
 
+  <Column field="tour_size" header="Tour Size" style={{ width: "10%" }}></Column> )}
+  
+  {
+  (localStorage.getItem("userType") === '3' || 
+   localStorage.getItem("userType") === '4' || 
+   localStorage.getItem("userType") === '2') ? (
+  <Column
+    field="classroom"
+    header="Classroom"
+    body={(rowData) => {
+      if (
+        rowData.classroom === null &&
+        rowData.tour_status === "READY"
+      ) {
+        return (
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "10px" }}>
+            <input
+              type="text"
+              value={classroomInputs[rowData.id] || ""} // Get value for the specific row
+              onChange={(e) => handleInputChange(rowData.id, e.target.value)} // Update the value for the specific row
+              placeholder="Enter Classroom"
+              style={{ marginRight: "10px" }}
+            />
+            <Button
+              label="Save"
+              icon="pi pi-check"
+              className="p-button-sm p-button-success"
+              onClick={() => handleClassroomUpdate(rowData.id)} // Pass the specific row ID
+              disabled={!classroomInputs[rowData.id]} // Disable button if input is empty
+            />
+          </div>
+        );
+      }
+      return rowData.classroom || "Not Assigned";
+    }}
+    style={{ width: "15%" }} 
+  />    
+  ) : null
+  }
           {/* Guide Quota Column */}
           {(localStorage.getItem("userType") === '3' || localStorage.getItem("userType") === '4' || localStorage.getItem("userType") === '2') && (
           <Column
@@ -335,17 +361,23 @@ export default function ReadyToursTable() {
             style={{ width: "10%" }}
           ></Column>
           )}
-        {(localStorage.getItem("userType") === '3' || localStorage.getItem("userType") === '4' || localStorage.getItem("userType") === '2') && (
-          <Column
-            field="assigned_candidates"
-            header="Candidate #"
-            body={(rowData) =>
-              `${rowData.assigned_candidates || 0} / ${rowData.guide_count}`
-            }
-            style={{ width: "10%" }}
-          ></Column>
-        )}
-          {(localStorage.getItem("userType") === '3' || localStorage.getItem("userType") === '4' || localStorage.getItem("userType") === '2') && (
+
+          {(localStorage.getItem("userType") === '3' ||
+            localStorage.getItem("userType") === '4' ||
+            localStorage.getItem("userType") === '2') && (
+            <Column
+              field="assigned_candidates"
+              header="Candidate #"
+              body={(rowData) =>
+                `${rowData.assigned_candidates || 0} / ${rowData.guide_count}`
+              }
+              style={{ width: "10%" }}
+            ></Column>
+          )}
+
+          {(localStorage.getItem("userType") === '3' ||
+            localStorage.getItem("userType") === '4' ||
+            localStorage.getItem("userType") === '2') && (
             <Column
               header="Be Guide"
               body={(rowData) => {
@@ -365,8 +397,9 @@ export default function ReadyToursTable() {
             ></Column>
           )}
 
-          {localStorage.getItem("userType") === '3' || localStorage.getItem("userType") === '4' ?
-            (<Column
+          {(localStorage.getItem("userType") === '3' ||
+            localStorage.getItem("userType") === '4') && (
+            <Column
               header="Assign Candidate"
               body={(rowData) => {
                 if (rowData.tour_status === "READY") {
@@ -401,15 +434,13 @@ export default function ReadyToursTable() {
                 return null;
               }}
               style={{ width: "20%" }}
-            ></Column>) : null}
+            ></Column>
+          )}
 
-          <Column
-            expander
-            style={{ width: '3rem' }} // Adjust width of the expander column
-          />
-
+          <Column expander style={{ width: '3rem' }} />
         </DataTable>
       </div>
+    </div>
     </div>
   );
 }

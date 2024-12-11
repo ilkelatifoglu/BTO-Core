@@ -1,28 +1,49 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { getUserWorkEntries, deleteWorkEntry, saveWorkload } from "../../services/WorkService";
-import EditWorkScreen from "./EditWorkScreen"; // Import the dialog component
-import AddWork from "./AddWork"; // Import AddWork component
+import EditWorkScreen from "./EditWorkScreen";
+import AddWork from "./AddWork";
 import { Button } from "primereact/button";
+import { Toast } from "primereact/toast"; // (2) Importing Toast
+import { Dialog } from "primereact/dialog"; // Use Dialog instead of window.confirm
 import "./PuantajComponents.css";
 
 export default function UserWorkTable() {
     const [workEntries, setWorkEntries] = useState([]);
-    const [workloadInputs, setWorkloadInputs] = useState({}); // Store workload inputs for Tour rows
-    const [selectedWork, setSelectedWork] = useState(null); // Store selected work for editing
-    const [isEditScreenOpen, setIsEditScreenOpen] = useState(false); // Control the edit dialog visibility
+    const [workloadInputs, setWorkloadInputs] = useState({});
+    const [selectedWork, setSelectedWork] = useState(null);
+    const [isEditScreenOpen, setIsEditScreenOpen] = useState(false);
+
+    const toast = useRef(null); // (3) Toast ref
+
+    const [confirmVisible, setConfirmVisible] = useState(false);
+    const [confirmMessage, setConfirmMessage] = useState("");
+    const [confirmAction, setConfirmAction] = useState(null);
 
     useEffect(() => {
-        const userId = localStorage.getItem("userId"); // Fetch logged-in user ID from localStorage
+        const userId = localStorage.getItem("userId");
 
-        // Fetch only the logged-in user's work entries
         getUserWorkEntries(userId)
             .then((data) => {
                 setWorkEntries(data);
+                toast.current.clear();
+                toast.current.show({
+                    severity: "success",
+                    summary: "Success",
+                    detail: "Work entries loaded successfully.",
+                    life: 3000,
+                });
             })
             .catch((error) => {
                 console.error("Error fetching user work entries:", error);
+                toast.current.clear();
+                toast.current.show({
+                    severity: "error",
+                    summary: "Error",
+                    detail: `Failed to load work entries: ${error.message}`,
+                    life: 3000,
+                });
             });
     }, []);
 
@@ -31,54 +52,93 @@ export default function UserWorkTable() {
         setIsEditScreenOpen(true);
     };
 
-    const handleDelete = async (rowData) => {
-        const confirmDelete = window.confirm(
-            `Are you sure you want to delete work entry with ID: ${rowData.work_id}?`
-        );
-        if (confirmDelete) {
-            try {
-                await deleteWorkEntry(rowData.work_id); // Ensure this is implemented in your service
-                setWorkEntries((prevEntries) =>
-                    prevEntries.filter((entry) => entry.work_id !== rowData.work_id)
-                );
-                alert("Work entry deleted successfully.");
-            } catch (error) {
-                console.error("Error deleting work entry:", error);
-                alert("Failed to delete work entry.");
+    const showConfirmDialog = (message, action) => {
+        setConfirmMessage(message);
+        setConfirmAction(() => action);
+        setConfirmVisible(true);
+    };
+
+    const handleDelete = (rowData) => {
+        showConfirmDialog(
+            `Are you sure you want to delete work entry with ID: ${rowData.work_id}?`,
+            async () => {
+                try {
+                    await deleteWorkEntry(rowData.work_id);
+                    setWorkEntries((prevEntries) =>
+                        prevEntries.filter((entry) => entry.work_id !== rowData.work_id)
+                    );
+                    toast.current.clear();
+                    toast.current.show({
+                        severity: "success",
+                        summary: "Success",
+                        detail: `Work entry ${rowData.work_id} deleted successfully.`,
+                        life: 3000,
+                    });
+                    refreshData();
+                } catch (error) {
+                    console.error("Error deleting work entry:", error);
+                    toast.current.clear();
+                    toast.current.show({
+                        severity: "error",
+                        summary: "Error",
+                        detail: `Failed to delete work entry ${rowData.work_id}: ${error.message}`,
+                        life: 3000,
+                    });
+                }
             }
-        }
-        refreshData();
+        );
     };
 
     const refreshData = async () => {
         try {
-            const userId = localStorage.getItem("userId"); // Fetch logged-in user ID again
-
+            const userId = localStorage.getItem("userId");
             const data = await getUserWorkEntries(userId);
             setWorkEntries(data);
         } catch (error) {
             console.error("Error refreshing data:", error);
+            toast.current.clear();
+            toast.current.show({
+                severity: "error",
+                summary: "Error",
+                detail: `Failed to refresh data: ${error.message}`,
+                life: 3000,
+            });
         }
     };
-    const handleSaveWorkload = async (rowData) => {
-        const confirmSave = window.confirm("Are you sure you want to save this workload?");
-        if (!confirmSave) return;
 
-        const { hours, minutes } = workloadInputs[rowData.work_id] || {};
-        const totalWorkload = (parseInt(hours, 10) || 0) * 60 + (parseInt(minutes, 10) || 0);
+    const handleSaveWorkload = (rowData) => {
+        showConfirmDialog(
+            "Are you sure you want to save this workload?",
+            async () => {
+                const { hours, minutes } = workloadInputs[rowData.work_id] || {};
+                const totalWorkload = (parseInt(hours, 10) || 0) * 60 + (parseInt(minutes, 10) || 0);
 
-        try {
-            await saveWorkload(rowData.work_id, totalWorkload); // Save workload in the database
-            setWorkEntries((prevEntries) =>
-                prevEntries.map((entry) =>
-                    entry.work_id === rowData.work_id ? { ...entry, workload: totalWorkload } : entry
-                )
-            );
-            alert("Workload saved successfully!");
-        } catch (error) {
-            console.error("Error saving workload:", error);
-            alert("Failed to save workload.");
-        }
+                try {
+                    await saveWorkload(rowData.work_id, totalWorkload);
+                    setWorkEntries((prevEntries) =>
+                        prevEntries.map((entry) =>
+                            entry.work_id === rowData.work_id ? { ...entry, workload: totalWorkload } : entry
+                        )
+                    );
+                    toast.current.clear();
+                    toast.current.show({
+                        severity: "success",
+                        summary: "Success",
+                        detail: `Workload for entry ${rowData.work_id} saved successfully.`,
+                        life: 3000,
+                    });
+                } catch (error) {
+                    console.error("Error saving workload:", error);
+                    toast.current.clear();
+                    toast.current.show({
+                        severity: "error",
+                        summary: "Error",
+                        detail: `Failed to save workload for ${rowData.work_id}: ${error.message}`,
+                        life: 3000,
+                    });
+                }
+            }
+        );
     };
 
     const handleInputChange = (workId, field, value) => {
@@ -87,6 +147,7 @@ export default function UserWorkTable() {
             [workId]: { ...prevInputs[workId], [field]: value },
         }));
     };
+
     const handleSaveEdit = (updatedWork) => {
         setWorkEntries((prevEntries) =>
             prevEntries.map((entry) =>
@@ -94,6 +155,13 @@ export default function UserWorkTable() {
             )
         );
         refreshData();
+        toast.current.clear();
+        toast.current.show({
+            severity: "success",
+            summary: "Success",
+            detail: `Work entry ${updatedWork.work_id} updated successfully.`,
+            life: 3000,
+        });
     };
 
     const formatDate = (date) => {
@@ -102,12 +170,6 @@ export default function UserWorkTable() {
 
     const formatTime = (time) => {
         return new Date(`1970-01-01T${time}`).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-    };
-
-    const formatWorkload = (workload) => {
-        const hours = Math.floor(workload / 60);
-        const minutes = workload % 60;
-        return `${hours} hour(s) ${minutes} minute(s)`;
     };
 
     const renderWorkload = (rowData) => {
@@ -133,7 +195,9 @@ export default function UserWorkTable() {
                 </div>
             );
         }
-        return `${Math.floor(rowData.workload / 60)} hour(s) ${rowData.workload % 60} minute(s)`;
+        const hours = Math.floor(rowData.workload / 60);
+        const mins = rowData.workload % 60;
+        return `${hours} hour(s) ${mins} minute(s)`;
     };
 
     const renderActions = (rowData) => {
@@ -148,7 +212,7 @@ export default function UserWorkTable() {
             );
         }
         if (rowData.work_type === "Tour" || rowData.is_approved) {
-            return <span style={{ color: "#aaa" }}>Not Editable</span>; // Placeholder for no action
+            return <span style={{ color: "#aaa" }}>Not Editable</span>;
         }
         return (
             <>
@@ -168,10 +232,34 @@ export default function UserWorkTable() {
         );
     };
 
+    const confirmDialogFooter = (
+        <div>
+            <Button
+                label="No"
+                icon="pi pi-times"
+                onClick={() => setConfirmVisible(false)}
+                className="p-button-text"
+            />
+            <Button
+                label="Yes"
+                icon="pi pi-check"
+                onClick={async () => {
+                    setConfirmVisible(false);
+                    if (confirmAction) {
+                        await confirmAction();
+                    }
+                }}
+                className="p-button-danger"
+                autoFocus
+            />
+        </div>
+    );
+
     return (
-        <div className="data-table-container">
-            <div className="data-table-content">
-                <h1>My Work Entries</h1>
+        <div className="page-container">
+          <Toast ref={toast} /> {/* Toast for UserWorkTable */}
+          <div className="content-container">
+            <h1 className="table-title">All Work Entries</h1>
                 <DataTable
                     value={workEntries}
                     dataKey="work_id"
@@ -201,12 +289,10 @@ export default function UserWorkTable() {
                     />
                 </DataTable>
 
-                {/* Render AddWork component */}
                 <div className="add-work-container">
                     <AddWork refreshData={refreshData} />
                 </div>
 
-                {/* Edit Dialog */}
                 <EditWorkScreen
                     isOpen={isEditScreenOpen}
                     onClose={() => setIsEditScreenOpen(false)}
@@ -214,6 +300,18 @@ export default function UserWorkTable() {
                     onSave={handleSaveEdit}
                 />
             </div>
+
+            {/* Confirmation Dialog */}
+            <Dialog
+                visible={confirmVisible}
+                onHide={() => setConfirmVisible(false)}
+                header="Confirmation"
+                footer={confirmDialogFooter}
+                modal
+                closable={false}
+            >
+                <p>{confirmMessage}</p>
+            </Dialog>
         </div>
     );
 }

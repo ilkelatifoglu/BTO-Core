@@ -88,8 +88,8 @@ const RealtimeStatus = () => {
 
   // Update nearby locations
   const sortLocationsByDistance = () => {
-    if (!userLocation) {
-      console.log("User location not available yet");
+    if (!userLocation || !locations) {
+      console.log("User location or locations not available yet");
       return;
     }
 
@@ -105,7 +105,7 @@ const RealtimeStatus = () => {
       }))
       .sort((a, b) => a.distance - b.distance);
 
-    setNearbyLocations(sortedLocations); // We keep the state name for now
+    setNearbyLocations(sortedLocations);
   };
 
   // Initialize
@@ -209,7 +209,7 @@ const RealtimeStatus = () => {
     const { current: map } = useMap();
 
     const centerToUser = () => {
-      if (userLocation) {
+      if (map && userLocation) {
         map.flyTo({
           center: [userLocation.longitude, userLocation.latitude],
           zoom: 15,
@@ -265,12 +265,14 @@ const RealtimeStatus = () => {
           mapStyle="mapbox://styles/mapbox/streets-v11"
         >
           {locationDenied && <LocationAccessButton />}
-          <Marker
-            longitude={userLocation.longitude}
-            latitude={userLocation.latitude}
-          >
-            <MapPin color="#2196F3" size={24} />
-          </Marker>
+          {userLocation && (
+            <Marker
+              longitude={userLocation.longitude}
+              latitude={userLocation.latitude}
+            >
+              <MapPin color="#2196F3" size={24} />
+            </Marker>
+          )}
 
           {locations.map((location) => (
             <Marker

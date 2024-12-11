@@ -87,13 +87,6 @@ const Sidebar = ({ setCurrentPage }) => {
       cachedProfileImage = imageSrc; // Cache the image
     } catch (error) {
       console.error("Error fetching profile picture:", error);
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Failed to load profile picture.",
-        life: 3000,
-      });
-      // Optionally, keep the default profile image
     } finally {
       setIsLoadingPicture(false);
     }

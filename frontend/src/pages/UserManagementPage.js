@@ -205,8 +205,9 @@ const UserManagementPage = () => {
     return (
         <div>
             <Sidebar />
-            <div className="user-management-page">
-                <Toast ref={toast} /> {/* Add Toast Component */}
+            <div className="user-management-container">
+              <Toast ref={toast} /> {/* Add Toast Component */}
+              <div className="user-management-content">
                 <h1>User Management</h1>
                 <div className="action-selector">
                     <label>Select Action:</label>
@@ -415,6 +416,7 @@ const UserManagementPage = () => {
                     </div>
                 )}
             </div>
+        </div>
         </div>
     );
 };

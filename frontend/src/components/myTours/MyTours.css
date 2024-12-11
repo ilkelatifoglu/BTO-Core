@@ -1,17 +1,20 @@
 /* Main container for sidebar and content */
 .my-tours-container {
-    display: flex; /* Use flex layout */
-    flex-direction: row; /* Align sidebar and table side by side */
-    height: 100vh; /* Full height */
-    overflow: hidden; /* Prevent overflow */
+    display: flex;
+    height: 100vh;
+    background-color: #f9f9f9;
 }
 
 /* Main content area */
 .my-tours-content {
-    flex-grow: 1; /* Occupy remaining space */
-    padding: 20px; /* Add padding */
-    margin-left: 200px; /* Add space from the sidebar */
-    overflow-x: auto; /* Allow horizontal scrolling for wide tables */
+    flex: 1;
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    margin: 20px 40px 20px auto;
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+    overflow-y: auto;
+    max-width: 80%;
 }
 
 /* Adjust table width to ensure it fits within available space */

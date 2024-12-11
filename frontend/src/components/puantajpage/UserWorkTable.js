@@ -256,10 +256,10 @@ export default function UserWorkTable() {
     );
 
     return (
-        <div className="data-table-container">
-            <Toast ref={toast} /> {/* Toast for UserWorkTable */}
-            <div className="data-table-content">
-                <h1>My Work Entries</h1>
+        <div className="page-container">
+          <Toast ref={toast} /> {/* Toast for UserWorkTable */}
+          <div className="content-container">
+            <h1 className="table-title">All Work Entries</h1>
                 <DataTable
                     value={workEntries}
                     dataKey="work_id"

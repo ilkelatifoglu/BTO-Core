@@ -72,8 +72,9 @@ const DataInsightPage = () => {
     <div className="data-insight-page">
       <Sidebar />
       <Toast ref={toast} /> {/* (5) Adding Toast component to JSX */}
+      <div className="data-insight-container">
       <div className="data-insight-content">
-        <h1>Data Insights</h1>
+        <h1 className="data-insight-title">Data Insights</h1>
         <div className="filter-buttons">
           {["Yearly", "Monthly", "Weekly"].map((type) => (
             <button
@@ -122,6 +123,7 @@ const DataInsightPage = () => {
           )}
         </div>
       </div>
+    </div>
     </div>
   );
 };

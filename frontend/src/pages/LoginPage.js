@@ -41,9 +41,16 @@ const LoginPage = () => {
     navigate("/forgot-password");
   };
 
+  const handleGoHome = () => {
+    navigate("/"); // go home
+  };
+
   return (
     <div className="container">
-      <div className="left-side">
+        <div className="left-side">
+       <button className="go-home-button" onClick={handleGoHome}>
+        Home
+      </button>
         <img
           src={BilkentLogo}
           alt="Bilkent University Logo"

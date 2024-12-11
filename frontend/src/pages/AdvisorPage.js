@@ -93,6 +93,7 @@ const AdvisorPage = () => {
             {/* Toast component placed here */}
             <Toast ref={toast} />
             <div className="advisor-page-container">
+            <div className="advisor-page-content">
                 <h1 className="advisor-page-title">Advisor Schedule</h1>
                 <DataTable
                     value={[{ key: "schedule" }]}
@@ -130,6 +131,7 @@ const AdvisorPage = () => {
                     ))}
                 </div>
             </div>
+        </div>
         </div>
     );
 };

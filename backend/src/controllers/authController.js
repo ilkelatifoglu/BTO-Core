@@ -2,7 +2,7 @@ const { verifyToken, generateToken } = require("../utils/jwt");
 const emailService = require("../services/EmailService");
 const userService = require("../services/UserService");
 const otpService = require("../services/OtpService.js");
-const pool = require('../config/database'); // Adjust the path based on your project structure
+const pool = require("../config/database"); // Adjust the path based on your project structure
 
 exports.register = async (req, res) => {
   try {
@@ -22,7 +22,7 @@ exports.register = async (req, res) => {
       ...req.body,
       days: Array.isArray(req.body.days) ? req.body.days : [req.body.days],
     };
-    
+
     if (req.body.role === "coordinator") {
       userPayload.crew_no = 1;
     }
@@ -39,10 +39,16 @@ exports.register = async (req, res) => {
          DO UPDATE SET day = EXCLUDED.day, 
                        full_name = EXCLUDED.full_name, 
                        updated_at = NOW()`,
-        [userId, req.body.days.join(","), `${req.body.first_name} ${req.body.last_name}`]
+        [
+          userId,
+          req.body.days.join(","),
+          `${req.body.first_name} ${req.body.last_name}`,
+        ]
       );
     } else if (req.body.role === "candidate guide") {
-      const advisor = await userService.findAdvisorByName(req.body.advisor_name);
+      const advisor = await userService.findAdvisorByName(
+        req.body.advisor_name
+      );
       if (!advisor) {
         return res.status(404).json({ message: "Advisor not found." });
       }
@@ -77,8 +83,6 @@ exports.register = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error." });
   }
 };
-
-
 
 exports.login = async (req, res) => {
   const { email, password } = req.body;
@@ -126,10 +130,12 @@ exports.verifyOtp = async (req, res) => {
 
     const isValid = await otpService.verifyOTP(decoded.userId, otp);
     if (!isValid) {
-      return res.status(401).json({ message: "Invalid or expired verification code" });
+      return res
+        .status(401)
+        .json({ message: "Invalid or expired verification code" });
     }
 
-    if (typeof decoded.user_type !== 'number') {
+    if (typeof decoded.user_type !== "number") {
       return res.status(401).json({ message: "Malformed token" });
     }
 

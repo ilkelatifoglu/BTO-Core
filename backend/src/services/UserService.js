@@ -18,7 +18,7 @@ class UserService {
     const userType = roleToUserType[userData.role];
     const userId = await userRepository.createUser({
       ...userData,
-      password: hashedPassword,
+      hashedPassword: hashedPassword,
       userType,
     });
 

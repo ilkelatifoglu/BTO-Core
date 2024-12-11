@@ -1,12 +1,12 @@
 /* components/guideInfo/GuideInfoTable.css */
-
 .guide-info-table {
+    display: flex;
     justify-content: center;
     align-items: center;
-    min-width: 115%;
+    width: 100%; 
     min-height: 400px;
-    margin-left: -90px;
-
+    margin: 0 auto; 
+    padding: 10px; 
 }
 
 .p-datatable {

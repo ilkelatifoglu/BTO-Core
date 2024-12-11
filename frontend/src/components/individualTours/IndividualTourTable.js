@@ -3,9 +3,10 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
-import { Toast } from "primereact/toast"; // (2) Importing Toast
+import { Toast } from "primereact/toast"; 
 import { getIndividualTours, approveTour, rejectTour } from "../../services/IndividualTourService";
 import '../approveTour/TourApprovalTable.css';
+import './IndividualTourTable.css';
 
 const IndividualToursTable = () => {
     const [tours, setTours] = useState([]);
@@ -190,8 +191,8 @@ const IndividualToursTable = () => {
     };
 
     return (
-        <div className="table-wrapper" style={{ marginLeft: "200px", overflowX: "hidden" }}>
-            <Toast ref={toast} /> {/* (5) Adding the Toast to the JSX */}
+        <div className="table-wrapper" style={{ marginLeft: "10px", overflowX: "hidden" }}>
+          <Toast ref={toast} /> {/* (5) Adding the Toast to the JSX */}
             <h1 style={{ textAlign: "center", margin: "20px 0" }}>Individual Tours</h1>
             <DataTable
                 value={tours}

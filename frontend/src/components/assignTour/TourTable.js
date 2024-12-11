@@ -232,6 +232,9 @@ export default function ReadyToursTable() {
   };
 
   const formatTime = (time) => {
+    if (typeof time !== 'string') {
+      return '';
+    }
     return time.slice(0, 5);
   };
 

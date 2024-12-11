@@ -1,20 +1,20 @@
 import React, { useState, useRef } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom"; // (1) Import useNavigate
 import { cancelTour } from "../services/ApproveTourService"; 
-import { Toast } from "primereact/toast"; // (2) Importing Toast
+import { Toast } from "primereact/toast"; 
 import Sidebar from '../components/common/Sidebar';
 
 const CancelConfirmation = () => {
     const [searchParams] = useSearchParams();
     const [isLoading, setIsLoading] = useState(false);
-    const toast = useRef(null); // (3) Toast ref
+    const toast = useRef(null);
+    const navigate = useNavigate(); 
 
-    // Extract the token from the URL
     const token = searchParams.get("token");
 
     const handleCancel = async () => {
         if (!token) {
-            toast.current.clear(); // (4) Clear before showing new toast
+            toast.current.clear();
             toast.current.show({
                 severity: "error",
                 summary: "Error",
@@ -34,6 +34,11 @@ const CancelConfirmation = () => {
                 detail: response.message || "Tour successfully canceled.",
                 life: 3000,
             });
+
+            // (3) Redirect to home after a short delay, giving time for the toast to appear
+            setTimeout(() => {
+                navigate("/home");
+            }, 1500);
         } catch (error) {
             toast.current.clear();
             toast.current.show({
@@ -49,8 +54,7 @@ const CancelConfirmation = () => {
 
     return (
         <div style={{ textAlign: "center", marginTop: "50px" }}>
-            <Sidebar />
-            <Toast ref={toast} /> {/* (5) Adding Toast to JSX */}
+            <Toast ref={toast} />
             <h1>Confirm Cancellation</h1>
             <p>Are you sure you want to cancel your tour?</p>
 

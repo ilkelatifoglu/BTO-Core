@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Map, { Marker, Popup } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { MapPin, RefreshCw, Crosshair } from "lucide-react";
-import { useMap } from "react-map-gl";
 import "./RealtimeStatus.css";
 
 // Mock data
@@ -51,6 +50,8 @@ const RealtimeStatus = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [locationDenied, setLocationDenied] = useState(false);
+
+  const mapRef = useRef();
 
   // Get user location
   const getUserLocation = () => {
@@ -205,10 +206,9 @@ const RealtimeStatus = () => {
   };
 
   // Update the MapControls component
-  const MapControls = () => {
-    const { current: map } = useMap();
-
+  const MapControls = ({ mapRef }) => {
     const centerToUser = () => {
+      const map = mapRef.current;
       if (map && userLocation) {
         map.flyTo({
           center: [userLocation.longitude, userLocation.latitude],
@@ -255,6 +255,7 @@ const RealtimeStatus = () => {
     <div className="realtime-status">
       <div className="realtime-status__map-container">
         <Map
+          ref={mapRef}
           mapboxAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
           initialViewState={{
             longitude: userLocation?.longitude || MOCK_USER_LOCATION.longitude,
@@ -312,7 +313,7 @@ const RealtimeStatus = () => {
             </Popup>
           )}
 
-          <MapControls />
+          <MapControls mapRef={mapRef} />
         </Map>
       </div>
 

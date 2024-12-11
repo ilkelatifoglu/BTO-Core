@@ -2,10 +2,11 @@ import React, { useState, useEffect, useRef } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { getUserWorkEntries, deleteWorkEntry, saveWorkload } from "../../services/WorkService";
-import EditWorkScreen from "./EditWorkScreen"; // Import the dialog component
-import AddWork from "./AddWork"; // Import AddWork component
+import EditWorkScreen from "./EditWorkScreen";
+import AddWork from "./AddWork";
 import { Button } from "primereact/button";
 import { Toast } from "primereact/toast"; // (2) Importing Toast
+import { Dialog } from "primereact/dialog"; // Use Dialog instead of window.confirm
 import "./PuantajComponents.css";
 
 export default function UserWorkTable() {
@@ -14,7 +15,11 @@ export default function UserWorkTable() {
     const [selectedWork, setSelectedWork] = useState(null);
     const [isEditScreenOpen, setIsEditScreenOpen] = useState(false);
 
-    const toast = useRef(null); // (3) Create a ref for Toast
+    const toast = useRef(null); // (3) Toast ref
+
+    const [confirmVisible, setConfirmVisible] = useState(false);
+    const [confirmMessage, setConfirmMessage] = useState("");
+    const [confirmAction, setConfirmAction] = useState(null);
 
     useEffect(() => {
         const userId = localStorage.getItem("userId");
@@ -22,7 +27,6 @@ export default function UserWorkTable() {
         getUserWorkEntries(userId)
             .then((data) => {
                 setWorkEntries(data);
-                // Notify success after data is loaded
                 toast.current.clear();
                 toast.current.show({
                     severity: "success",
@@ -48,35 +52,41 @@ export default function UserWorkTable() {
         setIsEditScreenOpen(true);
     };
 
-    const handleDelete = async (rowData) => {
-        const confirmDelete = window.confirm(
-            `Are you sure you want to delete work entry with ID: ${rowData.work_id}?`
-        );
-        if (confirmDelete) {
-            try {
-                await deleteWorkEntry(rowData.work_id);
-                setWorkEntries((prevEntries) =>
-                    prevEntries.filter((entry) => entry.work_id !== rowData.work_id)
-                );
-                toast.current.clear();
-                toast.current.show({
-                    severity: "success",
-                    summary: "Success",
-                    detail: `Work entry ${rowData.work_id} deleted successfully.`,
-                    life: 3000,
-                });
-            } catch (error) {
-                console.error("Error deleting work entry:", error);
-                toast.current.clear();
-                toast.current.show({
-                    severity: "error",
-                    summary: "Error",
-                    detail: `Failed to delete work entry ${rowData.work_id}: ${error.message}`,
-                    life: 3000,
-                });
+    const showConfirmDialog = (message, action) => {
+        setConfirmMessage(message);
+        setConfirmAction(() => action);
+        setConfirmVisible(true);
+    };
+
+    const handleDelete = (rowData) => {
+        showConfirmDialog(
+            `Are you sure you want to delete work entry with ID: ${rowData.work_id}?`,
+            async () => {
+                try {
+                    await deleteWorkEntry(rowData.work_id);
+                    setWorkEntries((prevEntries) =>
+                        prevEntries.filter((entry) => entry.work_id !== rowData.work_id)
+                    );
+                    toast.current.clear();
+                    toast.current.show({
+                        severity: "success",
+                        summary: "Success",
+                        detail: `Work entry ${rowData.work_id} deleted successfully.`,
+                        life: 3000,
+                    });
+                    refreshData();
+                } catch (error) {
+                    console.error("Error deleting work entry:", error);
+                    toast.current.clear();
+                    toast.current.show({
+                        severity: "error",
+                        summary: "Error",
+                        detail: `Failed to delete work entry ${rowData.work_id}: ${error.message}`,
+                        life: 3000,
+                    });
+                }
             }
-            refreshData();
-        }
+        );
     };
 
     const refreshData = async () => {
@@ -96,37 +106,39 @@ export default function UserWorkTable() {
         }
     };
 
-    const handleSaveWorkload = async (rowData) => {
-        const confirmSave = window.confirm("Are you sure you want to save this workload?");
-        if (!confirmSave) return;
+    const handleSaveWorkload = (rowData) => {
+        showConfirmDialog(
+            "Are you sure you want to save this workload?",
+            async () => {
+                const { hours, minutes } = workloadInputs[rowData.work_id] || {};
+                const totalWorkload = (parseInt(hours, 10) || 0) * 60 + (parseInt(minutes, 10) || 0);
 
-        const { hours, minutes } = workloadInputs[rowData.work_id] || {};
-        const totalWorkload = (parseInt(hours, 10) || 0) * 60 + (parseInt(minutes, 10) || 0);
-
-        try {
-            await saveWorkload(rowData.work_id, totalWorkload);
-            setWorkEntries((prevEntries) =>
-                prevEntries.map((entry) =>
-                    entry.work_id === rowData.work_id ? { ...entry, workload: totalWorkload } : entry
-                )
-            );
-            toast.current.clear();
-            toast.current.show({
-                severity: "success",
-                summary: "Success",
-                detail: `Workload for entry ${rowData.work_id} saved successfully.`,
-                life: 3000,
-            });
-        } catch (error) {
-            console.error("Error saving workload:", error);
-            toast.current.clear();
-            toast.current.show({
-                severity: "error",
-                summary: "Error",
-                detail: `Failed to save workload for ${rowData.work_id}: ${error.message}`,
-                life: 3000,
-            });
-        }
+                try {
+                    await saveWorkload(rowData.work_id, totalWorkload);
+                    setWorkEntries((prevEntries) =>
+                        prevEntries.map((entry) =>
+                            entry.work_id === rowData.work_id ? { ...entry, workload: totalWorkload } : entry
+                        )
+                    );
+                    toast.current.clear();
+                    toast.current.show({
+                        severity: "success",
+                        summary: "Success",
+                        detail: `Workload for entry ${rowData.work_id} saved successfully.`,
+                        life: 3000,
+                    });
+                } catch (error) {
+                    console.error("Error saving workload:", error);
+                    toast.current.clear();
+                    toast.current.show({
+                        severity: "error",
+                        summary: "Error",
+                        detail: `Failed to save workload for ${rowData.work_id}: ${error.message}`,
+                        life: 3000,
+                    });
+                }
+            }
+        );
     };
 
     const handleInputChange = (workId, field, value) => {
@@ -220,9 +232,32 @@ export default function UserWorkTable() {
         );
     };
 
+    const confirmDialogFooter = (
+        <div>
+            <Button
+                label="No"
+                icon="pi pi-times"
+                onClick={() => setConfirmVisible(false)}
+                className="p-button-text"
+            />
+            <Button
+                label="Yes"
+                icon="pi pi-check"
+                onClick={async () => {
+                    setConfirmVisible(false);
+                    if (confirmAction) {
+                        await confirmAction();
+                    }
+                }}
+                className="p-button-danger"
+                autoFocus
+            />
+        </div>
+    );
+
     return (
         <div className="data-table-container">
-            <Toast ref={toast} /> {/* (5) Adding the Toast to the JSX */}
+            <Toast ref={toast} /> {/* Toast for UserWorkTable */}
             <div className="data-table-content">
                 <h1>My Work Entries</h1>
                 <DataTable
@@ -265,6 +300,18 @@ export default function UserWorkTable() {
                     onSave={handleSaveEdit}
                 />
             </div>
+
+            {/* Confirmation Dialog */}
+            <Dialog
+                visible={confirmVisible}
+                onHide={() => setConfirmVisible(false)}
+                header="Confirmation"
+                footer={confirmDialogFooter}
+                modal
+                closable={false}
+            >
+                <p>{confirmMessage}</p>
+            </Dialog>
         </div>
     );
 }

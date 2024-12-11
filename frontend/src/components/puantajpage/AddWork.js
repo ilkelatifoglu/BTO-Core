@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { addWork } from "../../services/WorkService";
+import { Toast } from "primereact/toast"; // Importing Toast
 
 function AddWork({ refreshData }) {
     const workTypes = [
@@ -8,10 +9,11 @@ function AddWork({ refreshData }) {
         { name: 'Information Booth', code: 'INFO_BOOTH' }
     ];
 
-    const [selectedWorkType, setSelectedWorkType] = useState(""); // Store selected work type as a string
-    const [dateTime, setDateTime] = useState(""); // Input for datetime-local
-    const [workHours, setWorkHours] = useState(""); // Input for workload hours
-    const [workMinutes, setWorkMinutes] = useState(""); // Input for workload minutes
+    const [selectedWorkType, setSelectedWorkType] = useState("");
+    const [dateTime, setDateTime] = useState("");
+    const [workHours, setWorkHours] = useState("");
+    const [workMinutes, setWorkMinutes] = useState("");
+    const toast = useRef(null); // Toast ref
 
     const getDayOfWeek = (dateString) => {
         const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -20,51 +22,68 @@ function AddWork({ refreshData }) {
     };
 
     const handleAddWork = async () => {
+        toast.current.clear(); // Clear toast before showing a new one
+
         if (!selectedWorkType || !dateTime || (!workHours && !workMinutes)) {
-            alert("Please fill all the fields!");
+            toast.current.show({
+                severity: "error",
+                summary: "Error",
+                detail: "Please fill all the fields!",
+                life: 3000,
+            });
             return;
         }
 
-        // Validate hours and minutes
         if (workHours < 0 || workHours > 10 || workMinutes < 0 || workMinutes > 59) {
-            alert("Work hours cannot exceed 10, and minutes cannot exceed 59. Neither can be negative.");
+            toast.current.show({
+                severity: "error",
+                summary: "Error",
+                detail: "Work hours cannot exceed 10, and minutes cannot exceed 59. Neither can be negative.",
+                life: 3000,
+            });
             return;
         }
 
-        // Split date and time
         const [date, time] = dateTime.split("T");
-
         const day = getDayOfWeek(date);
-
-        // Convert hours and minutes to total minutes
         const workload = (parseInt(workHours, 10) || 0) * 60 + (parseInt(workMinutes, 10) || 0);
-
-        // Get userId from localStorage
         const userId = localStorage.getItem("userId");
 
         const newWork = {
             type: selectedWorkType,
-            date, // Pass date separately
-            time, // Pass time separately
+            date,
+            time,
             day,
-            user_id: userId, // Pass userId directly
+            user_id: userId,
             workload,
             is_approved: false
         };
 
         try {
-            const response = await addWork(newWork);
-            alert("Work added successfully!");
-            console.log("Added Work:", response);
-            refreshData(); // Call refreshData from UserWorkTable
+            await addWork(newWork);
+            toast.current.clear();
+            toast.current.show({
+                severity: "success",
+                summary: "Success",
+                detail: "Work added successfully!",
+                life: 3000,
+            });
+            refreshData();
         } catch (error) {
             console.error("Error adding work:", error);
-            alert("Failed to add work.");
+            toast.current.clear();
+            toast.current.show({
+                severity: "error",
+                summary: "Error",
+                detail: "Failed to add work.",
+                life: 3000,
+            });
         }
     };
 
     return (
         <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
+            <Toast ref={toast} /> {/* Toast for AddWork */}
             <select
                 value={selectedWorkType}
                 onChange={(e) => setSelectedWorkType(e.target.value)}
@@ -89,10 +108,8 @@ function AddWork({ refreshData }) {
                 max={(() => {
                     const now = new Date();
                     if (dateTime.split("T")[0] === now.toISOString().slice(0, 10)) {
-                        // If the selected date matches today's date, restrict to the current time
                         return now.toISOString().slice(0, 16);
                     }
-                    // Otherwise, allow the full day
                     return now.toISOString().slice(0, 10) + "T23:59";
                 })()}
                 style={{
@@ -105,7 +122,7 @@ function AddWork({ refreshData }) {
                 <input
                     type="number"
                     value={workHours}
-                    onChange={(e) => setWorkHours(Math.max(0, Math.min(10, e.target.value)))} // Constrain hours
+                    onChange={(e) => setWorkHours(Math.max(0, Math.min(10, e.target.value)))}
                     placeholder="Hours"
                     style={{
                         width: '5rem',
@@ -118,7 +135,7 @@ function AddWork({ refreshData }) {
                 <input
                     type="number"
                     value={workMinutes}
-                    onChange={(e) => setWorkMinutes(Math.max(0, Math.min(59, e.target.value)))} // Constrain minutes
+                    onChange={(e) => setWorkMinutes(Math.max(0, Math.min(59, e.target.value)))}
                     placeholder="Minutes"
                     style={{
                         width: '5rem',

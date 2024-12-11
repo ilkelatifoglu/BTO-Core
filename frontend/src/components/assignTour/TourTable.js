@@ -247,6 +247,7 @@ export default function ReadyToursTable() {
 
 
   return (
+    <div className="page-container">
     <div className="assign-tour-container">
       <h1 className="table-title">Tour Assignment</h1>
       <FilterBar onFilterChange={handleFilterChange} /> {/* Render FilterBar */}
@@ -280,49 +281,56 @@ export default function ReadyToursTable() {
             body={(rowData) => formatTime(rowData.time)}
             style={{ width: "10%" }}
           ></Column>
-        {(localStorage.getItem("userType") === '3' || localStorage.getItem("userType") === '4' || localStorage.getItem("userType") === '2') && (
-          <>{/* School Column */}
-          <Column field="school_name" header="School" style={{ width: "20%" }}></Column>
-          
-          {/* City Column */}
-          <Column field="city" header="City" style={{ width: "10%" }}></Column>
-      
-          {/* Tour Size Column */}
-          <Column field="tour_size" header="Tour Size" style={{ width: "10%" }}></Column>
-          <Column
-            field="classroom"
-            header="Classroom"
-            body={(rowData) => {
-              if (
-                rowData.classroom === null &&
-                rowData.tour_status === "READY" &&
-                (localStorage.getItem("userType") === "4" || localStorage.getItem("userType") === "3")
-              ) {
-                return (
-                  <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "10px" }}>
-                    <input
-                      type="text"
-                      value={classroomInputs[rowData.id] || ""} // Get value for the specific row
-                      onChange={(e) => handleInputChange(rowData.id, e.target.value)} // Update the value for the specific row
-                      placeholder="Enter Classroom"
-                      style={{ marginRight: "10px" }}
-                    />
-                    <Button
-                      label="Save"
-                      icon="pi pi-check"
-                      className="p-button-sm p-button-success"
-                      onClick={() => handleClassroomUpdate(rowData.id)} // Pass the specific row ID
-                      disabled={!classroomInputs[rowData.id]} // Disable button if input is empty
-                    />
-                  </div>
-                );
-              }
-              return rowData.classroom || "Not Assigned";
-            }}
-            style={{ width: "15%" }}
-          /> </> )}
+     
+  
+     {(localStorage.getItem("userType") === '3' || localStorage.getItem("userType") === '4' || localStorage.getItem("userType") === '2') && (
+  <Column field="school_name" header="School" style={{ width: "20%" }}></Column>
+    )}  
 
+   {(localStorage.getItem("userType") === '3' || localStorage.getItem("userType") === '4' || localStorage.getItem("userType") === '2') && (
+  <Column field="city" header="City" style={{ width: "10%" }}></Column>
+   )}
+    {(localStorage.getItem("userType") === '3' || localStorage.getItem("userType") === '4' || localStorage.getItem("userType") === '2') && (
 
+  <Column field="tour_size" header="Tour Size" style={{ width: "10%" }}></Column> )}
+  
+  {
+  (localStorage.getItem("userType") === '3' || 
+   localStorage.getItem("userType") === '4' || 
+   localStorage.getItem("userType") === '2') ? (
+  <Column
+    field="classroom"
+    header="Classroom"
+    body={(rowData) => {
+      if (
+        rowData.classroom === null &&
+        rowData.tour_status === "READY"
+      ) {
+        return (
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "10px" }}>
+            <input
+              type="text"
+              value={classroomInputs[rowData.id] || ""} // Get value for the specific row
+              onChange={(e) => handleInputChange(rowData.id, e.target.value)} // Update the value for the specific row
+              placeholder="Enter Classroom"
+              style={{ marginRight: "10px" }}
+            />
+            <Button
+              label="Save"
+              icon="pi pi-check"
+              className="p-button-sm p-button-success"
+              onClick={() => handleClassroomUpdate(rowData.id)} // Pass the specific row ID
+              disabled={!classroomInputs[rowData.id]} // Disable button if input is empty
+            />
+          </div>
+        );
+      }
+      return rowData.classroom || "Not Assigned";
+    }}
+    style={{ width: "15%" }} 
+  />    
+  ) : null
+  }
           {/* Guide Quota Column */}
           {(localStorage.getItem("userType") === '3' || localStorage.getItem("userType") === '4' || localStorage.getItem("userType") === '2') && (
           <Column
@@ -410,6 +418,7 @@ export default function ReadyToursTable() {
 
         </DataTable>
       </div>
+    </div>
     </div>
   );
 }

@@ -1,17 +1,27 @@
 .advisor-page-container {
-    padding: 10px 20px;
-    max-width: 1200px;
-    margin: auto;
-    font-family: Arial, sans-serif;
-    margin-left: 260px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background-color: #f9f9f9; 
+    min-height: 100vh; 
+    box-sizing: border-box;
 }
 
-/* Title */
+.advisor-page-content {
+    width: 80%; 
+    background-color: #ffffff; 
+    padding: 30px;
+    border-radius: 10px;
+    margin: 20px 40px 20px auto;
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+}
+
 .advisor-page-title {
     text-align: center;
     font-size: 2rem;
-    color: black;
-    margin-top: 10px;
+    color: #333333; 
     margin-bottom: 30px;
 }
 
@@ -20,21 +30,23 @@
     flex-direction: column;
 }
 
-/* Button Styling */
 .advisor-button {
     margin: 5px 0;
     cursor: pointer;
     text-decoration: underline;
     color: blue;
+    font-size: 14px;
 }
 
 .advisor-button:hover {
     color: #0056b3;
 }
 
-/* Advisor Card Styling */
 .advisor-details-section {
     margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
 .advisor-card {
@@ -43,8 +55,8 @@
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     padding: 20px;
-    margin-bottom: 20px;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    width: 100%;
 }
 
 .advisor-card:hover {
@@ -52,16 +64,6 @@
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
-/* Title */
-.advisor-page-title {
-    text-align: center;
-    font-size: 2rem;
-    color: black; /* Change from green to black */
-    margin-bottom: 30px;
-}
-
-
-/* List Styling */
 .advisor-guides-list {
     list-style-type: none;
     padding: 0;
@@ -75,4 +77,10 @@
 
 .advisor-guide-item:last-child {
     border-bottom: none;
+}
+
+@media (max-width: 768px) {
+    .advisor-page-content {
+        width: 95%; 
+    }
 }

@@ -1,23 +1,22 @@
 .outer-container {
   display: flex;
   justify-content: center;
-  align-items: flex-start; /* Yukarı hizalamak için kullanılır */
+  align-items: flex-start; 
   height: 100vh;
-  position: relative; /* Aşağı kaydırma için position gerekli */
+  position: relative; 
 }
 
 .container {
   display: flex;
   height: 85vh;
   width: 85vw;
-  border-radius: 16px; /* Köşeleri yuvarlat */
-  overflow: hidden; /* Taşan içerikleri kes */
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3); /* Gölge efekti */
+  border-radius: 16px; 
+  overflow: hidden; 
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3); 
   background-color: white;
-  margin-top: 50px; /* Container'ı aşağı kaydır */
+  margin-top: 50px;
   margin-left: 110px;
 }
-
 
 .left-side {
   width: 40%;
@@ -31,9 +30,9 @@
 }
 
 .bilkent-logo {
-  width: 200px; /* Adjust size as needed */
+  width: 200px; 
   height: auto;
-  margin-bottom: 20px; /* Space between the logo and the heading */
+  margin-bottom: 20px; 
 }
 
 .login-page {
@@ -80,3 +79,30 @@
   cursor: pointer;
   font-size: 14px;
 }
+
+.go-home-button {
+  position: absolute;
+  top: 20px; 
+  left: 20px; 
+  background-color: #5a6268;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.go-home-button:hover {
+  background-color: #0056b3;
+  transform: scale(1.05); 
+}
+
+.go-home-button:active {
+  transform: scale(0.95); 
+}
+
+

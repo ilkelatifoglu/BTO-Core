@@ -3,11 +3,15 @@
     display: flex;
     flex-direction: column;
     align-items: center; /* Center horizontally */
-    padding: 2rem;
-    margin-top: 2rem; /* Push the table slightly down from the very top */
-    width: 80%;
+    padding: 30px;
     box-sizing: border-box;
-    margin-left: 260px;
+    background-color: white; 
+    border-radius: 10px;
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+    flex: 1;
+    margin: 20px 40px 20px auto;
+    overflow-y: auto;
+    max-width: 80%;
 }
 
 /* Table title styling */
@@ -168,6 +172,4 @@
   .done-row {
     background-color: #3fbf3f 
   }
-  
-  /* Default READY status inherits no special row styles */
   

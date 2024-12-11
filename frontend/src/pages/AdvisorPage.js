@@ -4,6 +4,7 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import "./AdvisorPage.css"; // CSS for the page
 import Sidebar from "../components/common/Sidebar";
+import { Toast } from "primereact/toast";
 
 const daysOptions = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Weekend"];
 
@@ -12,7 +13,8 @@ const AdvisorPage = () => {
     const [groupedAdvisors, setGroupedAdvisors] = useState(
         daysOptions.reduce((acc, day) => ({ ...acc, [day]: [] }), {}) // Initialize grouped advisors
     );
-    const advisorRefs = useRef({}); // References to advisor details for smooth scrolling
+    const advisorRefs = useRef({});
+    const toast = useRef(null);
 
     useEffect(() => {
         const fetchAdvisors = async () => {
@@ -30,8 +32,27 @@ const AdvisorPage = () => {
 
                 setAdvisors(advisorsData);
                 setGroupedAdvisors(grouped);
+                
+                // Show success toast
+                if (toast.current) {
+                    toast.current.show({
+                        severity: "success",
+                        summary: "Advisors Loaded",
+                        detail: "Advisors have been successfully fetched.",
+                        life: 3000,
+                    });
+                }
             } catch (error) {
                 console.error("Error fetching advisors:", error);
+                // Show error toast
+                if (toast.current) {
+                    toast.current.show({
+                        severity: "error",
+                        summary: "Fetch Failed",
+                        detail: `Failed to fetch advisors: ${error.message}`,
+                        life: 5000,
+                    });
+                }
             }
         };
 
@@ -47,28 +68,30 @@ const AdvisorPage = () => {
     const renderDayColumn = (day) => {
         return (
             <div style={{ display: "flex", flexDirection: "column" }}>
-            {groupedAdvisors[day]?.map((advisor) => (
-                <div
-                    key={advisor.advisor_id}
-                    className="advisor-button"
-                    onClick={() => scrollToAdvisor(advisor.advisor_id)}
-                    style={{
-                        margin: "5px 0",
-                        cursor: "pointer",
-                        textDecoration: "underline",
-                        color: "blue",
-                    }}
-                >
-                    {advisor.advisor_name}
-                </div>
-            ))}
-        </div>
+                {groupedAdvisors[day]?.map((advisor) => (
+                    <div
+                        key={advisor.advisor_id}
+                        className="advisor-button"
+                        onClick={() => scrollToAdvisor(advisor.advisor_id)}
+                        style={{
+                            margin: "5px 0",
+                            cursor: "pointer",
+                            textDecoration: "underline",
+                            color: "blue",
+                        }}
+                    >
+                        {advisor.advisor_name}
+                    </div>
+                ))}
+            </div>
         );
     };
 
     return (
         <div>
             <Sidebar />
+            {/* Toast component placed here */}
+            <Toast ref={toast} />
             <div className="advisor-page-container">
                 <h1 className="advisor-page-title">Advisor Schedule</h1>
                 <DataTable

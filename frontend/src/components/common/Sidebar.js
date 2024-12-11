@@ -237,7 +237,7 @@ const Sidebar = ({ setCurrentPage }) => {
             {isExpanded && <span>Puantaj Page</span>}
           </li>
             )}
-             {(userType === 4) && (
+             {(userType === 4 || userType === 3) && (
           <li
             className="menu__item"
             onClick={() => handleNavigation("approve-tour")}
@@ -282,6 +282,24 @@ const Sidebar = ({ setCurrentPage }) => {
             {isExpanded && <span>Feedback Page</span>}
           </li>      
           )}
+          {(userType === 4 || userType === 3 || userType === 2) && (   
+          <li
+            className="menu__item"
+            onClick={() => handleNavigation("advisors")}
+          >
+            <i className="pi pi-briefcase"></i>
+            {isExpanded && <span>Advisors</span>}
+          </li>
+           )}
+            {(userType === 4 || userType === 3 || userType === 2 || userType === 1) && (   
+          <li
+            className="menu__item"
+            onClick={() => handleNavigation("my-tours")}
+          >
+            <i className="pi pi-map"></i>
+            {isExpanded && <span>My Tours</span>}
+          </li>
+           )}
           {userType === 4 && (
             <li
               className="menu__item"

@@ -1,17 +1,19 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { Toast } from "primereact/toast"; // (2) Importing Toast
 import Sidebar from "../components/common/Sidebar";
 import TourDaysChart from "../components/data/TourDaysChart";
 import CancellationStatsPieChart from "../components/data/CancellationStatsChart";
-import ToursByCityChart from "../components/data/ToursByCityChart"; // Import the new component
-import SchoolStudentChart from "../components/data/SchoolStudent"; // Corrected import
-import { fetchTourData } from "../services/DataService"; // Removed fetchSchoolStudentData
+import ToursByCityChart from "../components/data/ToursByCityChart"; 
+import SchoolStudentChart from "../components/data/SchoolStudent";
+import { fetchTourData } from "../services/DataService";
 import "./DataInsightPage.css";
 
 const DataInsightPage = () => {
   const [filter, setFilter] = useState("weekly");
   const [periodIndex, setPeriodIndex] = useState(0);
   const [tourData, setTourData] = useState(null);
-  
+  const toast = useRef(null); // (3) Toast ref
+
   useEffect(() => {
     setPeriodIndex(0); 
   }, [filter]);
@@ -21,8 +23,26 @@ const DataInsightPage = () => {
       try {
         const data = await fetchTourData(filter, periodIndex);
         setTourData(data);
+
+        // Show success toast after data is loaded
+        toast.current.clear(); // (4) Clear before showing toast
+        toast.current.show({
+          severity: "success",
+          summary: "Success",
+          detail: "Data loaded successfully.",
+          life: 3000,
+        });
       } catch (error) {
         console.error("Error fetching tour data:", error);
+
+        // Show error toast if data fetching fails
+        toast.current.clear();
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Failed to load data. Please try again.",
+          life: 3000,
+        });
       }
     };
 
@@ -46,12 +66,12 @@ const DataInsightPage = () => {
 
   const handleFilterChange = (type) => {
     setFilter(type.toLowerCase());
-    // Removed setCurrentYear as it's now managed within SchoolStudentChart
   };
 
   return (
     <div className="data-insight-page">
       <Sidebar />
+      <Toast ref={toast} /> {/* (5) Adding Toast component to JSX */}
       <div className="data-insight-container">
       <div className="data-insight-content">
         <h1 className="data-insight-title">Data Insights</h1>
@@ -96,7 +116,7 @@ const DataInsightPage = () => {
                 handleNext={handleNext}
                 maxPeriod={maxPeriod}
               />
-              <SchoolStudentChart /> {/* Removed props */}
+              <SchoolStudentChart />
             </>
           ) : (
             <p>Loading...</p>

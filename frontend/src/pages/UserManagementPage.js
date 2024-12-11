@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import "./UserManagementPage.css"; // Include CSS for styling
 import Sidebar from "../components/common/Sidebar";
 import { MultiSelect } from "primereact/multiselect"; // Import MultiSelect component
+import { Toast } from "primereact/toast"; // Import Toast
 
 const daysOptions = [
     { label: "Monday", value: "Monday" },
@@ -28,6 +29,10 @@ const UserManagementPage = () => {
         days: [],
     });
     const [error, setError] = useState("");
+    const toast = useRef(null); // Create a ref for Toast
+
+    // Replace this with your method of getting the current user's email
+    const currentUserEmail = localStorage.getItem("email") || "current.user@example.com";
 
     // Fetch advisors on component mount
     useEffect(() => {
@@ -71,41 +76,102 @@ const UserManagementPage = () => {
         e.preventDefault();
         try {
             const response = await axios.post("http://localhost:3001/auth/register", formData);
-            alert(response.data.message);
+            toast.current.clear();
+            toast.current.show({
+                severity: "success",
+                summary: "Success",
+                detail: response.data.message,
+                life: 3000,
+            });
             resetForm();
         } catch (error) {
             console.error("Error during registration:", error);
-            alert(error.response?.data?.message || "An error occurred while registering.");
+            toast.current.clear();
+            toast.current.show({
+                severity: "error",
+                summary: "Error",
+                detail: error.response?.data?.message || "An error occurred while registering.",
+                life: 3000,
+            });
         }
     };
 
     const handleRemoveUserSubmit = async (e) => {
         e.preventDefault();
+
+        // Prevent removing self
+        if (formData.email === currentUserEmail) {
+            toast.current.clear();
+            toast.current.show({
+                severity: "error",
+                summary: "Error",
+                detail: "You cannot remove your own account.",
+                life: 3000,
+            });
+            return;
+        }
+
         try {
             const response = await axios.post("http://localhost:3001/user-management/remove", {
                 email: formData.email,
             });
-            alert(response.data.message);
+            toast.current.clear();
+            toast.current.show({
+                severity: "success",
+                summary: "Success",
+                detail: response.data.message,
+                life: 3000,
+            });
             resetForm();
         } catch (error) {
             console.error("Error removing user:", error);
-            alert(error.response?.data?.message || "An error occurred while removing the user.");
+            toast.current.clear();
+            toast.current.show({
+                severity: "error",
+                summary: "Error",
+                detail: error.response?.data?.message || "An error occurred while removing the user.",
+                life: 3000,
+            });
         }
     };
 
     const handleChangeRoleSubmit = async (e) => {
         e.preventDefault();
+        // Check if the user is trying to change their own role
+        if (formData.email === currentUserEmail) {
+            toast.current.clear();
+            toast.current.show({
+                severity: "error",
+                summary: "Error",
+                detail: "You cannot change your own user role.",
+                life: 3000,
+            });
+            return;
+        }
+
         try {
             const response = await axios.post("http://localhost:3001/user-management/changeRole", {
                 email: formData.email,
                 new_role: formData.role,
                 days: formData.days,
             });
-            alert(response.data.message);
+            toast.current.clear();
+            toast.current.show({
+                severity: "success",
+                summary: "Success",
+                detail: response.data.message,
+                life: 3000,
+            });
             resetForm();
         } catch (error) {
             console.error("Error changing role:", error);
-            alert(error.response?.data?.message || "An error occurred while changing the role.");
+            toast.current.clear();
+            toast.current.show({
+                severity: "error",
+                summary: "Error",
+                detail: error.response?.data?.message || "An error occurred while changing the role.",
+                life: 3000,
+            });
         }
     };
 
@@ -116,11 +182,23 @@ const UserManagementPage = () => {
                 email: formData.email,
                 crew_no: formData.crew_no,
             });
-            alert(response.data.message);
+            toast.current.clear();
+            toast.current.show({
+                severity: "success",
+                summary: "Success",
+                detail: response.data.message,
+                life: 3000,
+            });
             resetForm();
         } catch (error) {
             console.error("Error updating crew number:", error);
-            alert(error.response?.data?.message || "An error occurred while updating the crew number.");
+            toast.current.clear();
+            toast.current.show({
+                severity: "error",
+                summary: "Error",
+                detail: error.response?.data?.message || "An error occurred while updating the crew number.",
+                life: 3000,
+            });
         }
     };
 
@@ -128,7 +206,8 @@ const UserManagementPage = () => {
         <div>
             <Sidebar />
             <div className="user-management-container">
-            <div className="user-management-content">
+              <Toast ref={toast} /> {/* Add Toast Component */}
+              <div className="user-management-content">
                 <h1>User Management</h1>
                 <div className="action-selector">
                     <label>Select Action:</label>
@@ -194,7 +273,7 @@ const UserManagementPage = () => {
                                     <option value="candidate guide">Candidate Guide</option>
                                     <option value="advisor">Advisor</option>
                                     <option value="guide">Guide</option>
-                                    <option value="coordinator">Coordinator</option> {/* Add Coordinator Option */}
+                                    <option value="coordinator">Coordinator</option>
                                 </select>
                             </div>
 
@@ -233,26 +312,27 @@ const UserManagementPage = () => {
                         </form>
                     </div>
                 )}
-            {action === "removeByEmail" && (
-                <div className="form-container">
-                    <h2>Remove User by Email</h2>
-                    <form onSubmit={handleRemoveUserSubmit}>
-                        <div className="form-group">
-                            <label>Email:</label>
-                            <input
-                                type="email"
-                                name="email"
-                                value={formData.email}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
-                        <button type="submit">Remove User</button>
-                    </form>
-                </div>
-            )}
 
-            {action === "changeStatus" && (
+                {action === "removeByEmail" && (
+                    <div className="form-container">
+                        <h2>Remove User by Email</h2>
+                        <form onSubmit={handleRemoveUserSubmit}>
+                            <div className="form-group">
+                                <label>Email:</label>
+                                <input
+                                    type="email"
+                                    name="email"
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </div>
+                            <button type="submit">Remove User</button>
+                        </form>
+                    </div>
+                )}
+
+                {action === "changeStatus" && (
                     <div className="form-container">
                         <h2>Change User Status</h2>
                         <form onSubmit={handleChangeRoleSubmit}>
@@ -306,7 +386,6 @@ const UserManagementPage = () => {
                         </form>
                     </div>
                 )}
-
 
                 {action === "updateCrewNo" && (
                     <div className="form-container">

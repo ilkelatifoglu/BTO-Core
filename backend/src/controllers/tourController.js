@@ -373,30 +373,105 @@ exports.cancelTour = async (req, res) => {
   const { token } = req.query;
 
   try {
-    // Verify the token
+    // Step 1: Verify the token
     const decoded = verifyToken(token);
-
-    // Extract the tour ID from the token payload
     const { tourId } = decoded;
 
     if (!tourId) {
-      return res.status(400).json({ message: "Invalid cancellation token" });
+      return res.status(400).json({ message: "Invalid cancellation token." });
     }
 
-    // Update the tour status to CANCELED
-    const queryUpdate = 'UPDATE "tours" SET "tour_status" = $1 WHERE "id" = $2';
-    await query(queryUpdate, ["CANCELLED", tourId]);
+    // Step 2: Check if the cancellation token has already been used
+    const tourResult = await query(
+      'SELECT cancellation_used, school_id, date, day FROM "tours" WHERE "id" = $1',
+      [tourId]
+    );
+
+    if (tourResult.rows.length === 0) {
+      return res.status(404).json({ message: "Tour not found." });
+    }
+
+    const { cancellation_used, school_id, date, day } = tourResult.rows[0];
+
+    if (cancellation_used) {
+      return res
+        .status(400)
+        .json({ message: "This cancellation link has already been used." });
+    }
+
+    // Step 3: Cancel the tour
+    await query(
+      'UPDATE "tours" SET "tour_status" = $1, "cancellation_used" = TRUE WHERE "id" = $2',
+      ["CANCELLED", tourId]
+    );
+
+    // Step 4: Fetch school name
+    const schoolResult = await query(
+      'SELECT school_name FROM "schools" WHERE "id" = $1',
+      [school_id]
+    );
+    const school_name =
+      schoolResult.rows.length > 0
+        ? schoolResult.rows[0].school_name
+        : "Unknown School";
+
+    // Step 5: Fetch assigned guides and send emails
+    const guideIdsResult = await query(
+      'SELECT guide_id FROM "tour_guide" WHERE "tour_id" = $1',
+      [tourId]
+    );
+    const guideIds = guideIdsResult.rows.map((row) => row.guide_id);
+
+    if (guideIds.length > 0) {
+      const userResult = await query(
+        'SELECT email FROM "users" WHERE id = ANY($1::int[])',
+        [guideIds]
+      );
+      const emails = userResult.rows.map((row) => row.email).filter((email) => !!email);
+
+      if (emails.length > 0) {
+        const subject = "Tour Cancelled";
+        const formattedDate = new Date(date).toLocaleDateString("en-GB", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        });
+        const html = `
+          <p>Dear Guide,</p>
+          <p>We regret to inform you that the following tour has been cancelled:</p>
+          <p><strong>School:</strong> ${school_name}<br/>
+          <strong>Date:</strong> ${formattedDate} (${day})</p>
+          <p>We apologize for any inconvenience caused. If you have any questions, please contact us.</p>
+          <p>Best regards,<br/><strong>BTO Core Team</strong></p>
+        `;
+
+        try {
+          await sendEmail({
+            to: emails.join(","),
+            subject,
+            html,
+          });
+          console.log("Cancellation emails sent to assigned guides.");
+        } catch (emailError) {
+          console.error("Failed to send cancellation emails:", emailError);
+          // Not throwing here so that the cancellation process completes
+        }
+      } else {
+        console.log("No emails found for assigned guides.");
+      }
+    } else {
+      console.log("No guides assigned to this tour.");
+    }
 
     res.status(200).send("<h1>Tour successfully canceled.</h1>");
   } catch (error) {
     console.error("Error canceling tour:", error);
 
-    // Handle token expiration
     if (error.name === "TokenExpiredError") {
-      return res.status(400).json({ message: "Cancellation token has expired" });
+      return res.status(400).json({ message: "Cancellation token has expired." });
     }
 
-    res.status(500).json({ message: "Failed to cancel tour" });
+    res.status(500).json({ message: "Failed to cancel the tour." });
   }
 };
 

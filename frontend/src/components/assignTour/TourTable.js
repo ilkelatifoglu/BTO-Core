@@ -247,6 +247,7 @@ export default function ReadyToursTable() {
 
 
   return (
+    <div className="page-container">
     <div className="assign-tour-container">
       <h1 className="table-title">Tour Assignment</h1>
       <FilterBar onFilterChange={handleFilterChange} /> {/* Render FilterBar */}
@@ -417,6 +418,7 @@ export default function ReadyToursTable() {
 
         </DataTable>
       </div>
+    </div>
     </div>
   );
 }

@@ -5,6 +5,7 @@ import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog"; // Import Dialog from PrimeReact
 import { getIndividualTours, approveTour, rejectTour } from "../../services/IndividualTourService"; // Import the service
 import '../approveTour/TourApprovalTable.css'; // Assuming you saved the CSS in this file
+import './IndividualTourTable.css';
 
 const IndividualToursTable = () => {
     const [tours, setTours] = useState([]);
@@ -149,7 +150,7 @@ const IndividualToursTable = () => {
     };
 
     return (
-        <div className="table-wrapper" style={{ marginLeft: "200px", overflowX: "hidden" }}>
+        <div className="table-wrapper" style={{ marginLeft: "10px", overflowX: "hidden" }}>
             <h1 style={{ textAlign: "center", margin: "20px 0" }}>Individual Tours</h1>
             <DataTable
                 value={tours}

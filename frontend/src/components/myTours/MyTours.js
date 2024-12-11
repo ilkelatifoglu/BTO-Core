@@ -1,43 +1,60 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import AssignTourService from "../../services/AssignTourService";
 import { fetchFairs, unassignGuide } from "../../services/fairService";
+import { Toast } from "primereact/toast";
+import { Dialog } from "primereact/dialog"; // Import Dialog from PrimeReact
 import "./MyTours.css";
 import Sidebar from '../../components/common/Sidebar';
 
 export default function MyTours() {
-    const [items, setItems] = useState([]); // Combined data of tours and fairs
-    const [error, setError] = useState(null);
+    const [items, setItems] = useState([]);
+    const [confirmVisible, setConfirmVisible] = useState(false); // Manage dialog visibility
+    const [pendingItem, setPendingItem] = useState(null); // Item to withdraw from
+    const toast = useRef(null);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // Fetch tours
                 const tours = await AssignTourService.getMyTours();
+                const fairs = await fetchFairs();
 
-                // Fetch assigned fairs for the user
-                const fairs = await fetchFairs(); // You might filter assigned fairs based on the user
-
-                // Combine and format data
                 const combinedData = [
                     ...tours.map((tour) => ({
                         ...tour,
-                        type: "tour", // Mark as a tour
-                        event: tour.school_name, // Event for tour is the school name
+                        type: "tour",
+                        event: tour.school_name,
                     })),
                     ...fairs
-                        .filter((fair) => [fair.guide_1_id, fair.guide_2_id, fair.guide_3_id].includes(parseInt(localStorage.getItem("userId")))) // Filter assigned fairs
+                        .filter((fair) =>
+                            [fair.guide_1_id, fair.guide_2_id, fair.guide_3_id]
+                                .includes(parseInt(localStorage.getItem("userId"), 10))
+                        )
                         .map((fair) => ({
                             ...fair,
-                            type: "fair", // Mark as a fair
-                            event: fair.organization_name, // Event for fair is the organization name
+                            type: "fair",
+                            event: fair.organization_name,
                         })),
                 ];
 
                 setItems(combinedData);
+
+                toast.current.clear();
+                toast.current.show({
+                    severity: "success",
+                    summary: "Success",
+                    detail: "Assignments loaded successfully.",
+                    life: 3000,
+                });
             } catch (err) {
-                setError(err.message || "Failed to fetch data");
+                toast.current.clear();
+                toast.current.show({
+                    severity: "error",
+                    summary: "Error",
+                    detail: err.message || "Failed to fetch data",
+                    life: 3000,
+                });
             }
         };
 
@@ -45,66 +62,117 @@ export default function MyTours() {
     }, []);
 
     const dateTemplate = (rowData) => new Date(rowData.date).toLocaleDateString();
+
     const dayTemplate = (rowData) => {
         const date = new Date(rowData.date);
         return date.toLocaleString("en-us", { weekday: "long" });
     };
 
-    const timeTemplate = (rowData) => (rowData.type === "tour" ? rowData.time || "Not Assigned" : "-");
+    const timeTemplate = (rowData) =>
+        rowData.type === "tour" ? rowData.time || "Not Assigned" : "-";
 
-    const handleWithdraw = async (item) => {
+    const showConfirmDialog = (item) => {
+        setPendingItem(item);
+        setConfirmVisible(true);
+    };
+
+    const hideConfirmDialog = () => {
+        setConfirmVisible(false);
+        setPendingItem(null);
+    };
+
+    const confirmWithdraw = async () => {
+        if (!pendingItem) return;
+        const item = pendingItem;
         const isFair = item.type === "fair";
 
-        if (window.confirm(`Are you sure you want to withdraw from this ${isFair ? "fair" : "tour"}?`)) {
-            try {
-                if (isFair) {
-                    // Unassign from fair
-                    const userId = parseInt(localStorage.getItem("userId"));
-                    const column =
-                        item.guide_1_id === userId
-                            ? "guide_1_id"
-                            : item.guide_2_id === userId
-                            ? "guide_2_id"
-                            : "guide_3_id";
+        hideConfirmDialog();
+        toast.current.clear();
+        try {
+            if (isFair) {
+                const userId = parseInt(localStorage.getItem("userId"), 10);
+                const column =
+                    item.guide_1_id === userId
+                        ? "guide_1_id"
+                        : item.guide_2_id === userId
+                        ? "guide_2_id"
+                        : "guide_3_id";
 
-                    await unassignGuide(item.id, column);
-                } else {
-                    // Withdraw from tour
-                    await AssignTourService.withdrawFromTour(item.id);
-                }
-
-                // Update the UI
-                setItems((prevItems) => prevItems.filter((i) => i.id !== item.id));
-            } catch (error) {
-                console.error(`Failed to withdraw from ${isFair ? "fair" : "tour"}:`, error);
-                setError(error.message || `Failed to withdraw from ${isFair ? "fair" : "tour"}`);
+                await unassignGuide(item.id, column);
+            } else {
+                await AssignTourService.withdrawFromTour(item.id);
             }
+
+            setItems((prevItems) => prevItems.filter((i) => i.id !== item.id));
+
+            toast.current.show({
+                severity: "success",
+                summary: "Success",
+                detail: `${isFair ? "Fair" : "Tour"} withdrawn successfully.`,
+                life: 3000,
+            });
+        } catch (error) {
+            toast.current.show({
+                severity: "error",
+                summary: "Error",
+                detail: error.message || `Failed to withdraw from ${isFair ? "fair" : "tour"}`,
+                life: 3000,
+            });
         }
     };
 
     const actionTemplate = (rowData) => (
         <button
             className="withdraw-button"
-            onClick={() => handleWithdraw(rowData)}
+            onClick={() => showConfirmDialog(rowData)}
         >
             Withdraw
         </button>
     );
 
+    const confirmDialogFooter = (
+        <div>
+            <button
+                className="p-button p-component p-button-text"
+                onClick={hideConfirmDialog}
+            >
+                No
+            </button>
+            <button
+                className="p-button p-component p-button-danger"
+                onClick={confirmWithdraw}
+            >
+                Yes
+            </button>
+        </div>
+    );
+
     return (
         <div className="my-tours-container">
             <Sidebar />
+            <Toast ref={toast} />
             <div className="my-tours-content">
-            <h1>My Assignments</h1>
-            {error && <p className="error-message">{error}</p>}
-            <DataTable value={items} paginator rows={10}>
-                <Column field="date" header="Date" body={dateTemplate}></Column>
-                <Column field="date" header="Day" body={dayTemplate}></Column>
-                <Column field="event" header="Event"></Column>
-                <Column field="time" header="Time" body={timeTemplate}></Column>
-                <Column body={actionTemplate} header="Actions"></Column>
-            </DataTable>
-        </div>
+                <h1>My Assignments</h1>
+                <DataTable value={items} paginator rows={10}>
+                    <Column field="date" header="Date" body={dateTemplate}></Column>
+                    <Column field="date" header="Day" body={dayTemplate}></Column>
+                    <Column field="event" header="Event"></Column>
+                    <Column field="time" header="Time" body={timeTemplate}></Column>
+                    <Column body={actionTemplate} header="Actions"></Column>
+                </DataTable>
+            </div>
+
+            {/* Confirmation Dialog */}
+            <Dialog
+                visible={confirmVisible}
+                onHide={hideConfirmDialog}
+                header="Confirm Withdrawal"
+                footer={confirmDialogFooter}
+                modal
+                closable={false}
+            >
+                <p>Are you sure you want to withdraw from this {pendingItem?.type === "fair" ? "fair" : "tour"}?</p>
+            </Dialog>
         </div>
     );
 }

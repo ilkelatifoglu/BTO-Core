@@ -1,28 +1,45 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { getUserWorkEntries, deleteWorkEntry, saveWorkload } from "../../services/WorkService";
 import EditWorkScreen from "./EditWorkScreen"; // Import the dialog component
 import AddWork from "./AddWork"; // Import AddWork component
 import { Button } from "primereact/button";
+import { Toast } from "primereact/toast"; // (2) Importing Toast
 import "./PuantajComponents.css";
 
 export default function UserWorkTable() {
     const [workEntries, setWorkEntries] = useState([]);
-    const [workloadInputs, setWorkloadInputs] = useState({}); // Store workload inputs for Tour rows
-    const [selectedWork, setSelectedWork] = useState(null); // Store selected work for editing
-    const [isEditScreenOpen, setIsEditScreenOpen] = useState(false); // Control the edit dialog visibility
+    const [workloadInputs, setWorkloadInputs] = useState({});
+    const [selectedWork, setSelectedWork] = useState(null);
+    const [isEditScreenOpen, setIsEditScreenOpen] = useState(false);
+
+    const toast = useRef(null); // (3) Create a ref for Toast
 
     useEffect(() => {
-        const userId = localStorage.getItem("userId"); // Fetch logged-in user ID from localStorage
+        const userId = localStorage.getItem("userId");
 
-        // Fetch only the logged-in user's work entries
         getUserWorkEntries(userId)
             .then((data) => {
                 setWorkEntries(data);
+                // Notify success after data is loaded
+                toast.current.clear();
+                toast.current.show({
+                    severity: "success",
+                    summary: "Success",
+                    detail: "Work entries loaded successfully.",
+                    life: 3000,
+                });
             })
             .catch((error) => {
                 console.error("Error fetching user work entries:", error);
+                toast.current.clear();
+                toast.current.show({
+                    severity: "error",
+                    summary: "Error",
+                    detail: `Failed to load work entries: ${error.message}`,
+                    life: 3000,
+                });
             });
     }, []);
 
@@ -37,29 +54,48 @@ export default function UserWorkTable() {
         );
         if (confirmDelete) {
             try {
-                await deleteWorkEntry(rowData.work_id); // Ensure this is implemented in your service
+                await deleteWorkEntry(rowData.work_id);
                 setWorkEntries((prevEntries) =>
                     prevEntries.filter((entry) => entry.work_id !== rowData.work_id)
                 );
-                alert("Work entry deleted successfully.");
+                toast.current.clear();
+                toast.current.show({
+                    severity: "success",
+                    summary: "Success",
+                    detail: `Work entry ${rowData.work_id} deleted successfully.`,
+                    life: 3000,
+                });
             } catch (error) {
                 console.error("Error deleting work entry:", error);
-                alert("Failed to delete work entry.");
+                toast.current.clear();
+                toast.current.show({
+                    severity: "error",
+                    summary: "Error",
+                    detail: `Failed to delete work entry ${rowData.work_id}: ${error.message}`,
+                    life: 3000,
+                });
             }
+            refreshData();
         }
-        refreshData();
     };
 
     const refreshData = async () => {
         try {
-            const userId = localStorage.getItem("userId"); // Fetch logged-in user ID again
-
+            const userId = localStorage.getItem("userId");
             const data = await getUserWorkEntries(userId);
             setWorkEntries(data);
         } catch (error) {
             console.error("Error refreshing data:", error);
+            toast.current.clear();
+            toast.current.show({
+                severity: "error",
+                summary: "Error",
+                detail: `Failed to refresh data: ${error.message}`,
+                life: 3000,
+            });
         }
     };
+
     const handleSaveWorkload = async (rowData) => {
         const confirmSave = window.confirm("Are you sure you want to save this workload?");
         if (!confirmSave) return;
@@ -68,16 +104,28 @@ export default function UserWorkTable() {
         const totalWorkload = (parseInt(hours, 10) || 0) * 60 + (parseInt(minutes, 10) || 0);
 
         try {
-            await saveWorkload(rowData.work_id, totalWorkload); // Save workload in the database
+            await saveWorkload(rowData.work_id, totalWorkload);
             setWorkEntries((prevEntries) =>
                 prevEntries.map((entry) =>
                     entry.work_id === rowData.work_id ? { ...entry, workload: totalWorkload } : entry
                 )
             );
-            alert("Workload saved successfully!");
+            toast.current.clear();
+            toast.current.show({
+                severity: "success",
+                summary: "Success",
+                detail: `Workload for entry ${rowData.work_id} saved successfully.`,
+                life: 3000,
+            });
         } catch (error) {
             console.error("Error saving workload:", error);
-            alert("Failed to save workload.");
+            toast.current.clear();
+            toast.current.show({
+                severity: "error",
+                summary: "Error",
+                detail: `Failed to save workload for ${rowData.work_id}: ${error.message}`,
+                life: 3000,
+            });
         }
     };
 
@@ -87,6 +135,7 @@ export default function UserWorkTable() {
             [workId]: { ...prevInputs[workId], [field]: value },
         }));
     };
+
     const handleSaveEdit = (updatedWork) => {
         setWorkEntries((prevEntries) =>
             prevEntries.map((entry) =>
@@ -94,6 +143,13 @@ export default function UserWorkTable() {
             )
         );
         refreshData();
+        toast.current.clear();
+        toast.current.show({
+            severity: "success",
+            summary: "Success",
+            detail: `Work entry ${updatedWork.work_id} updated successfully.`,
+            life: 3000,
+        });
     };
 
     const formatDate = (date) => {
@@ -102,12 +158,6 @@ export default function UserWorkTable() {
 
     const formatTime = (time) => {
         return new Date(`1970-01-01T${time}`).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-    };
-
-    const formatWorkload = (workload) => {
-        const hours = Math.floor(workload / 60);
-        const minutes = workload % 60;
-        return `${hours} hour(s) ${minutes} minute(s)`;
     };
 
     const renderWorkload = (rowData) => {
@@ -133,7 +183,9 @@ export default function UserWorkTable() {
                 </div>
             );
         }
-        return `${Math.floor(rowData.workload / 60)} hour(s) ${rowData.workload % 60} minute(s)`;
+        const hours = Math.floor(rowData.workload / 60);
+        const mins = rowData.workload % 60;
+        return `${hours} hour(s) ${mins} minute(s)`;
     };
 
     const renderActions = (rowData) => {
@@ -148,7 +200,7 @@ export default function UserWorkTable() {
             );
         }
         if (rowData.work_type === "Tour" || rowData.is_approved) {
-            return <span style={{ color: "#aaa" }}>Not Editable</span>; // Placeholder for no action
+            return <span style={{ color: "#aaa" }}>Not Editable</span>;
         }
         return (
             <>
@@ -170,6 +222,7 @@ export default function UserWorkTable() {
 
     return (
         <div className="data-table-container">
+            <Toast ref={toast} /> {/* (5) Adding the Toast to the JSX */}
             <div className="data-table-content">
                 <h1>My Work Entries</h1>
                 <DataTable
@@ -201,12 +254,10 @@ export default function UserWorkTable() {
                     />
                 </DataTable>
 
-                {/* Render AddWork component */}
                 <div className="add-work-container">
                     <AddWork refreshData={refreshData} />
                 </div>
 
-                {/* Edit Dialog */}
                 <EditWorkScreen
                     isOpen={isEditScreenOpen}
                     onClose={() => setIsEditScreenOpen(false)}

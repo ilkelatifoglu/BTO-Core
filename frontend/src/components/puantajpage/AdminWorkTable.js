@@ -1,17 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { getAllWorkEntries, updateWorkEntry } from "../../services/WorkService";
 import { Checkbox } from "primereact/checkbox";
 import { Button } from "primereact/button";
+import { Toast } from "primereact/toast"; // (2) Import Toast
 import "./PuantajComponents.css";
 
 export default function AdminWorkTable() {
     const [workEntries, setWorkEntries] = useState([]);
     const [selectedEntries, setSelectedEntries] = useState({});
+    const toast = useRef(null); // (3) Toast ref
 
     useEffect(() => {
-        // Fetch all work entries
         getAllWorkEntries()
             .then((data) => {
                 const initialSelection = data.reduce((acc, entry) => {
@@ -20,44 +21,78 @@ export default function AdminWorkTable() {
                 }, {});
                 setWorkEntries(data);
                 setSelectedEntries(initialSelection);
+
+                // Success toast after loading data
+                toast.current.clear();
+                toast.current.show({
+                    severity: "success",
+                    summary: "Success",
+                    detail: "All work entries loaded successfully.",
+                    life: 3000,
+                });
             })
             .catch((error) => {
                 console.error("Error fetching work entries:", error);
+                toast.current.clear();
+                toast.current.show({
+                    severity: "error",
+                    summary: "Error",
+                    detail: `Failed to load work entries: ${error.message}`,
+                    life: 3000,
+                });
             });
     }, []);
 
     const handleCheckboxChange = (workId, checked) => {
         setSelectedEntries((prev) => ({
             ...prev,
-            [workId]: checked, // Update the state of the specific work_id
+            [workId]: checked,
         }));
     };
 
-
     const handleSubmit = async () => {
-        try {
-            // Filter and map only the changed rows
-            const updates = workEntries
-                .filter((entry) => selectedEntries[entry.work_id] !== entry.is_approved) // Only process rows with changes
-                .map((entry) => ({
-                    work_id: entry.work_id,
-                    is_approved: selectedEntries[entry.work_id],
-                    work_type: entry.work_type, // Include work_type
-                }));
+        const updates = workEntries
+            .filter((entry) => selectedEntries[entry.work_id] !== entry.is_approved)
+            .map((entry) => ({
+                work_id: entry.work_id,
+                is_approved: selectedEntries[entry.work_id],
+                work_type: entry.work_type,
+            }));
 
-            // Send updates to the backend
+        if (updates.length === 0) {
+            toast.current.clear();
+            toast.current.show({
+                severity: "info",
+                summary: "No Changes",
+                detail: "No updates to submit.",
+                life: 3000,
+            });
+            return;
+        }
+
+        try {
             for (const update of updates) {
                 await updateWorkEntry(update.work_id, update.is_approved, update.work_type);
             }
-
-            alert("Work entries updated successfully.");
+            toast.current.clear();
+            toast.current.show({
+                severity: "success",
+                summary: "Success",
+                detail: "Work entries updated successfully.",
+                life: 3000,
+            });
             refreshData();
         } catch (error) {
             console.error("Error updating work entries:", error);
-            alert("Failed to update work entries.");
+            toast.current.clear();
+            toast.current.show({
+                severity: "error",
+                summary: "Error",
+                detail: `Failed to update work entries: ${error.message}`,
+                life: 3000,
+            });
         }
     };
-
 
     const refreshData = async () => {
         try {
@@ -70,6 +105,13 @@ export default function AdminWorkTable() {
             setSelectedEntries(initialSelection);
         } catch (error) {
             console.error("Error refreshing data:", error);
+            toast.current.clear();
+            toast.current.show({
+                severity: "error",
+                summary: "Error",
+                detail: `Failed to refresh data: ${error.message}`,
+                life: 3000,
+            });
         }
     };
 
@@ -80,6 +122,7 @@ export default function AdminWorkTable() {
     const formatTime = (time) => {
         return new Date(`1970-01-01T${time}`).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
     };
+
     const formatWorkload = (workload) => {
         const hours = Math.floor(workload / 60);
         const minutes = workload % 60;
@@ -88,6 +131,7 @@ export default function AdminWorkTable() {
 
     return (
         <div className="data-table-container">
+            <Toast ref={toast} /> {/* (5) Added Toast component */}
             <div className="data-table-content">
                 <h1>All Work Entries</h1>
                 <DataTable

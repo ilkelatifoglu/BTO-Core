@@ -1,21 +1,23 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Dialog } from "primereact/dialog";
 import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
-import { editWorkEntry } from "../../services/WorkService"; // Import the service method
+import { Toast } from "primereact/toast";
+import { editWorkEntry } from "../../services/WorkService";
 
 function EditWorkScreen({ isOpen, onClose, workData, onSave }) {
     const [formData, setFormData] = useState({});
-    const [workHours, setWorkHours] = useState(""); // Workload hours
-    const [workMinutes, setWorkMinutes] = useState(""); // Workload minutes
-    const [dateTime, setDateTime] = useState(""); // Date-time input
+    const [workHours, setWorkHours] = useState("");
+    const [workMinutes, setWorkMinutes] = useState("");
+    const [dateTime, setDateTime] = useState("");
+    const toast = useRef(null);
 
     useEffect(() => {
         if (workData) {
             setFormData({ ...workData });
-            setWorkHours(Math.floor(workData.workload / 60)); // Initialize hours from workload
-            setWorkMinutes(workData.workload % 60); // Initialize minutes from workload
-            setDateTime(`${workData.date}T${workData.time}`); // Initialize date-time
+            setWorkHours(Math.floor(workData.workload / 60));
+            setWorkMinutes(workData.workload % 60);
+            setDateTime(`${workData.date}T${workData.time}`);
         }
     }, [workData]);
 
@@ -29,22 +31,25 @@ function EditWorkScreen({ isOpen, onClose, workData, onSave }) {
         setFormData((prev) => ({ ...prev, type: e.value }));
     };
 
+    const showToast = (severity, summary, detail) => {
+        if (toast.current) {
+            toast.current.clear();
+            toast.current.show({ severity, summary, detail, life: 3000 });
+        }
+    };
+
     const handleSave = async () => {
         if (!dateTime || (!workHours && !workMinutes)) {
-            alert("Please fill all required fields!");
+            showToast("error", "Error", "Please fill all required fields!");
             return;
         }
 
-        // Prevent invalid workload
         if (workHours < 0 || workHours > 10 || workMinutes < 0 || workMinutes > 59) {
-            alert("Work hours cannot exceed 10, and minutes cannot exceed 59. Neither can be negative.");
+            showToast("error", "Error", "Work hours cannot exceed 10, minutes cannot exceed 59, and neither can be negative.");
             return;
         }
 
-        // Split date and time
         const [date, time] = dateTime.split("T");
-
-        // Calculate total workload in minutes
         const workload = (parseInt(workHours, 10) || 0) * 60 + (parseInt(workMinutes, 10) || 0);
 
         const updatedData = {
@@ -55,17 +60,13 @@ function EditWorkScreen({ isOpen, onClose, workData, onSave }) {
         };
 
         try {
-            // Save changes via the backend
-            await editWorkEntry(formData.work_id, updatedData); // Backend API call
-
-            // Notify the parent component of the changes
+            await editWorkEntry(formData.work_id, updatedData);
             onSave(updatedData);
-
-            // Close the dialog
+            showToast("success", "Success", "Work entry saved successfully!");
             onClose();
         } catch (error) {
             console.error("Error saving work entry:", error);
-            alert("Failed to save changes. Please try again.");
+            showToast("error", "Error", "Failed to save changes. Please try again.");
         }
     };
 
@@ -76,91 +77,92 @@ function EditWorkScreen({ isOpen, onClose, workData, onSave }) {
         </div>
     );
 
-    if (!isOpen) return null;
+    const now = new Date().toISOString().slice(0, 16);
 
-    const now = new Date().toISOString().slice(0, 16); // Current date and time in `datetime-local` format
-
+    // Even if not open, we still render Toast so it's always mounted
     return (
-        <Dialog
-            visible={isOpen}
-            style={{ width: "500px" }}
-            header="Edit Work Entry"
-            modal
-            footer={dialogFooter}
-            onHide={() => {
-                setFormData({}); // Reset form data on close
-                setWorkHours("");
-                setWorkMinutes("");
-                setDateTime("");
-                onClose();
-            }}
-        >
-            <div className="p-fluid">
-                {/* Work Type Dropdown */}
-                <div className="p-field">
-                    <label htmlFor="type">Work Type</label>
-                    <Dropdown
-                        id="type"
-                        value={formData.type || ""} // Ensure value is correctly set
-                        options={workTypes}
-                        onChange={(e) => handleDropdownChange(e)}
-                        placeholder="Select a Work Type"
-                    />
-                </div>
+        <>
+            <Toast ref={toast} />
+            {isOpen && (
+                <Dialog
+                    visible={isOpen}
+                    style={{ width: "500px" }}
+                    header="Edit Work Entry"
+                    modal
+                    footer={dialogFooter}
+                    onHide={() => {
+                        setFormData({});
+                        setWorkHours("");
+                        setWorkMinutes("");
+                        setDateTime("");
+                        onClose();
+                    }}
+                >
+                    <div className="p-fluid">
+                        <div className="p-field">
+                            <label htmlFor="type">Work Type</label>
+                            <Dropdown
+                                id="type"
+                                value={formData.type || ""}
+                                options={workTypes}
+                                onChange={handleDropdownChange}
+                                placeholder="Select a Work Type"
+                            />
+                        </div>
 
-                {/* Date-Time Input */}
-                <div className="p-field">
-                    <label htmlFor="dateTime">Date & Time</label>
-                    <input
-                        type="datetime-local"
-                        id="dateTime"
-                        value={dateTime}
-                        max={now} // Prevent selecting future dates/times
-                        onChange={(e) => setDateTime(e.target.value)}
-                        style={{
-                            padding: "0.5rem",
-                            borderRadius: "5px",
-                            border: "1px solid #ccc",
-                            width: "100%",
-                        }}
-                    />
-                </div>
+                        <div className="p-field">
+                            <label htmlFor="dateTime">Date & Time</label>
+                            <input
+                                type="datetime-local"
+                                id="dateTime"
+                                value={dateTime}
+                                max={now}
+                                onChange={(e) => setDateTime(e.target.value)}
+                                style={{
+                                    padding: "0.5rem",
+                                    borderRadius: "5px",
+                                    border: "1px solid #ccc",
+                                    width: "100%",
+                                }}
+                            />
+                        </div>
 
-                {/* Workload Hours and Minutes */}
-                <div className="p-field">
-                    <label htmlFor="workHours">Workload (Hours:Minutes)</label>
-                    <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-                        <input
-                            type="number"
-                            id="workHours"
-                            value={workHours}
-                            onChange={(e) => setWorkHours(Math.max(0, Math.min(10, e.target.value)))} // Constrain hours
-                            placeholder="Hours"
-                            style={{
-                                width: "5rem",
-                                padding: "0.5rem",
-                                borderRadius: "5px",
-                                border: "1px solid #ccc",
-                            }}
-                        />
-                        <span>:</span>
-                        <input
-                            type="number"
-                            id="workMinutes"
-                            value={workMinutes}
-                            onChange={(e) => setWorkMinutes(Math.max(0, Math.min(59, e.target.value)))} // Constrain minutes
-                            placeholder="Minutes"
-                            style={{
-                                width: "5rem",
-                                padding: "0.5rem",
-                                borderRadius: "5px",
-                                border: "1px solid #ccc",
-                            }}
-                        />
+                        <div className="p-field">
+                            <label htmlFor="workHours">Workload (Hours:Minutes)</label>
+                            <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                                <input
+                                    type="number"
+                                    id="workHours"
+                                    value={workHours}
+                                    onChange={(e) => setWorkHours(Math.max(0, Math.min(10, e.target.value)))}
+                                    placeholder="Hours"
+                                    style={{
+                                        width: "5rem",
+                                        padding: "0.5rem",
+                                        borderRadius: "5px",
+                                        border: "1px solid #ccc",
+                                    }}
+                                />
+                                <span>:</span>
+                                <input
+                                    type="number"
+                                    id="workMinutes"
+                                    value={workMinutes}
+                                    onChange={(e) => setWorkMinutes(Math.max(0, Math.min(59, e.target.value)))}
+                                    placeholder="Minutes"
+                                    style={{
+                                        width: "5rem",
+                                        padding: "0.5rem",
+                                        borderRadius: "5px",
+                                        border: "1px solid #ccc",
+                                    }}
+                                />
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-        </Dialog>
+                </Dialog>
+            )}
+        </>
     );
 }
 

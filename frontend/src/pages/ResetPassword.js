@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { Toast } from "primereact/toast"; // (2) Importing Toast
 import "./ResetPassword.css";
 import PasswordService from "../services/PasswordService";
 
@@ -10,8 +11,9 @@ const ResetPassword = () => {
     newPassword: "",
     confirmPassword: "",
   });
-  const [message, setMessage] = useState({ text: "", type: "" });
   const [passwordsMatch, setPasswordsMatch] = useState(true);
+
+  const toast = useRef(null); // (3) Toast ref
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -20,13 +22,11 @@ const ResetPassword = () => {
       [name]: value,
     }));
 
-    // Check password match when either password field changes
-    if (name === "newPassword" || name === "confirmPassword") {
-      if (name === "newPassword") {
-        setPasswordsMatch(value === formData.confirmPassword);
-      } else {
-        setPasswordsMatch(value === formData.newPassword);
-      }
+    // Check password match
+    if (name === "newPassword") {
+      setPasswordsMatch(value === formData.confirmPassword);
+    } else if (name === "confirmPassword") {
+      setPasswordsMatch(value === formData.newPassword);
     }
   };
 
@@ -34,30 +34,43 @@ const ResetPassword = () => {
     e.preventDefault();
 
     if (formData.newPassword !== formData.confirmPassword) {
-      setMessage({ text: "Passwords do not match", type: "error" });
+      toast.current.clear(); // (4) Clear before showing toast
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Passwords do not match",
+        life: 3000,
+      });
       return;
     }
 
     try {
-      const response = await PasswordService.resetPassword(
-        formData.newPassword,
-        token
-      );
+      await PasswordService.resetPassword(formData.newPassword, token);
+      toast.current.clear();
+      toast.current.show({
+        severity: "success",
+        summary: "Success",
+        detail: "Password successfully reset!",
+        life: 3000,
+      });
 
-      setMessage({ text: "Password successfully reset!", type: "success" });
       setTimeout(() => {
         navigate("/login");
       }, 2000);
     } catch (error) {
-      setMessage({
-        text: error.response?.data || "An error occurred",
-        type: "error",
+      toast.current.clear();
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: error.response?.data || "An error occurred",
+        life: 3000,
       });
     }
   };
 
   return (
     <div className="reset-password-container">
+      <Toast ref={toast} /> {/* (5) Adding Toast to JSX */}
       <div className="reset-password-form">
         <h2>Reset Password</h2>
         <form onSubmit={handleSubmit}>
@@ -92,10 +105,6 @@ const ResetPassword = () => {
 
           {!passwordsMatch && (
             <div className="password-match-error">Passwords do not match</div>
-          )}
-
-          {message.text && (
-            <div className={`${message.type}-message`}>{message.text}</div>
           )}
 
           <button type="submit">Reset Password</button>

@@ -3,6 +3,7 @@ import Map, { Marker, Popup } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { MapPin, RefreshCw, Crosshair } from "lucide-react";
 import { useMap } from "react-map-gl";
+import "./RealtimeStatus.css";
 
 // Mock data
 const MOCK_LOCATIONS = [
@@ -220,15 +221,7 @@ const RealtimeStatus = () => {
     return (
       <button
         onClick={centerToUser}
-        style={{
-          ...buttonStyle,
-          position: "absolute",
-          bottom: "20px",
-          right: "20px",
-          backgroundColor: "#2196F3",
-          padding: "12px", // Square button for icon
-          minWidth: "unset", // Override minWidth for square button
-        }}
+        className="realtime-status__button realtime-status__button--icon realtime-status__button--crosshair"
       >
         <Crosshair size={24} color="white" />
       </button>
@@ -244,37 +237,13 @@ const RealtimeStatus = () => {
 
   const LocationAccessButton = () => {
     return (
-      <div
-        style={{
-          position: "absolute",
-          top: "10px",
-          left: "50%",
-          transform: "translateX(-50%)",
-          zIndex: 1,
-          backgroundColor: "white",
-          padding: "10px",
-          borderRadius: "4px",
-          boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: "5px",
-        }}
-      >
-        <p style={{ margin: 0, fontSize: "14px", color: "#666" }}>
+      <div className="realtime-status__location-access">
+        <p className="realtime-status__location-access-text">
           Location access is required for better experience
         </p>
         <button
           onClick={getUserLocation}
-          style={{
-            padding: "8px 16px",
-            backgroundColor: "#2196F3",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-            fontSize: "14px",
-          }}
+          className="realtime-status__location-access-button"
         >
           Grant Location Access
         </button>
@@ -283,30 +252,8 @@ const RealtimeStatus = () => {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100vh",
-        width: "100vw",
-        padding: "10px",
-        boxSizing: "border-box",
-        gap: "10px",
-      }}
-    >
-      {/* Map Container */}
-      <div
-        style={{
-          height: "50vh", // Fixed height for map container
-          display: "flex",
-          flexDirection: "column",
-          gap: "10px",
-          padding: "10px",
-          border: "1px solid #ccc",
-          borderRadius: "8px",
-          backgroundColor: "#fff",
-        }}
-      >
+    <div className="realtime-status">
+      <div className="realtime-status__map-container">
         <Map
           mapboxAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
           initialViewState={{
@@ -314,7 +261,7 @@ const RealtimeStatus = () => {
             latitude: userLocation?.latitude || MOCK_USER_LOCATION.latitude,
             zoom: 15,
           }}
-          style={{ width: "100%", height: "100%" }} // Fill container
+          className="realtime-status__map"
           mapStyle="mapbox://styles/mapbox/streets-v11"
         >
           {locationDenied && <LocationAccessButton />}
@@ -333,14 +280,7 @@ const RealtimeStatus = () => {
               onClick={() => setSelectedLocation(location)}
             >
               <div
-                style={{
-                  width: "20px",
-                  height: "20px",
-                  borderRadius: "50%",
-                  backgroundColor: getMarkerColor(location.status),
-                  cursor: "pointer",
-                  border: "2px solid white",
-                }}
+                className={`realtime-status__marker realtime-status__marker--${location.status}`}
               />
             </Marker>
           ))}
@@ -355,14 +295,14 @@ const RealtimeStatus = () => {
               closeOnClick={false}
               onClose={() => setSelectedLocation(null)}
             >
-              <div style={{ padding: "8px", minWidth: "200px" }}>
-                <h3 style={{ fontWeight: "bold", marginBottom: "8px" }}>
+              <div className="realtime-status__popup">
+                <h3 className="realtime-status__popup-title">
                   {selectedLocation.name}
                 </h3>
-                <p style={{ marginBottom: "4px" }}>
+                <p className="realtime-status__popup-text">
                   Status: {selectedLocation.status}
                 </p>
-                <p>
+                <p className="realtime-status__popup-text">
                   Occupancy: {selectedLocation.currentOccupancy}/
                   {selectedLocation.capacity}
                 </p>
@@ -374,87 +314,39 @@ const RealtimeStatus = () => {
         </Map>
       </div>
 
-      {/* Control Buttons */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          padding: "0 15px",
-          gap: "10px",
-          height: "48px", // Fixed height for buttons
-        }}
-      >
+      <div className="realtime-status__controls">
         <button
           onClick={isTourActive ? handleEndTour : handleStartTour}
-          style={{
-            ...buttonStyle,
-            backgroundColor: isTourActive ? "#f44336" : "#4CAF50",
-          }}
+          className={`realtime-status__button ${
+            isTourActive
+              ? "realtime-status__button--end"
+              : "realtime-status__button--start"
+          }`}
         >
           {isTourActive ? "End Tour" : "Start Tour"}
         </button>
         <button
           onClick={sortLocationsByDistance}
-          style={{
-            ...buttonStyle,
-            backgroundColor: "#2196F3",
-            padding: "12px", // Square button for icon
-            minWidth: "unset", // Override minWidth for square button
-          }}
+          className="realtime-status__button realtime-status__button--icon realtime-status__button--refresh"
         >
           <RefreshCw size={24} color="white" />
         </button>
       </div>
 
-      {/* Locations List */}
-      <div
-        style={{
-          padding: "15px",
-          backgroundColor: "#f5f5f5",
-          border: "1px solid #ccc",
-          borderRadius: "8px",
-          overflowY: "auto",
-          flex: 1, // Take remaining space
-          minHeight: "200px", // Minimum height even when empty
-          maxHeight: "calc(40vh)", // Maximum height to prevent overflow
-        }}
-      >
-        <h2 style={{ marginBottom: "20px", fontSize: "1.2em" }}>
-          Nearby Locations
-        </h2>
-        <div
-          style={{
-            marginBottom: "20px",
-            display: "flex",
-            gap: "10px",
-            height: "40px", // Fixed height for search container
-          }}
-        >
+      <div className="realtime-status__locations-list">
+        <h2 className="realtime-status__list-title">Nearby Locations</h2>
+        <div className="realtime-status__search-container">
           <input
             type="text"
             placeholder="Search locations..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            style={{
-              padding: "8px",
-              borderRadius: "4px",
-              border: "1px solid #ccc",
-              flex: 1,
-              height: "100%", // Match container height
-              boxSizing: "border-box", // Include padding in height calculation
-            }}
+            className="realtime-status__search-input"
           />
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            style={{
-              padding: "8px",
-              borderRadius: "4px",
-              border: "1px solid #ccc",
-              height: "100%", // Match container height
-              boxSizing: "border-box", // Include padding in height calculation
-            }}
+            className="realtime-status__status-select"
           >
             <option value="all">All Status</option>
             <option value="empty">Empty</option>
@@ -463,43 +355,23 @@ const RealtimeStatus = () => {
           </select>
         </div>
         {filteredLocations.map((location) => (
-          <div
-            key={location.id}
-            style={{
-              backgroundColor: "white",
-              padding: "12px",
-              marginBottom: "10px",
-              borderRadius: "6px",
-              boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                gap: "10px",
-              }}
-            >
-              <div>
-                <h3 style={{ marginBottom: "4px", fontSize: "1em" }}>
+          <div key={location.id} className="realtime-status__location-card">
+            <div className="realtime-status__location-content">
+              <div className="realtime-status__location-info">
+                <h3 className="realtime-status__location-name">
                   {location.name}
                 </h3>
-                <p style={{ marginBottom: "2px", fontSize: "0.8em" }}>
+                <p className="realtime-status__location-distance">
                   Distance: {Math.round(location.distance)}m
                 </p>
-                <p style={{ fontSize: "0.8em" }}>
+                <p className="realtime-status__location-occupancy">
                   Occupancy: {location.currentOccupancy}/{location.capacity}
                 </p>
               </div>
               {isTourActive && (
                 <button
                   onClick={() => handleStatusChange(location.id)}
-                  style={{
-                    ...buttonStyle,
-                    backgroundColor: getMarkerColor(location.status),
-                    margin: "0",
-                  }}
+                  className={`realtime-status__button realtime-status__marker--${location.status}`}
                 >
                   {location.status === "empty"
                     ? "Empty"
@@ -512,17 +384,6 @@ const RealtimeStatus = () => {
           </div>
         ))}
       </div>
-
-      {/* Responsive Styles */}
-      <style>
-        {`
-                @media (max-width: 768px) {
-                    .container {
-                        padding: 10px;
-                    }
-                }
-            `}
-      </style>
     </div>
   );
 };

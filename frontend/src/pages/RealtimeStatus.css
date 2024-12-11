@@ -1,0 +1,229 @@
+.realtime-status {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  padding: 10px;
+  box-sizing: border-box;
+  gap: 10px;
+}
+
+.realtime-status__map-container {
+  height: 50vh;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #fff;
+}
+
+.realtime-status__map {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.realtime-status__marker {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid white;
+}
+
+.realtime-status__marker--empty {
+  background-color: #ff4444;
+}
+
+.realtime-status__marker--inline {
+  background-color: #ffbb33;
+}
+
+.realtime-status__marker--ongoing {
+  background-color: #00c851;
+}
+
+.realtime-status__popup {
+  padding: 8px;
+  min-width: 200px;
+}
+
+.realtime-status__popup-title {
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.realtime-status__popup-text {
+  margin-bottom: 4px;
+}
+
+.realtime-status__controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 15px;
+  gap: 10px;
+  height: 48px;
+}
+
+.realtime-status__button {
+  padding: 12px 20px;
+  font-size: 16px;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  min-width: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.realtime-status__button--icon {
+  padding: 12px;
+  min-width: unset;
+}
+
+.realtime-status__button--start {
+  background-color: #4caf50;
+}
+
+.realtime-status__button--end {
+  background-color: #f44336;
+}
+
+.realtime-status__button--refresh {
+  background-color: #2196f3;
+}
+
+.realtime-status__button--crosshair {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1;
+  background-color: #2196f3;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.realtime-status__location-access {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+  background-color: white;
+  padding: 10px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.realtime-status__location-access-text {
+  margin: 0;
+  font-size: 14px;
+  color: #666;
+}
+
+.realtime-status__location-access-button {
+  padding: 8px 16px;
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.realtime-status__locations-list {
+  padding: 15px;
+  background-color: #f5f5f5;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 200px;
+  max-height: calc(40vh);
+}
+
+.realtime-status__list-title {
+  margin-bottom: 20px;
+  font-size: 1.2em;
+}
+
+.realtime-status__search-container {
+  margin-bottom: 20px;
+  display: flex;
+  gap: 10px;
+  height: 40px;
+}
+
+.realtime-status__search-input {
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  flex: 1;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.realtime-status__status-select {
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.realtime-status__location-card {
+  background-color: white;
+  padding: 12px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.realtime-status__location-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.realtime-status__location-info {
+  flex: 1;
+}
+
+.realtime-status__location-name {
+  margin-bottom: 4px;
+  font-size: 1em;
+}
+
+.realtime-status__location-distance {
+  margin-bottom: 2px;
+  font-size: 0.8em;
+}
+
+.realtime-status__location-occupancy {
+  font-size: 0.8em;
+}
+
+@media (max-width: 768px) {
+  .realtime-status {
+    padding: 5px;
+  }
+
+  .realtime-status__controls {
+    padding: 0 10px;
+  }
+
+  .realtime-status__button {
+    padding: 10px 15px;
+    font-size: 14px;
+  }
+}

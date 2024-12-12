@@ -10,6 +10,9 @@ import { MapPin, RefreshCw, Crosshair, ArrowLeft } from "lucide-react";
 import "./RealtimeStatus.css";
 import { Toast } from "primereact/toast";
 
+import useProtectRoute from "../hooks/useProtectRoute";
+import Unauthorized from "./Unauthorized";
+
 const BILKENT_BOUNDS = [
   [32.73, 39.85], // Southwest coordinates [lng, lat]
   [32.77, 39.89], // Northeast coordinates [lng, lat]
@@ -22,6 +25,8 @@ const BILKENT_CENTER = {
 };
 
 const RealtimeStatus = () => {
+  const isAuthorized = useProtectRoute([1, 2, 3, 4]); // Check authorization
+
   const MOCK_USER_LOCATION = {
     latitude: 39.868201,
     longitude: 32.749127,
@@ -357,6 +362,10 @@ const RealtimeStatus = () => {
       });
     }
   };
+
+  if (!isAuthorized) {
+    return <Unauthorized />;
+  }
 
   return (
     <div className="realtime-status">

@@ -145,10 +145,28 @@
     
 /* Row colors for different statuses */
 .cancelled-row {
-    background-color: #f8d7da 
+    background-color: hsl(355, 77%, 82%) !important;
+    transition: all 0.3s ease; 
+    
   }
   
   .done-row {
-    background-color: #d4edda 
+    background-color: #9ae8ac !important;
+    transition: all 0.3s ease;
   }
+
+  .cancelled-row:hover, .done-row:hover {
+    background-color: hsl(355, 72%, 71%) !important; /* Even more vivid red */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); /* Add a shadow for emphasis */
+    transform: scale(1.02); /* Slightly enlarge the row */
+    cursor: pointer; /* Indicate interactivity */
+}
+
+.done-row:hover {
+    background-color: hsl(140, 50%, 65%) !important; /* Slightly darker green */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); /* Add a shadow for emphasis */
+    transform: scale(1.02); /* Slightly enlarge the row */
+    cursor: pointer; /* Indicate interactivity */
+}
   
+

@@ -316,6 +316,7 @@ export default function ReadyToursTable() {
   {
   (localStorage.getItem("userType") === '3' || 
    localStorage.getItem("userType") === '4' || 
+   localStorage.getItem("userType") === '1' || 
    localStorage.getItem("userType") === '2') ? (
   <Column
     field="classroom"

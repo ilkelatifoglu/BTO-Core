@@ -255,17 +255,23 @@
 }
 
 .menu__item.active {
-  background-color: #2563eb; /* Bright blue background */
+  background-color: #2563eb;
   border-left: 3px solid #ffffff;
   color: white;
 }
 
 .menu__item.active i,
 .menu__item.active span {
-  color: white; /* Ensure icon and text are white for contrast */
+  color: white;
 }
 
 .menu__item:hover {
-  background-color: #3b82f6; /* Lighter blue on hover */
+  background-color: #3b82f6;
+  color: white;
+}
+
+/* Add this to ensure icons also change color on hover */
+.menu__item:hover i,
+.menu__item:hover span {
   color: white;
 }

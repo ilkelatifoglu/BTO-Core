@@ -54,7 +54,7 @@
     transition: all 0.3s ease; 
 }
 
-  .red-row:hover, .done-row:hover {
+  .red-row:hover {
     background-color: hsl(355, 72%, 71%) !important; /* Even more vivid red */
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); /* Add a shadow for emphasis */
     transform: scale(1.02); /* Slightly enlarge the row */

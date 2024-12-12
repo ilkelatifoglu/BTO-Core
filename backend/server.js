@@ -8,7 +8,6 @@ const multer = require("multer");
 const multerS3 = require("multer-s3");
 
 const authRoutes = require("./src/routes/authRoutes");
-
 const guideInfoRoutes = require("./src/routes/guideInfoRoutes");
 const workRoutes = require("./src/routes/workRoutes");
 const tourRoutes = require("./src/routes/tourRoutes");
@@ -22,6 +21,7 @@ const profileRoutes = require("./src/routes/profileRoutes");
 const fairRoutes = require("./src/routes/fairRoutes");
 const individualTourRoutes = require("./src/routes/individualTourRoutes");
 const tourLocationRoutes = require("./src/routes/tourLocationRoutes");
+const initializeSchedulers = require('./src/jobs/scheduler');
 
 const app = express();
 const server = http.createServer(app);
@@ -82,6 +82,8 @@ io.on("connection", (socket) => {
     console.log("Client disconnected:", socket.id);
   });
 });
+
+initializeSchedulers();
 
 const PORT = process.env.PORT || 3001;
 

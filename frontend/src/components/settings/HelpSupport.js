@@ -4,7 +4,7 @@ import './HelpSupport.css';
 const HelpSupport = () => {
     return (
         <div className="help-support-container">
-            <h1 className="help-support-header">Help and Support</h1>
+            <h1 className="help-support-header" style={{marginTop: "20px"}}>Help and Support</h1>
 
             <div className="help-support-section">
                 <h2>

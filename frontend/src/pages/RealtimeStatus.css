@@ -489,3 +489,82 @@
   background-color: #1976d2;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
+
+.realtime-status__custom-popup .mapboxgl-popup-content {
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  max-width: 300px;
+}
+
+.realtime-status__popup-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 10px 0;
+  color: #333;
+}
+
+.realtime-status__popup-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.status-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.status-empty {
+  background-color: #00c851;
+}
+.status-partial {
+  background-color: #ffbb33;
+}
+.status-full {
+  background-color: #ff4444;
+}
+
+.realtime-status__popup-occupancy {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 12px;
+}
+
+.realtime-status__popup-users {
+  border-top: 1px solid #eee;
+  padding-top: 12px;
+}
+
+.realtime-status__popup-users h4 {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  color: #333;
+}
+
+.realtime-status__popup-users ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.realtime-status__popup-users li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  font-size: 13px;
+}
+
+.visitor-name {
+  color: #2196f3;
+  font-weight: 500;
+}
+
+.visitor-time {
+  color: #999;
+  font-size: 12px;
+}

@@ -120,3 +120,13 @@ exports.endTour = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+exports.resetAllOccupancies = async (req, res) => {
+  try {
+    await tourLocationService.resetAllOccupancies();
+    res.json({ message: "All occupancies reset successfully" });
+  } catch (error) {
+    console.error("Error resetting occupancies:", error);
+    res.status(500).json({ message: "Failed to reset occupancies" });
+  }
+};

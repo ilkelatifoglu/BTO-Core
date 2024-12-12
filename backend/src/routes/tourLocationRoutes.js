@@ -17,5 +17,6 @@ router.delete("/:id", tourLocationController.deleteLocation);
 // Tour management endpoints
 router.post("/start-tour", tourLocationController.startTour);
 router.post("/end-tour", tourLocationController.endTour);
+router.post("/reset-occupancies", tourLocationController.resetAllOccupancies);
 
 module.exports = router;

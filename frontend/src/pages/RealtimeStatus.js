@@ -37,6 +37,7 @@ const RealtimeStatus = () => {
   const [statusFilter, setStatusFilter] = useState("all");
   const [locationDenied, setLocationDenied] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [userType, setUserType] = useState("coordinator");
 
   const mapRef = useRef();
   const toast = useRef(null);
@@ -137,54 +138,44 @@ const RealtimeStatus = () => {
     }
   };
 
-  // Update handleStatusChange to include userId
+  // Update handleStatusChange function
   const handleStatusChange = async (locationId) => {
     try {
-      const currentLocation = locations.find((loc) => loc.id === locationId);
-      const userId = localStorage.getItem("userId");
-
-      // Check if the user is already in this location
-      const isUserInLocation = currentLocation.current_users?.some(
-        (user) => user.user_id === userId
+      const isUserInLocation = locations.find((loc) =>
+        loc.current_users?.some(
+          (user) => user.user_id === localStorage.getItem("userId")
+        )
       );
 
-      let endpoint;
-      if (isUserInLocation) {
-        // If user is in this location, they can leave
-        endpoint = `${process.env.REACT_APP_BACKEND_URL}/tour-locations/end-tour`;
-      } else {
-        // If user is not in this location, they can enter if it's not full
-        if (currentLocation.current_occupancy >= currentLocation.capacity) {
-          throw new Error("Location is at full capacity");
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/tour-locations/${
+          isUserInLocation ? "end-tour" : "start-tour"
+        }`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId: localStorage.getItem("userId"),
+            locationId: locationId,
+          }),
         }
-        endpoint = `${process.env.REACT_APP_BACKEND_URL}/tour-locations/start-tour`;
-      }
-
-      const response = await fetch(endpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ locationId, userId }),
-      });
+      );
 
       if (!response.ok) {
-        const errorData = await response.text();
-        throw new Error(errorData);
+        const error = await response.json();
+        throw new Error(error.message);
       }
 
       await fetchLocations();
       toast.current.show({
         severity: "success",
         summary: "Success",
-        detail: isUserInLocation
-          ? "Successfully left the location"
-          : "Successfully entered the location",
+        detail: isUserInLocation ? "Tour ended" : "Tour started",
         life: 3000,
       });
     } catch (error) {
-      console.error("Error updating location status:", error);
-      setError(error.message);
       toast.current.show({
         severity: "error",
         summary: "Error",
@@ -330,6 +321,40 @@ const RealtimeStatus = () => {
     );
   };
 
+  const handleResetOccupancies = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/tour-locations/reset-occupancies`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to reset occupancies");
+      }
+
+      await fetchLocations();
+      toast.current.show({
+        severity: "success",
+        summary: "Success",
+        detail: "All occupancies have been reset",
+        life: 3000,
+      });
+    } catch (error) {
+      console.error("Error resetting occupancies:", error);
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to reset occupancies",
+        life: 3000,
+      });
+    }
+  };
+
   return (
     <div className="realtime-status">
       <Toast ref={toast} />
@@ -411,39 +436,46 @@ const RealtimeStatus = () => {
                 anchor="bottom"
                 offset={[0, -20]}
                 closeButton={true}
-                closeOnClick={false}
+                closeOnClick={true}
                 onClose={() => setSelectedLocation(null)}
+                className="realtime-status__custom-popup"
               >
                 <div className="realtime-status__popup">
                   <h3 className="realtime-status__popup-title">
                     {selectedLocation.name}
                   </h3>
-                  <p className="realtime-status__popup-text">
-                    Status: {selectedLocation.status}
-                  </p>
-                  <p className="realtime-status__popup-text">
-                    Occupancy: {selectedLocation.current_occupancy}/
-                    {selectedLocation.capacity}
+                  <div className="realtime-status__popup-status">
+                    <span
+                      className={`status-indicator status-${selectedLocation.status}`}
+                    />
+                    <p>
+                      {selectedLocation.status.charAt(0).toUpperCase() +
+                        selectedLocation.status.slice(1)}
+                    </p>
+                  </div>
+                  <p className="realtime-status__popup-occupancy">
+                    {selectedLocation.current_occupancy}/
+                    {selectedLocation.capacity} visitors
                   </p>
 
-                  {/* Add users list */}
                   {selectedLocation.current_users &&
                     selectedLocation.current_users.length > 0 && (
                       <div className="realtime-status__popup-users">
-                        <h4 className="realtime-status__popup-subtitle">
-                          Current Visitors:
-                        </h4>
-                        <ul className="realtime-status__popup-users-list">
-                          {selectedLocation.current_users.map((user, index) => (
-                            <li
-                              key={user.user_id}
-                              className="realtime-status__popup-user"
-                            >
-                              <span className="realtime-status__popup-user-id">
-                                User {index + 1}
+                        <h4>Current Guides</h4>
+                        <ul>
+                          {selectedLocation.current_users.map((user) => (
+                            <li key={user.user_id}>
+                              <span className="visitor-name">
+                                {user.user_name || "Anonymous"}
                               </span>
-                              <span className="realtime-status__popup-user-time">
-                                {new Date(user.joined_at).toLocaleTimeString()}
+                              <span className="visitor-time">
+                                {new Date(user.joined_at).toLocaleTimeString(
+                                  [],
+                                  {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  }
+                                )}
                               </span>
                             </li>
                           ))}
@@ -483,6 +515,18 @@ const RealtimeStatus = () => {
         >
           <RefreshCw size={24} color="white" />
         </button>
+        {userType === "coordinator" && (
+          <button
+            onClick={handleResetOccupancies}
+            className="realtime-status__button realtime-status__button--reset"
+            style={{
+              backgroundColor: "#dc3545",
+              marginLeft: "10px",
+            }}
+          >
+            Reset All
+          </button>
+        )}
       </div>
 
       <div className="realtime-status__locations-list">

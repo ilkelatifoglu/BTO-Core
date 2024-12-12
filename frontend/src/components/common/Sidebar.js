@@ -26,6 +26,11 @@ const Sidebar = ({ setCurrentPage }) => {
   const [userType, setUserType] = useState(null);
   const toast = useRef(null);
 
+  // Add new state for current path
+  const [currentPath, setCurrentPath] = useState(
+    window.location.pathname.substring(1)
+  );
+
   const toggleSidebar = () => {
     setIsExpanded(!isExpanded);
   };
@@ -38,6 +43,7 @@ const Sidebar = ({ setCurrentPage }) => {
       localStorage.clear();
       navigate("/login");
     } else {
+      setCurrentPath(page);
       navigate(`/${page}`);
     }
   };
@@ -168,6 +174,11 @@ const Sidebar = ({ setCurrentPage }) => {
     setUserType(parseInt(storedUserType, 10)); // `userType`'ı localStorage'dan al
   }, []);
 
+  // Add useEffect to update currentPath when location changes
+  useEffect(() => {
+    setCurrentPath(window.location.pathname.substring(1));
+  }, [window.location.pathname]);
+
   return (
     <div style={{ display: "flex" }}>
       <div className={`sidebar ${isExpanded ? "expanded" : "collapsed"}`}>
@@ -221,7 +232,9 @@ const Sidebar = ({ setCurrentPage }) => {
             userType === 2 ||
             userType === 1) && (
             <li
-              className="menu__item"
+              className={`menu__item ${
+                currentPath === "assign-tour" ? "active" : ""
+              }`}
               onClick={() => handleNavigation("assign-tour")}
             >
               <i className="pi pi-table"></i>
@@ -230,7 +243,9 @@ const Sidebar = ({ setCurrentPage }) => {
           )}
           {(userType === 4 || userType === 3 || userType === 2) && (
             <li
-              className="menu__item"
+              className={`menu__item ${
+                currentPath === "guideInfo" ? "active" : ""
+              }`}
               onClick={() => handleNavigation("guideInfo")}
             >
               <i className="pi pi-info-circle"></i>
@@ -239,7 +254,9 @@ const Sidebar = ({ setCurrentPage }) => {
           )}
           {(userType === 4 || userType === 3 || userType === 2) && (
             <li
-              className="menu__item"
+              className={`menu__item ${
+                currentPath === "puantaj-page" ? "active" : ""
+              }`}
               onClick={() => handleNavigation("puantaj-page")}
             >
               <i className="pi pi-calendar"></i>
@@ -248,7 +265,9 @@ const Sidebar = ({ setCurrentPage }) => {
           )}
           {(userType === 4 || userType === 3) && (
             <li
-              className="menu__item"
+              className={`menu__item ${
+                currentPath === "approve-tour" ? "active" : ""
+              }`}
               onClick={() => handleNavigation("approve-tour")}
             >
               <i className="pi pi-check"></i>
@@ -257,7 +276,9 @@ const Sidebar = ({ setCurrentPage }) => {
           )}
           {userType === 4 && (
             <li
-              className="menu__item"
+              className={`menu__item ${
+                currentPath === "data-insight" ? "active" : ""
+              }`}
               onClick={() => handleNavigation("data-insight")}
             >
               <i className="pi pi-chart-line"></i>
@@ -266,7 +287,9 @@ const Sidebar = ({ setCurrentPage }) => {
           )}
           {userType === 4 && (
             <li
-              className="menu__item"
+              className={`menu__item ${
+                currentPath === "manageUser" ? "active" : ""
+              }`}
               onClick={() => handleNavigation("manageUser")}
             >
               <i className="pi pi-user-plus"></i>
@@ -275,7 +298,9 @@ const Sidebar = ({ setCurrentPage }) => {
           )}
           {(userType === 4 || userType === 3 || userType === 2) && (
             <li
-              className="menu__item"
+              className={`menu__item ${
+                currentPath === "realtime-status" ? "active" : ""
+              }`}
               onClick={() => handleNavigation("realtime-status")}
             >
               <i className="pi pi-clock"></i>
@@ -287,7 +312,9 @@ const Sidebar = ({ setCurrentPage }) => {
             userType === 2 ||
             userType === 1) && (
             <li
-              className="menu__item"
+              className={`menu__item ${
+                currentPath === "feedback" ? "active" : ""
+              }`}
               onClick={() => handleNavigation("feedback")}
             >
               <i className="pi pi-comments"></i>
@@ -296,7 +323,9 @@ const Sidebar = ({ setCurrentPage }) => {
           )}
           {(userType === 4 || userType === 3 || userType === 2) && (
             <li
-              className="menu__item"
+              className={`menu__item ${
+                currentPath === "advisors" ? "active" : ""
+              }`}
               onClick={() => handleNavigation("advisors")}
             >
               <i className="pi pi-briefcase"></i>
@@ -308,7 +337,9 @@ const Sidebar = ({ setCurrentPage }) => {
             userType === 2 ||
             userType === 1) && (
             <li
-              className="menu__item"
+              className={`menu__item ${
+                currentPath === "my-tours" ? "active" : ""
+              }`}
               onClick={() => handleNavigation("my-tours")}
             >
               <i className="pi pi-map"></i>
@@ -317,7 +348,9 @@ const Sidebar = ({ setCurrentPage }) => {
           )}
           {userType === 4 && (
             <li
-              className="menu__item"
+              className={`menu__item ${
+                currentPath === "approve-fair" ? "active" : ""
+              }`}
               onClick={() => handleNavigation("approve-fair")}
             >
               <i className="pi pi-check-circle"></i>
@@ -326,7 +359,9 @@ const Sidebar = ({ setCurrentPage }) => {
           )}
           {(userType === 4 || userType === 3 || userType === 2) && (
             <li
-              className="menu__item"
+              className={`menu__item ${
+                currentPath === "assign-fair" ? "active" : ""
+              }`}
               onClick={() => handleNavigation("assign-fair")}
             >
               <i className="pi pi-users"></i>
@@ -335,7 +370,9 @@ const Sidebar = ({ setCurrentPage }) => {
           )}
           {(userType === 4 || userType === 3 || userType === 2) && (
             <li
-              className="menu__item"
+              className={`menu__item ${
+                currentPath === "individual-tours" ? "active" : ""
+              }`}
               onClick={() => handleNavigation("individual-tours")}
             >
               <i className="pi pi-user"></i>

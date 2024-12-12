@@ -72,11 +72,20 @@ export default function ReadyToursTable() {
   useEffect(() => {
     const fetchCandidates = async () => {
       try {
-        const candidates = await AssignTourService.getCandidateGuides();
-        const formattedCandidates = candidates.map(candidate => ({
-          label: candidate.name,
-          value: candidate.id,
-        }));
+        const candidatePromises = tours.map(async (tour) => {
+          const { candidates } = await AssignTourService.getCandidateGuides(tour.id);
+          return { tourId: tour.id, candidates };
+        });
+  
+        const allCandidates = await Promise.all(candidatePromises);
+  
+        const formattedCandidates = {};
+        allCandidates.forEach(({ tourId, candidates }) => {
+          formattedCandidates[tourId] = candidates.map(candidate => ({
+            label: candidate.name,
+            value: candidate.id,
+          }));
+        });
         setCandidateGuideOptions(formattedCandidates);
       } catch (error) {
         console.error("Error fetching candidate guides:", error);
@@ -89,8 +98,11 @@ export default function ReadyToursTable() {
         });
       }
     };
-    fetchCandidates();
-  }, []);
+    if (tours.length > 0) {
+      fetchCandidates();
+    }
+  }, [tours]);
+  
 
   const handleFilterChange = (filters) => {
     const filtered = tours.filter((tour) => {
@@ -232,6 +244,38 @@ export default function ReadyToursTable() {
     }
   };
 
+  const handleRequestToJoin = async (tourId) => {
+    const userId = localStorage.getItem("userId");
+    const userType = localStorage.getItem("userType");
+    console.log("Requesting to join tour with data:", { tourId, userId });  
+    try {
+      await AssignTourService.requestToJoinTour(tourId, userId);
+      toast.current.clear();
+      toast.current.show({
+        severity: "success",
+        summary: "Request Sent",
+        detail: "Your request to join this tour has been submitted.",
+        life: 3000,
+      });
+      if (userType === '1') {
+        setTours((prevTours) => prevTours.filter((tour) => tour.id !== tourId));
+        setFilteredTours((prevFilteredTours) =>
+            prevFilteredTours.filter((tour) => tour.id !== tourId)
+        );
+    }
+    } catch (error) {
+      console.error("Error sending request:", error);
+      toast.current.clear();
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: error.message || "Unable to send request to join the tour.",
+        life: 3000,
+      });
+    }
+  };
+  
+
   const formatTime = (time) => {
     if (typeof time !== 'string') {
       return '';
@@ -302,6 +346,25 @@ export default function ReadyToursTable() {
             body={(rowData) => formatTime(rowData.time)}
             style={{ width: "10%" }}
           ></Column>
+          {localStorage.getItem("userType") === "1" && (
+              <Column
+                header="Request to Join"
+                body={(rowData) => {
+                  if (rowData.tour_status === "READY") {
+                    return (
+                      <Button
+                        label="Request to Join"
+                        className="p-button-primary"
+                        onClick={() => handleRequestToJoin(rowData.id)}
+                        style={{ width: "100%" }}
+                      />
+                    );
+                  }
+                  return null;
+                }}
+                style={{ width: "15%" }}
+              />
+            )}
      {(localStorage.getItem("userType") === '3' || localStorage.getItem("userType") === '4' || localStorage.getItem("userType") === '2') && (
   <Column field="school_name" header="School" style={{ width: "20%" }}></Column>
     )}  
@@ -401,16 +464,17 @@ export default function ReadyToursTable() {
 
           {(localStorage.getItem("userType") === '3' ||
             localStorage.getItem("userType") === '4') && (
-            <Column
+              <Column
               header="Assign Candidate"
               body={(rowData) => {
                 if (rowData.tour_status === "READY") {
+                  const candidatesForTour = candidateGuideOptions[rowData.id] || [];
                   const selectedForTour = selectedCandidates[rowData.id] || [];
                   return (
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                       <MultiSelect
                         value={selectedForTour}
-                        options={candidateGuideOptions}
+                        options={candidatesForTour}
                         onChange={(e) => {
                           setSelectedCandidates((prev) => ({
                             ...prev,
@@ -419,9 +483,7 @@ export default function ReadyToursTable() {
                         }}
                         placeholder="Select Candidates"
                         display="chip"
-                        className="p-multiselect-dropdown scrollable-multiselect"
-                        style={{ width: "100%", whiteSpace: "nowrap", maxWidth: "200px" }}
-                      />
+                      /> 
                       <Button
                         label="Confirm"
                         icon="pi pi-check"

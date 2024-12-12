@@ -16,7 +16,8 @@ const { addTour,
     cancelTour,
     fetchDoneTours,
     getToursByUserId,
-    getUsersByTourId
+    getUsersByTourId, 
+    requestToJoinTour
 } = require("../controllers/tourController");
 const authenticateToken = require('../middleware/auth'); // Middleware for authentication
 
@@ -39,4 +40,6 @@ router.get("/doneTours", fetchDoneTours);
 router.get("/cancel", cancelTour);
 router.get("/getToursByUser", getToursByUserId);
 router.get("/getUsersByTour", getUsersByTourId);
+router.post("/requestToJoin", requestToJoinTour);
+
 module.exports = router;

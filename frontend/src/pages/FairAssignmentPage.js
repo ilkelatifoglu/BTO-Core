@@ -4,7 +4,7 @@ import { Column } from "primereact/column";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog"; // Using Dialog for confirmation
 import { Toast } from "primereact/toast"; // (2) Importing Toast
-import { fetchFairs, requestToJoinFair } from "../services/fairService";
+import { fetchFairs, requestToJoinFair, fetchAvailableFairsForUser } from "../services/fairService";
 import Sidebar from '../components/common/Sidebar';
 import "./FairAssignment.css";
 import '../components/common/CommonComp.css';
@@ -19,7 +19,7 @@ export default function FairAssignmentPage() {
     useEffect(() => {
         const loadApprovedFairs = async () => {
             try {
-                const data = await fetchFairs("APPROVED");
+                const data = await fetchAvailableFairsForUser();
                 setFairs(data);
 
                 // Show success toast after data loaded
@@ -87,6 +87,11 @@ export default function FairAssignmentPage() {
         setConfirmVisible(true);
     };
 
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        return `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`;
+    };
+
     const actionTemplate = (rowData) => (
         <Button
             label="Request to Join"
@@ -126,8 +131,11 @@ export default function FairAssignmentPage() {
             <div className="fair-assignment-content">
                 <h2>Fair Assignment</h2>
                 <DataTable value={fairs} paginator rows={10} responsiveLayout="scroll">
-                    <Column field="date" header="Date" />
-                    <Column field="organization_name" header="Organization Name" />
+                    <Column
+                        field="date"
+                        header="Date"
+                        body={(rowData) => formatDate(rowData.date)}
+                    />                      <Column field="organization_name" header="Organization Name" />
                     <Column field="city" header="City" />
                     <Column body={actionTemplate} header="Actions" />
                 </DataTable>

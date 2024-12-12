@@ -257,14 +257,27 @@ exports.getReadyTours = async (req, res) => {
 
 exports.getCandidateGuides = async (req, res) => {
   try {
-    const candidates = await fetchCandidateGuides();
-    const formattedCandidates = candidates.map(candidate => ({
-      id: candidate.id,
-      name: candidate.name,
-    }));
-    res.status(200).json(formattedCandidates);
+    const { tourId } = req.query;
+
+    if (!tourId) {
+      return res.status(400).json({ message: "Tour ID is required" });
+    }
+
+    const candidates = await query(
+      `
+      SELECT 
+        u.id, 
+        CONCAT(u.first_name, ' ', u.last_name) AS name
+      FROM users u
+      JOIN tour_requests tr ON u.id = tr.guide_id
+      WHERE tr.tour_id = $1
+      `,
+      [tourId]
+    );
+
+    res.status(200).json({ tourId, candidates: candidates.rows });
   } catch (error) {
-    console.error("Error fetching candidate guides:", error.message || error);
+    console.error("Error fetching candidate guides:", error);
     res.status(500).json({ message: "Failed to fetch candidate guides" });
   }
 };
@@ -714,6 +727,33 @@ exports.getUsersByTourId = async (req, res) => {
   } catch (error) {
     console.error("Error fetching users by tour ID:", error);
     res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+exports.requestToJoinTour = async (req, res) => {
+  const { tourId, guideId } = req.body;
+  console.log("Received request body:", req.body); // Debug log
+
+  if (!tourId || !guideId) {
+    return res.status(400).json({ message: "Tour ID and Guide ID are required" });
+  }
+
+  try {
+    const existingRequest = await query(
+      "SELECT * FROM tour_requests WHERE tour_id = $1 AND guide_id = $2",
+      [tourId, guideId]
+    );
+
+    if (existingRequest.rowCount > 0) {
+      return res.status(400).json({ message: "You have already requested to join this tour." });
+    }
+
+    await query("INSERT INTO tour_requests (tour_id, guide_id) VALUES ($1, $2)", [tourId, guideId]);
+
+    res.status(201).json({ message: "Request sent successfully" });
+  } catch (error) {
+    console.error("Error requesting to join tour:", error);
+    res.status(500).json({ message: "Failed to send request" });
   }
 };
 

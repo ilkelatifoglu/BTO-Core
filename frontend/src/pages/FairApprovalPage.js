@@ -43,6 +43,13 @@ export default function FairApprovalPage() {
             });
     }, []);
 
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        return `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`;
+    };
+    
+    
+
     const rowClassName = (rowData) => {
         return rowData.status === "CANCELLED" ? "cancelled-row" : "";
     };
@@ -288,7 +295,11 @@ export default function FairApprovalPage() {
                     responsiveLayout="scroll"
                     rowClassName={rowClassName}
                 >
-                    <Column field="date" header="Date" />
+                    <Column
+                        field="date"
+                        header="Date"
+                        body={(rowData) => formatDate(rowData.date)}
+                    />                    
                     <Column field="organization_name" header="Organization" />
                     <Column field="city" header="City" />
                     {["guide_1_id", "guide_2_id", "guide_3_id"].map((column, index) => (

@@ -25,7 +25,8 @@ const BILKENT_CENTER = {
 };
 
 const RealtimeStatus = () => {
-  const isAuthorized = useProtectRoute([1, 2, 3, 4]); // Check authorization
+  // TODO: change user types
+  const isAuthorized = useProtectRoute([1, 2, 3, 4]);
 
   const MOCK_USER_LOCATION = {
     latitude: 39.868201,

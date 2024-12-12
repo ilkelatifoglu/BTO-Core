@@ -13,14 +13,9 @@ let cachedUserId = null;
 const Sidebar = ({ setCurrentPage }) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const navigate = useNavigate();
-  const [profileImage, setProfileImage] = useState(
-    cachedProfileImage || defaultProfileImage
-  );
-  const [userName, setUserName] = useState(
-    cachedUserProfile
-      ? `${cachedUserProfile.firstName} ${cachedUserProfile.lastName}`
-      : ""
-  );
+  const [profileImage, setProfileImage] = useState(null);
+  const [userName, setUserName] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
   const [isLoadingPicture, setIsLoadingPicture] = useState(false);
   const [isLoadingProfile, setIsLoadingProfile] = useState(false);
   const [userType, setUserType] = useState(null);
@@ -56,43 +51,26 @@ const Sidebar = ({ setCurrentPage }) => {
   // Function to fetch profile picture from backend
   const fetchProfilePicture = async () => {
     const userId = getUserId();
-    if (!userId) {
-      toast.current.show({
-        severity: "error",
-        summary: "User Not Found",
-        detail: "Please log in.",
-        life: 3000,
-      });
-      return;
-    }
+    if (!userId) return;
 
     setIsLoadingPicture(true);
-
     try {
       const token =
         localStorage.getItem("token") || localStorage.getItem("tempToken");
-
-      if (!token) {
-        throw new Error("Authentication token is missing.");
-      }
+      if (!token) throw new Error("Authentication token is missing.");
 
       const url = `${process.env.REACT_APP_BACKEND_URL}/profile/get-profile-picture/${userId}`;
-
       const response = await axios.get(url, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       const { profile_picture_data, profile_picture_mime_type } = response.data;
-
-      // Construct the data URL
       const imageSrc = `data:${profile_picture_mime_type};base64,${profile_picture_data}`;
-
       setProfileImage(imageSrc);
-      cachedProfileImage = imageSrc; // Cache the image
+      cachedProfileImage = imageSrc;
     } catch (error) {
-      console.error("Error fetching profile picture:", error);
+      // Silently fall back to default profile image
+      setProfileImage(defaultProfileImage);
     } finally {
       setIsLoadingPicture(false);
     }
@@ -101,18 +79,9 @@ const Sidebar = ({ setCurrentPage }) => {
   // Function to fetch user profile from backend
   const fetchUserProfile = async () => {
     const userId = getUserId();
-    if (!userId) {
-      toast.current.show({
-        severity: "error",
-        summary: "User Not Found",
-        detail: "Please log in.",
-        life: 3000,
-      });
-      return;
-    }
+    if (!userId) return;
 
     setIsLoadingProfile(true);
-
     try {
       const response = await axios.get(
         `${process.env.REACT_APP_BACKEND_URL}/profile/getProfile`,
@@ -126,12 +95,16 @@ const Sidebar = ({ setCurrentPage }) => {
       );
 
       const { firstName, lastName } = response.data;
-
       setUserName(`${firstName} ${lastName}`);
-      cachedUserProfile = { firstName, lastName }; // Cache the profile
+      cachedUserProfile = { firstName, lastName };
     } catch (error) {
-      console.error("Error fetching user profile:", error);
-      setUserName("User"); // Fallback to 'User'
+      toast.current.show({
+        severity: "error",
+        summary: "Error Loading Profile",
+        detail: "Failed to load user profile details. Please try again later.",
+        life: 3000,
+      });
+      setUserName("User");
     } finally {
       setIsLoadingProfile(false);
     }
@@ -146,27 +119,31 @@ const Sidebar = ({ setCurrentPage }) => {
 
   useEffect(() => {
     const currentUserId = getUserId();
+    setIsLoading(true);
 
-    // Check if we need to fetch new data
-    if (
-      !cachedProfileImage ||
-      !cachedUserProfile ||
-      cachedUserId !== currentUserId
-    ) {
-      // Clear existing cache if user is different
-      if (cachedUserId !== currentUserId) {
-        cachedProfileImage = null;
-        cachedUserProfile = null;
-      }
-      fetchUserData();
-    } else {
-      // Use cached data if it exists and user is the same
+    if (!currentUserId) {
+      setIsLoading(false);
+      return;
+    }
+
+    if (cachedUserId !== currentUserId) {
+      // Clear cache if different user
+      cachedProfileImage = null;
+      cachedUserProfile = null;
+      cachedUserId = null;
+
+      fetchUserData().finally(() => setIsLoading(false));
+    } else if (cachedProfileImage && cachedUserProfile) {
+      // Use cache if same user
       setProfileImage(cachedProfileImage);
       setUserName(
         `${cachedUserProfile.firstName} ${cachedUserProfile.lastName}`
       );
+      setIsLoading(false);
+    } else {
+      // Fetch if no cache
+      fetchUserData().finally(() => setIsLoading(false));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -193,20 +170,11 @@ const Sidebar = ({ setCurrentPage }) => {
         <div className="sidebar__header">
           <div className="profile-container">
             <div className="profile-picture-wrapper">
-              {isLoadingPicture ? (
-                <div className="profile-loading">
-                  <i
-                    className="pi pi-spin pi-spinner"
-                    style={{ fontSize: "2em" }}
-                  ></i>
-                </div>
-              ) : (
-                <img
-                  src={profileImage}
-                  alt="Profile"
-                  className="profile-picture"
-                />
-              )}
+              <img
+                src={profileImage || defaultProfileImage}
+                alt="Profile"
+                className={`profile-picture ${isLoading ? "loading-blur" : ""}`}
+              />
               {isExpanded && !isLoadingPicture && (
                 <button
                   className="refresh-button"

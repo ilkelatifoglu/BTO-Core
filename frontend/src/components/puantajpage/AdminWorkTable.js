@@ -6,6 +6,7 @@ import { Checkbox } from "primereact/checkbox";
 import { Button } from "primereact/button";
 import { Toast } from "primereact/toast"; // (2) Import Toast
 import "./PuantajComponents.css";
+import '../common/CommonComp.css';
 
 export default function AdminWorkTable() {
     const [workEntries, setWorkEntries] = useState([]);
@@ -130,9 +131,9 @@ export default function AdminWorkTable() {
     };
 
     return (
-        <div className="data-table-container">
+        <div className="page-container">
             <Toast ref={toast} /> {/* (5) Added Toast component */}
-            <div className="data-table-content">
+            <div className="page-content">
                 <h1>All Work Entries</h1>
                 <DataTable
                     value={workEntries}

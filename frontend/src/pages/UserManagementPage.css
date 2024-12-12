@@ -61,7 +61,7 @@
 }
 
 .user-management-content .form-container h2 {
-    text-align: center;
+    text-align: left;
     font-size: 22px;
     margin-bottom: 15px;
     color: #2c3e50;
@@ -71,6 +71,7 @@
     display: flex;
     flex-direction: column;
     margin-bottom: 15px;
+    align-items: left;
 }
 
 .user-management-content .form-group label {
@@ -78,10 +79,12 @@
     font-size: 14px;
     font-weight: 600;
     color: #34495e;
+    text-align: left; 
 }
 
 .user-management-content .form-group input,
 .form-group select {
+
     padding: 10px;
     font-size: 14px;
     border: 1px solid #ddd;
@@ -98,7 +101,7 @@
 }
 
 .user-management-content button {
-    background-color: #2563eb;
+    background-color: rgb(0, 74, 119);
     color: white;
     border: none;
     border-radius: 6px;
@@ -111,7 +114,7 @@
 }
 
 .user-management-content button:hover {
-    background-color: #3b82f6;
+    background-color: rgb(0, 104, 159);
     transform: scale(1.02);
 }
 

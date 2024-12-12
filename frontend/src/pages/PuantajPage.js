@@ -14,9 +14,9 @@ function PuantajPage() {
     }, []);
 
     return (
-        <div className="page-container">
+        <div >
             <Sidebar />
-            <div className="page-content">
+            <div >
                 {userType === 4 ? <AdminWorkTable /> : <UserWorkTable />}
                 <div className="submit-button-container">
                   

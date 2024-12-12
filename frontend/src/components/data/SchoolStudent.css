@@ -19,7 +19,7 @@
 .year-button {
   align-items: center;
   justify-content: center;
-  background-color: #2563eb;
+  background-color: rgb(0, 74, 119);
   color: white;
   border: none;
   border-radius: 6px;
@@ -32,7 +32,7 @@
 }
 
 .year-button:hover {
-  background-color: #3b82f6;
+  background-color: rgb(0, 104, 159);
   transform: scale(1.02);
 }
 
@@ -84,7 +84,7 @@
 
   align-items: center;
   justify-content: center;
-  background-color: #2563eb;
+  background-color: rgb(0, 74, 119);
   color: white;
   border: none;
   border-radius: 6px;

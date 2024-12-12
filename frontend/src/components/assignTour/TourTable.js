@@ -376,19 +376,21 @@ export default function ReadyToursTable() {
 
   <Column field="tour_size" header="Tour Size" style={{ width: "10%" }}></Column> )}
   
-  {
-  (localStorage.getItem("userType") === '3' || 
-   localStorage.getItem("userType") === '4' || 
-   localStorage.getItem("userType") === '1' || 
-   localStorage.getItem("userType") === '2') ? (
+
   <Column
     field="classroom"
     header="Classroom"
+    style={{ width: "10%" }}
     body={(rowData) => {
       if (
         rowData.classroom === null &&
         rowData.tour_status === "READY"
       ) {
+      if (
+        localStorage.getItem("userType") === '3' || 
+        localStorage.getItem("userType") === '4' || 
+        localStorage.getItem("userType") === '2'
+      ) { 
         return (
           <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "10px" }}>
             <input
@@ -396,7 +398,6 @@ export default function ReadyToursTable() {
               value={classroomInputs[rowData.id] || ""} // Get value for the specific row
               onChange={(e) => handleInputChange(rowData.id, e.target.value)} // Update the value for the specific row
               placeholder="Enter Classroom"
-              style={{ marginRight: "10px" }}
             />
             <Button
               label="Save"
@@ -408,12 +409,24 @@ export default function ReadyToursTable() {
           </div>
         );
       }
-      return rowData.classroom || "Not Assigned";
+    }
+      if (
+        localStorage.getItem("userType") === '3' || 
+        localStorage.getItem("userType") === '4' || 
+        localStorage.getItem("userType") === '1' || 
+        localStorage.getItem("userType") === '2'
+      ) {
+        return (
+          <div >
+            {rowData.classroom || "Not Assigned"}
+          </div>
+        );
+      }
+
+      return null; // Explicitly return null if no conditions are met
     }}
-    style={{ width: "15%" }} 
-  />    
-  ) : null
-  }
+  />
+
           {/* Guide Quota Column */}
           {(localStorage.getItem("userType") === '3' || localStorage.getItem("userType") === '4' || localStorage.getItem("userType") === '2') && (
           <Column

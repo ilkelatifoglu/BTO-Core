@@ -63,7 +63,7 @@
 /* Submit button styling */
 .add-work-button {
     padding: 0.5rem 1rem; /* Add padding */
-    background-color: #4CAF50; /* Green background */
+    background-color: rgb(0, 74, 119);; /* Green background */
     color: white; /* White text */
     border: none; /* Remove border */
     border-radius: 5px; /* Rounded corners */

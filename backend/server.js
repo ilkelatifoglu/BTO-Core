@@ -20,7 +20,8 @@ const feedbackRoutes = require("./src/routes/feedbackRoutes");
 const scheduleRoutes = require("./src/routes/scheduleRoutes");
 const profileRoutes = require("./src/routes/profileRoutes");
 const fairRoutes = require("./src/routes/fairRoutes");
-const individualTourRoutes = require('./src/routes/individualTourRoutes');
+const individualTourRoutes = require("./src/routes/individualTourRoutes");
+const tourLocationRoutes = require("./src/routes/tourLocationRoutes");
 
 const app = express();
 const server = http.createServer(app);
@@ -58,8 +59,8 @@ app.use(cors());
 app.use(express.json());
 app.set("io", io);
 
-app.use('/uploads', express.static('uploads'));
-app.use('/profile', profileRoutes);
+app.use("/uploads", express.static("uploads"));
+app.use("/profile", profileRoutes);
 app.use("/auth", authRoutes);
 app.use("/guide-info", guideInfoRoutes);
 app.use("/work", workRoutes);
@@ -68,10 +69,11 @@ app.use("/school", schoolRoutes);
 app.use("/advisors", advisorRoutes);
 app.use("/user-management", userManagementRoutes);
 app.use("/feedback", feedbackRoutes);
-app.use('/schedule', scheduleRoutes);
-app.use('/data', dataRoutes);
-app.use('/individual-tours', individualTourRoutes);
-app.use("/fairs", fairRoutes); 
+app.use("/schedule", scheduleRoutes);
+app.use("/data", dataRoutes);
+app.use("/individual-tours", individualTourRoutes);
+app.use("/fairs", fairRoutes);
+app.use("/tour-locations", tourLocationRoutes);
 
 io.on("connection", (socket) => {
   console.log("New client connected:", socket.id);

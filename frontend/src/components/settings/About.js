@@ -9,8 +9,8 @@ import bertanPhoto from '../../assets/bertanphoto.jpeg';
 
 const About = () => {
     return (
-        <div className="about-container">
-         <h1 className="about-main-heading">About</h1>
+        <div className="about-container" style={{marginLeft: "-15px"}}>
+            <h1 className="about-main-heading" style={{marginTop: "60px", marginLeft: "15px"}}>About</h1>
             <div className="about-section">
                 <h2>
                     <i className="pi pi-desktop about-icon"></i> What BTO Core is?
@@ -36,7 +36,7 @@ const About = () => {
                     <i className="pi pi-users about-icon"></i> App Developers
                 </h2>
                 <div className="developer-profiles">
-                <figure className="developer">
+                    <figure className="developer">
                         <img src={ekinPhoto} alt="Ekin Köylü" />
                         <figcaption>Ekin Köylü</figcaption>
                     </figure>
@@ -48,15 +48,15 @@ const About = () => {
                         <img src={ilkePhoto} alt="İlke Latifoğlu" />
                         <figcaption>İlke Latifoğlu</figcaption>
                     </figure>
-                    <figure className="developer">
+                    <figure className="developer" style={{marginTop: "-10px"}}>
                         <img src={emrePhoto} alt="Emre Yazıcıoğlu" />
                         <figcaption>Emre Yazıcıoğlu</figcaption>
                     </figure>
-                    <figure className="developer">
+                    <figure className="developer" style={{marginTop: "-10px"}}>
                         <img src={mervePhoto} alt="Merve Güleç" />
                         <figcaption>Merve Güleç</figcaption>
                     </figure>
-                    <figure className="developer">
+                    <figure className="developer" style={{marginTop: "-10px"}}>
                         <img src={bertanPhoto} alt="Bertan Uran" />
                         <figcaption>Bertan Uran</figcaption>
                     </figure>

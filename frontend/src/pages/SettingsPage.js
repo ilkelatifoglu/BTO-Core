@@ -1,3 +1,5 @@
+// SettingsPage.jsx
+
 import React, { useState, useContext } from 'react';
 import Sidebar from '../components/common/Sidebar';
 import ProfileSettings from '../components/settings/ProfileSettings';
@@ -43,12 +45,9 @@ const SettingsPage = () => {
 
     return (
         <div style={{ display: 'flex', height: '100vh' }}>
-            {/* Main Application Sidebar */}
             <Sidebar setCurrentPage={() => {}} />
 
-            {/* Settings Page Content */}
             <div className="settings-page-container">
-                {/* Settings Sidebar */}
                 <div className="settings-sidebar">
                     <h2 className="settings-header">Settings</h2>
                     <button
@@ -85,7 +84,11 @@ const SettingsPage = () => {
                 </div>
 
                 {/* Settings Main Content */}
-                <div className="settings-content">{renderContent()}</div>
+                <div
+                    className={`settings-content ${activeTab === 'account' || 'uploads' ? 'column-direction' : ''}`}
+                >
+                    {renderContent()}
+                </div>
             </div>
         </div>
     );

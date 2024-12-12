@@ -65,7 +65,7 @@
     height: 80px;
     border-radius: 50%;
     object-fit: cover;
-    margin-bottom: 5px; /* Reduce spacing below the image */
+    margin-bottom: 0px; /* Reduce spacing below the image */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 

@@ -79,6 +79,7 @@
 
 /* Add margin for the message */
 .message {
+  font-family: "Tiempos Text Regular";
     font-size: 1rem;
     color: #28a745; /* Success message color */
     margin-bottom: 1rem;
@@ -144,10 +145,10 @@
     
 /* Row colors for different statuses */
 .cancelled-row {
-    background-color: #e11f1f 
+    background-color: #f8d7da 
   }
   
   .done-row {
-    background-color: #3fbf3f 
+    background-color: #d4edda 
   }
   

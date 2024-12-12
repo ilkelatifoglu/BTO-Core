@@ -288,6 +288,7 @@ const UserManagementPage = () => {
                                         placeholder="Select Days"
                                         display="chip"
                                         required
+                                        style={{ width: "100%", maxWidth: "300px" }}
                                     />
                                 </div>
                             )}

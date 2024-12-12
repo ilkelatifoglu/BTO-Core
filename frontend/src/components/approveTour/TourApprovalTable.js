@@ -400,7 +400,7 @@ const TourApprovalTable = () => {
                     backgroundColor: "#f9f9f9",
                 }}
             >
-                <p style={{ fontSize: "14px", color: "#333" }}>
+                <p style={{ font: "Tiempos Text Regular", fontSize: "14px", color: "#333" }}>
                     If you want to assign the most appropriate days according to the most suitable schools based on prioritization, follow these steps:
                     <br /><br />
                     1. Filter by <strong>WAITING</strong> status. 🕒

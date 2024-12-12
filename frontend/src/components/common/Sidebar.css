@@ -28,6 +28,7 @@
   cursor: pointer;
   margin-top: 10px;
   font-size: 1.2em;
+  font-family: "Tiempos Text Regular";
   padding: 0;
   margin-left: auto; /* Align toggle to the right */
   transition: color 0.3s;
@@ -124,13 +125,14 @@
 
 /* User Name */
 .sidebar__header h2 {
-  font-size: 0.9rem;
+  font-size: 20px;
   font-weight: bold;
   margin: 3px 0; /* Adjust margin for spacing */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   margin-top: 12px;
+  font-weight: bold;
 }
 
 /* Hide User Name when Sidebar is Collapsed */
@@ -177,6 +179,7 @@
   margin: 5px 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   background-color: #ffffff;
+  font-weight: bold;
 }
 
 .menu__item:hover {

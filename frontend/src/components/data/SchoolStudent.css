@@ -34,6 +34,7 @@
 }
 
 .year-display {
+  font: "Tiempos Text Regular";
   font-size: 1.2em;
   font-weight: bold;
   padding: 0 10px;

@@ -42,6 +42,9 @@ const RealtimeStatus = () => {
   const mapRef = useRef();
   const toast = useRef(null);
 
+  // Add new state for map initialization
+  const [mapLoaded, setMapLoaded] = useState(false);
+
   const handleNavigateBack = () => {
     window.history.back();
   };
@@ -382,118 +385,122 @@ const RealtimeStatus = () => {
             maxZoom={18}
             attributionControl={false}
             cooperativeGestures={true}
+            onLoad={() => setMapLoaded(true)}
           >
-            <AttributionControl
-              customAttribution="Bilkent University"
-              style={{
-                color: "#666",
-                backgroundColor: "rgba(255, 255, 255, 0.8)",
-              }}
-            />
-
-            <NavigationControl position="bottom-left" />
-
-            {locationDenied && <LocationAccessButton />}
-            {userLocation && (
-              <Marker
-                longitude={userLocation.longitude}
-                latitude={userLocation.latitude}
-              >
-                <MapPin color="#2196F3" size={24} />
-              </Marker>
-            )}
-
-            {locations.map((location) => (
-              <Marker
-                key={location.id}
-                longitude={location.longitude}
-                latitude={location.latitude}
-                onClick={(e) => {
-                  e.originalEvent.stopPropagation();
-                  setSelectedLocation(location);
-                }}
-              >
-                <div
-                  className={`realtime-status__marker realtime-status__marker--${
-                    location.status || "empty"
-                  }`}
+            {mapLoaded && (
+              <>
+                <AttributionControl
+                  customAttribution="Bilkent University"
                   style={{
-                    backgroundColor: getMarkerColor(location.status),
-                    width: "20px",
-                    height: "20px",
-                    borderRadius: "50%",
-                    border: "2px solid white", // Add white border for contrast
-                    boxShadow: "0 0 4px rgba(0,0,0,0.5)", // Add shadow for better visibility
+                    color: "#666",
+                    backgroundColor: "rgba(255, 255, 255, 0.8)",
                   }}
                 />
-              </Marker>
-            ))}
 
-            {selectedLocation && (
-              <Popup
-                longitude={selectedLocation.longitude}
-                latitude={selectedLocation.latitude}
-                anchor="bottom"
-                offset={[0, -20]}
-                closeButton={true}
-                closeOnClick={true}
-                onClose={() => setSelectedLocation(null)}
-                className="realtime-status__custom-popup"
-              >
-                <div className="realtime-status__popup">
-                  <h3 className="realtime-status__popup-title">
-                    {selectedLocation.name}
-                  </h3>
-                  <div className="realtime-status__popup-status">
-                    <span
-                      className={`status-indicator status-${selectedLocation.status}`}
+                <NavigationControl position="bottom-left" />
+
+                {locationDenied && <LocationAccessButton />}
+                {userLocation && (
+                  <Marker
+                    longitude={userLocation.longitude}
+                    latitude={userLocation.latitude}
+                  >
+                    <MapPin color="#2196F3" size={24} />
+                  </Marker>
+                )}
+
+                {locations.map((location) => (
+                  <Marker
+                    key={location.id}
+                    longitude={location.longitude}
+                    latitude={location.latitude}
+                    onClick={(e) => {
+                      e.originalEvent.stopPropagation();
+                      setSelectedLocation(location);
+                    }}
+                  >
+                    <div
+                      className={`realtime-status__marker realtime-status__marker--${
+                        location.status || "empty"
+                      }`}
+                      style={{
+                        backgroundColor: getMarkerColor(location.status),
+                        width: "20px",
+                        height: "20px",
+                        borderRadius: "50%",
+                        border: "2px solid white", // Add white border for contrast
+                        boxShadow: "0 0 4px rgba(0,0,0,0.5)", // Add shadow for better visibility
+                      }}
                     />
-                    <p>
-                      {selectedLocation.status.charAt(0).toUpperCase() +
-                        selectedLocation.status.slice(1)}
-                    </p>
-                  </div>
-                  <p className="realtime-status__popup-occupancy">
-                    {selectedLocation.current_occupancy}/
-                    {selectedLocation.capacity} visitors
-                  </p>
+                  </Marker>
+                ))}
 
-                  {selectedLocation.current_users &&
-                    selectedLocation.current_users.length > 0 && (
-                      <div className="realtime-status__popup-users">
-                        <h4>Current Guides</h4>
-                        <ul>
-                          {selectedLocation.current_users.map((user) => (
-                            <li key={user.user_id}>
-                              <span className="visitor-name">
-                                {user.user_name || "Anonymous"}
-                              </span>
-                              <span className="visitor-time">
-                                {new Date(user.joined_at).toLocaleTimeString(
-                                  [],
-                                  {
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                  }
-                                )}
-                              </span>
-                            </li>
-                          ))}
-                        </ul>
+                {selectedLocation && (
+                  <Popup
+                    longitude={selectedLocation.longitude}
+                    latitude={selectedLocation.latitude}
+                    anchor="bottom"
+                    offset={[0, -20]}
+                    closeButton={true}
+                    closeOnClick={true}
+                    onClose={() => setSelectedLocation(null)}
+                    className="realtime-status__custom-popup"
+                  >
+                    <div className="realtime-status__popup">
+                      <h3 className="realtime-status__popup-title">
+                        {selectedLocation.name}
+                      </h3>
+                      <div className="realtime-status__popup-status">
+                        <span
+                          className={`status-indicator status-${selectedLocation.status}`}
+                        />
+                        <p>
+                          {selectedLocation.status.charAt(0).toUpperCase() +
+                            selectedLocation.status.slice(1)}
+                        </p>
                       </div>
-                    )}
-                </div>
-              </Popup>
-            )}
+                      <p className="realtime-status__popup-occupancy">
+                        {selectedLocation.current_occupancy}/
+                        {selectedLocation.capacity} visitors
+                      </p>
 
-            <div className="realtime-status__map-controls">
-              <button
-                onClick={centerToUser}
-                className="realtime-status__button realtime-status__button--icon realtime-status__button--crosshair"
-              >
-                <Crosshair size={24} color="white" />
-              </button>
-            </div>
+                      {selectedLocation.current_users &&
+                        selectedLocation.current_users.length > 0 && (
+                          <div className="realtime-status__popup-users">
+                            <h4>Current Guides</h4>
+                            <ul>
+                              {selectedLocation.current_users.map((user) => (
+                                <li key={user.user_id}>
+                                  <span className="visitor-name">
+                                    {user.user_name || "Anonymous"}
+                                  </span>
+                                  <span className="visitor-time">
+                                    {new Date(
+                                      user.joined_at
+                                    ).toLocaleTimeString([], {
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                    })}
+                                  </span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                    </div>
+                  </Popup>
+                )}
+
+                <div className="realtime-status__map-controls">
+                  <button
+                    onClick={centerToUser}
+                    className="realtime-status__button realtime-status__button--icon realtime-status__button--crosshair"
+                  >
+                    <Crosshair size={24} color="white" />
+                  </button>
+                </div>
+              </>
+            )}
           </Map>
         )}
       </div>

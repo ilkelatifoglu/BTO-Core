@@ -359,7 +359,7 @@ const RealtimeStatus = () => {
             cooperativeGestures={true}
           >
             <AttributionControl
-              customAttribution="Bilkent University Tour Guide"
+              customAttribution="Bilkent University"
               style={{
                 color: "#666",
                 backgroundColor: "rgba(255, 255, 255, 0.8)",

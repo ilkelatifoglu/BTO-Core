@@ -12,8 +12,7 @@
 
 /* Inputs, Selects, and Button */
 .guide-filter-bar input,
-.guide-filter-bar select,
-.guide-filter-bar button {
+.guide-filter-bar select{
     padding: 8px;
     font-size: 14px;
     border: 1px solid #ccc;
@@ -22,20 +21,7 @@
     box-sizing: border-box; /* Include padding in width calculations */
 }
 
-/* Exclude the Apply button from dropdown styles */
-.guide-filter-bar button:not(.dropdown-button) {
-    background-color: #5a6268;
-    color: #fff;
-    cursor: pointer;
-    border: none;
-    padding: 8px 16px;
-    transition: background-color 0.3s ease;
-}
 
-/* Hover Effect for Apply Button */
-.guide-filter-bar button:not(.dropdown-button):hover {
-    background-color: #515c67;
-}
 
 /* Custom Dropdown Wrapper */
 .custom-dropdown {

@@ -1,0 +1,185 @@
+/* ======================= PAGE LAYOUT ======================= */
+
+/* General Page Container */
+.page-container {
+    display: flex;
+    height: 100vh; /* Full viewport height */
+    background-color: #f9f9f9; /* Light background for the page */
+}
+
+/* General Page Content Area */
+.page-content {
+    flex: 1;
+    padding: 30px;
+    background-color: #ffffff; /* White content background */
+    border-radius: 10px; /* Rounded corners */
+    margin: 20px 40px 20px auto; /* Spacing for centered alignment */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); /* Subtle shadow for depth */
+    overflow-y: auto; /* Enable scrolling for overflow */
+    max-width: 80%; /* Constrain maximum width */
+    text-align: center; /* Center text by default */
+}
+
+/* General Heading Styles (H1) */
+.page-content h1 {
+    font-family: "Tiempos Text Regular";
+    font-size: 35px; /* Large heading size */
+    margin-bottom: 20px;
+    font-weight: bold; /* Bold for emphasis */
+    text-align: center; /* Center-align heading */
+}
+
+/* BUTTONS */
+.apply-button,
+.submit-button,
+.clearfilters-button,
+.datapage-button,
+.register-button,
+.delete-button,
+.viewfeedback-button,
+.cancel-button,
+.upload-button {
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: normal;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: none;
+}
+
+.apply-button:hover,
+.submit-button:hover,
+.clearfilters-button:hover,
+.datapage-button:hover,
+.register-button:hover,
+.delete-button:hover,
+.viewfeedback-button:hover,
+.cancel-button:hover,
+.upload-button:hover {
+    background-color: #3b82f6;
+    transform: scale(1.02);
+}
+
+.apply-button:active,
+.submit-button:active,
+.clearfilters-button:active,
+.datapage-button:active,
+.register-button:active,
+.delete-button:active,
+.viewfeedback-button:active,
+.cancel-button:active,
+.upload-button:active {
+    transform: scale(0.98); 
+}
+
+/* Generic Table Styles */
+.table {
+    border-collapse: collapse; /* Remove gaps between cells */
+    width: 100%;
+    font-size: 14px; /* Standard table font size */
+    text-align: left; /* Left-align table text */
+}
+
+/* Table Header Styles */
+.table thead th {
+    padding: 14px 12px; /* Header cell padding */
+    font-weight: bold; /* Bold headers */
+    color: #333; /* Dark text color */
+    border-bottom: 2px solid #e0e0e0; /* Header underline */
+    background-color: #f7f7f7; /* Light gray background */
+    text-align: left; /* Left-align text */
+    vertical-align: middle; /* Middle-align content */
+}
+
+/* Table Body Cell Styles */
+.table tbody td {
+    padding: 14px 12px; /* Content cell padding */
+    border-bottom: 1px solid #f0f0f0; /* Divider between rows */
+    color: #555; /* Text color */
+    vertical-align: middle; /* Middle-align content */
+}
+
+/* Pager Styles */
+.p-paginator {
+    font-size: 14px; /* Pager font size */
+    padding: 10px; /* Spacing */
+    text-align: right; /* Align to the right */
+    background: none; /* Transparent background */
+    border-top: 2px solid #e0e0e0; /* Divider above pager */
+}
+
+/* ======================= DROPDOWN ======================= */
+
+/* Dropdown Wrapper */
+.dropdown {
+    position: relative;
+    width: 100%; /* Fill the column space */
+}
+
+/* Dropdown Button */
+.dropdown-button {
+    width: 100%;
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc; /* Light border */
+    border-radius: 6px; /* Rounded corners */
+    background-color: #fff; /* White background */
+    cursor: pointer; /* Pointer cursor */
+    text-align: left; /* Align text to the left */
+    position: relative;
+    appearance: none; /* Remove default browser styles */
+    white-space: nowrap; /* Prevent text wrapping */
+    font-weight: normal; /* Default font weight */
+}
+
+/* Dropdown Arrow */
+.dropdown-button::after {
+    content: "▼"; /* Dropdown arrow */
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none; /* Disable pointer events on arrow */
+    font-size: 12px; /* Smaller arrow size */
+    color: #000; /* Black arrow */
+}
+
+/* Dropdown Active State */
+.dropdown-button.active {
+    border-color: #2563eb; /* Highlighted border color */
+}
+
+/* Dropdown Menu */
+.dropdown-menu {
+    position: absolute;
+    top: 100%; /* Position below the button */
+    left: 0;
+    right: 0;
+    max-height: 200px; /* Limit height */
+    overflow-y: auto; /* Enable scrolling */
+    background-color: #fff; /* White background */
+    border: 1px solid #ccc; /* Border */
+    border-radius: 6px; /* Rounded corners */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    z-index: 1000; /* Ensure above other elements */
+    margin-top: 4px; /* Space below button */
+}
+
+/* Dropdown Items */
+.dropdown-item {
+    padding: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    white-space: nowrap; /* Prevent text wrapping */
+    font-weight: normal; /* Standard font weight */
+}
+
+/* Hover Effect for Dropdown Items */
+.dropdown-item:hover {
+    background-color: #2563eb; /* Highlight background */
+    color: white; /* White text */
+}

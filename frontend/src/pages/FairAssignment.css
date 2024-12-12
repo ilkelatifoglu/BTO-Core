@@ -1,8 +1,8 @@
 /* Main container for sidebar and page content */
 .fair-assignment-page {
     display: flex;
-    height: 100vh;
-    background-color: #f9f9f9;
+    height: 100vh; /* Full viewport height */
+    background-color: #f9f9f9; 
 }
 
 
@@ -10,18 +10,22 @@
 .fair-assignment-content {
     flex: 1;
     padding: 30px;
-    background-color: #ffffff;
-    border-radius: 10px;
-    margin: 20px 40px 20px auto;
-    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
-    overflow-y: auto;
-    max-width: 80%;
+    background-color: #ffffff; /* White content background */
+    border-radius: 10px; /* Rounded corners */
+    margin: 20px 40px 20px auto; /* Spacing for centered alignment */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); /* Subtle shadow for depth */
+    overflow-y: auto; /* Enable scrolling for overflow */
+    max-width: 80%; /* Constrain maximum width */
+    text-align: center; /* Center text by default */
 }
 
 /* Page title styling */
 .fair-assignment-content h2 {
-    text-align: center;
+    font-family: "Tiempos Text Regular";
+    font-size: 35px; /* Large heading size */
     margin-bottom: 20px;
+    font-weight: bold; /* Bold for emphasis */
+    text-align: center; /* Center-align heading */
 }
 
 /* DataTable styling */
@@ -52,13 +56,21 @@
 
 /* Action buttons */
 .p-button {
-    background-color: #007bff; /* Blue for "Request to Join" */
+    background-color: #2563eb;
+    color: white;
     border: none;
-    color: #fff;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: normal;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: none;
 }
 
 .p-button:hover {
-    background-color: #0056b3; /* Darker blue on hover */
+    background-color: #3b82f6;
+    transform: scale(1.02);
 }
 
 .p-button:disabled {

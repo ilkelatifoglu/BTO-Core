@@ -57,6 +57,7 @@
     display: flex; /* Flex layout */
     justify-content: flex-end; /* Align button to the right */
     margin-top: 20px; /* Add spacing above the button */
+    
 }
 
 /* Submit button styling */

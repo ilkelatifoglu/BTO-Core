@@ -10,7 +10,7 @@
   
   .chart-title {
     margin-bottom: 15px;
-    font-size: 16px;
+    font-size: 20px;
     font-weight: bold;
   }
   
@@ -54,6 +54,7 @@
     color: #fff;
     padding: 5px 10px;
     border-radius: 4px;
+    font: "Tiempos Text Regular";
     font-size: 12px;
     white-space: nowrap;
   }
@@ -67,5 +68,6 @@
 .navigation-buttons button {
   margin: 0 5px;
   padding: 5px 10px;
+  font-family: "Tiempos Text Regular";
   font-size: 14px;
 }

@@ -1,29 +1,27 @@
 .user-management-container {
     display: flex;
-    justify-content: center; 
-    align-items: flex-start;
-    padding: 20px;
-    background-color: #f9f9f9;
-    min-height: 100vh; 
-    box-sizing: border-box;
+    height: 100vh; /* Full viewport height */
+    background-color: #f9f9f9; 
 }
 
 .user-management-content {
     flex: 1;
     padding: 30px;
-    background-color: #ffffff;
-    border-radius: 10px;
-    margin: 20px 40px 20px auto;
-    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
-    overflow-y: auto;
-    max-width: 80%;
+    background-color: #ffffff; /* White content background */
+    border-radius: 10px; /* Rounded corners */
+    margin: 20px 40px 20px auto; /* Spacing for centered alignment */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); /* Subtle shadow for depth */
+    overflow-y: auto; /* Enable scrolling for overflow */
+    max-width: 80%; /* Constrain maximum width */
+    text-align: center; /* Center text by default */
 }
 
 .user-management-content h1 {
-    text-align: center;
+    font-family: "Tiempos Text Regular";
+    font-size: 35px; /* Large heading size */
     margin-bottom: 20px;
-    font-size: 28px;
-    color: #333333;
+    font-weight: bold; /* Bold for emphasis */
+    text-align: center; /* Center-align heading */
 }
 
 .user-management-content .action-selector {
@@ -100,24 +98,26 @@
 }
 
 .user-management-content button {
-    background-color: #5a6268;
-    color: #fff;
-    padding: 12px 20px;
-    font-size: 16px;
-    font-weight: bold;
-    border-radius: 5px;
+    background-color: #2563eb;
+    color: white;
     border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: normal;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: none;
 }
 
 .user-management-content button:hover {
-    background-color: #515c67;
-    transform: scale(1.05);
+    background-color: #3b82f6;
+    transform: scale(1.02);
 }
 
 .user-management-content button:active {
-    background-color: #3c4042;
+    background: #09045c;
+    color: white;
 }
 
 @media (max-width: 768px) {

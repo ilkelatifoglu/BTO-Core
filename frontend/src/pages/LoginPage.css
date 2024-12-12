@@ -81,28 +81,26 @@
 }
 
 .go-home-button {
-  position: absolute;
-  top: 20px; 
-  left: 20px; 
-  background-color: #5a6268;
+  position: absolute; /* Enable positioning relative to the parent */
+  top: 10px; /* Distance from the top of the parent/container */
+  left: 10px; /* Distance from the left of the parent/container */
+  background-color: #2563eb;
   color: white;
   border: none;
-  border-radius: 10px;
-  padding: 10px 20px;
-  font-size: 14px;
+  border-radius: 8px; /* Slightly smaller corners */
+  padding: 6px 12px; /* Reduced padding for smaller size */
+  font-size: 12px; /* Smaller font size */
   font-weight: bold;
   cursor: pointer;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Slightly smaller shadow */
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .go-home-button:hover {
-  background-color: #0056b3;
+  background-color: #004080; /* Darker blue for hover */
   transform: scale(1.05); 
 }
 
 .go-home-button:active {
   transform: scale(0.95); 
 }
-
-

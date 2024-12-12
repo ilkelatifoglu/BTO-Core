@@ -70,7 +70,11 @@ exports.deleteLocation = async (req, res) => {
 
 exports.startTour = async (req, res) => {
   try {
-    const { locationId } = req.body;
+    const { locationId, userId } = req.body;
+
+    if (!userId) {
+      return res.status(400).json({ message: "User ID is required" });
+    }
 
     const isAvailable = await tourLocationService.isLocationAvailable(
       locationId
@@ -79,7 +83,10 @@ exports.startTour = async (req, res) => {
       return res.status(400).json({ message: "Location is at full capacity" });
     }
 
-    const location = await tourLocationService.incrementOccupancy(locationId);
+    const location = await tourLocationService.incrementOccupancy(
+      locationId,
+      userId
+    );
     if (!location) {
       return res.status(404).json({ message: "Location not found" });
     }
@@ -87,15 +94,22 @@ exports.startTour = async (req, res) => {
     res.json(location);
   } catch (error) {
     console.error("Error starting tour:", error);
-    res.status(500).json({ message: "Failed to start tour" });
+    res.status(500).json({ message: error.message });
   }
 };
 
 exports.endTour = async (req, res) => {
   try {
-    const { locationId } = req.body;
+    const { locationId, userId } = req.body;
 
-    const location = await tourLocationService.decrementOccupancy(locationId);
+    if (!userId) {
+      return res.status(400).json({ message: "User ID is required" });
+    }
+
+    const location = await tourLocationService.decrementOccupancy(
+      locationId,
+      userId
+    );
     if (!location) {
       return res.status(404).json({ message: "Location not found" });
     }
@@ -103,6 +117,6 @@ exports.endTour = async (req, res) => {
     res.json(location);
   } catch (error) {
     console.error("Error ending tour:", error);
-    res.status(500).json({ message: "Failed to end tour" });
+    res.status(500).json({ message: error.message });
   }
 };

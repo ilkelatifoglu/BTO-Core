@@ -3,7 +3,27 @@ const { query } = require("../config/database");
 class TourLocationService {
   async getAllLocations() {
     const result = await query(
-      "SELECT id, name, latitude, longitude, capacity, current_occupancy FROM tour_locations"
+      `SELECT 
+        t.id, 
+        t.name, 
+        t.latitude, 
+        t.longitude, 
+        t.capacity, 
+        t.current_occupancy,
+        CASE 
+          WHEN t.current_occupancy = 0 THEN 'empty'
+          WHEN t.current_occupancy = capacity THEN 'full'
+          ELSE 'partial'
+        END as status,
+        json_agg(
+          json_build_object(
+            'user_id', ul.user_id,
+            'joined_at', ul.created_at
+          )
+        ) FILTER (WHERE ul.user_id IS NOT NULL) as current_users
+      FROM tour_locations t
+      LEFT JOIN user_locations ul ON t.id = ul.location_id
+      GROUP BY t.id`
     );
     return result.rows;
   }
@@ -42,27 +62,82 @@ class TourLocationService {
     return result.rows[0];
   }
 
-  async incrementOccupancy(id) {
+  async incrementOccupancy(id, userId) {
+    // First check if user already occupies a location
+    const occupiedLocation = await query(
+      `SELECT id FROM tour_locations 
+       WHERE current_occupancy > 0 
+       AND EXISTS (
+         SELECT 1 FROM user_locations 
+         WHERE location_id = tour_locations.id 
+         AND user_id = $1
+       )`,
+      [userId]
+    );
+
+    if (occupiedLocation.rows.length > 0) {
+      throw new Error("User already occupies a location");
+    }
+
     const result = await query(
       `UPDATE tour_locations 
        SET current_occupancy = current_occupancy + 1 
        WHERE id = $1 
        AND current_occupancy < capacity 
-       RETURNING *`,
+       RETURNING *, 
+       CASE 
+         WHEN current_occupancy = 0 THEN 'empty'
+         WHEN current_occupancy = capacity THEN 'full'
+         ELSE 'partial'
+       END as status`,
       [id]
     );
+
+    if (result.rows[0]) {
+      // Record user's occupation
+      await query(
+        `INSERT INTO user_locations (user_id, location_id) VALUES ($1, $2)`,
+        [userId, id]
+      );
+    }
+
     return result.rows[0];
   }
 
-  async decrementOccupancy(id) {
+  async decrementOccupancy(id, userId) {
+    // Check if user actually occupies this location
+    const userOccupation = await query(
+      `SELECT 1 FROM user_locations 
+       WHERE location_id = $1 AND user_id = $2`,
+      [id, userId]
+    );
+
+    if (userOccupation.rows.length === 0) {
+      throw new Error("User does not occupy this location");
+    }
+
     const result = await query(
       `UPDATE tour_locations 
        SET current_occupancy = current_occupancy - 1 
        WHERE id = $1 
        AND current_occupancy > 0 
-       RETURNING *`,
+       RETURNING *, 
+       CASE 
+         WHEN current_occupancy = 0 THEN 'empty'
+         WHEN current_occupancy = capacity THEN 'full'
+         ELSE 'partial'
+       END as status`,
       [id]
     );
+
+    if (result.rows[0]) {
+      // Remove user's occupation record
+      await query(
+        `DELETE FROM user_locations WHERE user_id = $1 AND location_id = $2`,
+        [userId, id]
+      );
+    }
+
     return result.rows[0];
   }
 
@@ -72,6 +147,35 @@ class TourLocationService {
       [id]
     );
     return result.rows[0]?.is_available || false;
+  }
+
+  async getLocationWithUsers(id) {
+    const result = await query(
+      `SELECT 
+        t.id, 
+        t.name, 
+        t.latitude, 
+        t.longitude, 
+        t.capacity, 
+        t.current_occupancy,
+        CASE 
+          WHEN t.current_occupancy = 0 THEN 'empty'
+          WHEN t.current_occupancy = capacity THEN 'full'
+          ELSE 'partial'
+        END as status,
+        json_agg(
+          json_build_object(
+            'user_id', ul.user_id,
+            'joined_at', ul.created_at
+          )
+        ) FILTER (WHERE ul.user_id IS NOT NULL) as current_users
+      FROM tour_locations t
+      LEFT JOIN user_locations ul ON t.id = ul.location_id
+      WHERE t.id = $1
+      GROUP BY t.id`,
+      [id]
+    );
+    return result.rows[0];
   }
 }
 

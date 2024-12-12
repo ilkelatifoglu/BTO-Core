@@ -24,22 +24,22 @@ const RealtimeStatus = () => {
 
   // Get user location
   const getUserLocation = () => {
-    // if ("geolocation" in navigator) {
-    //   navigator.geolocation.getCurrentPosition(
-    //     (position) => {
-    //       setUserLocation({
-    //         latitude: position.coords.latitude,
-    //         longitude: position.coords.longitude,
-    //       });
-    //       setLocationDenied(false);
-    //     },
-    //     (error) => {
-    //       console.error("Location access denied:", error);
-    //       setLocationDenied(true);
-    //       setError("Location access denied");
-    //     }
-    //   );
-    // }
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserLocation({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          });
+          setLocationDenied(false);
+        },
+        (error) => {
+          console.error("Location access denied:", error);
+          setLocationDenied(true);
+          setError("Location access denied");
+        }
+      );
+    }
   };
 
   // Calculate distance between points
@@ -115,40 +115,55 @@ const RealtimeStatus = () => {
     }
   };
 
-  // Update handleStatusChange to use API
+  // Update handleStatusChange to include userId
   const handleStatusChange = async (locationId) => {
     try {
       const currentLocation = locations.find((loc) => loc.id === locationId);
-      const endpoint =
-        currentLocation.status === "empty"
-          ? `${process.env.REACT_APP_BACKEND_URL}/tour-locations/start-tour`
-          : `${process.env.REACT_APP_BACKEND_URL}/tour-locations/end-tour`;
+      const userId = localStorage.getItem("userId");
+
+      // Check if the user is already in this location
+      const isUserInLocation = currentLocation.current_users?.some(
+        (user) => user.user_id === userId
+      );
+
+      let endpoint;
+      if (isUserInLocation) {
+        // If user is in this location, they can leave
+        endpoint = `${process.env.REACT_APP_BACKEND_URL}/tour-locations/end-tour`;
+      } else {
+        // If user is not in this location, they can enter if it's not full
+        if (currentLocation.current_occupancy >= currentLocation.capacity) {
+          throw new Error("Location is at full capacity");
+        }
+        endpoint = `${process.env.REACT_APP_BACKEND_URL}/tour-locations/start-tour`;
+      }
 
       const response = await fetch(endpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ locationId }),
+        body: JSON.stringify({ locationId, userId }),
       });
 
-      if (!response.ok) throw new Error("Failed to update location status");
+      if (!response.ok) {
+        const errorData = await response.text();
+        throw new Error(errorData);
+      }
 
-      // Refresh locations after status change
       await fetchLocations();
     } catch (error) {
       console.error("Error updating location status:", error);
-      setError("Failed to update location status");
+      setError(error.message);
     }
   };
 
   // Update initialization useEffect
   useEffect(() => {
     getUserLocation();
-    fetchLocations(); // Initial fetch of locations
+    fetchLocations();
   }, []);
 
-  // Update nearby locations when user location changes
   useEffect(() => {
     if (userLocation) {
       sortLocationsByDistance();
@@ -172,16 +187,17 @@ const RealtimeStatus = () => {
     sortLocationsByDistance();
   };
 
+  // Update getMarkerColor function
   const getMarkerColor = (status) => {
-    switch (status || "empty") {
+    switch (status) {
       case "empty":
-        return "#FF4444"; // Bright red
-      case "inline":
-        return "#FFBB33"; // Bright orange/yellow
-      case "ongoing":
-        return "#00C851"; // Bright green
+        return "#00C851"; // Green for empty
+      case "partial":
+        return "#FFBB33"; // Yellow for partially occupied
+      case "full":
+        return "#FF4444"; // Red for full
       default:
-        return "#FF4444"; // Default to red
+        return "#00C851"; // Default to green
     }
   };
 
@@ -308,12 +324,37 @@ const RealtimeStatus = () => {
                   {selectedLocation.name}
                 </h3>
                 <p className="realtime-status__popup-text">
-                  Status: {selectedLocation.status || "empty"}
+                  Status: {selectedLocation.status}
                 </p>
                 <p className="realtime-status__popup-text">
                   Occupancy: {selectedLocation.current_occupancy}/
                   {selectedLocation.capacity}
                 </p>
+
+                {/* Add users list */}
+                {selectedLocation.current_users &&
+                  selectedLocation.current_users.length > 0 && (
+                    <div className="realtime-status__popup-users">
+                      <h4 className="realtime-status__popup-subtitle">
+                        Current Visitors:
+                      </h4>
+                      <ul className="realtime-status__popup-users-list">
+                        {selectedLocation.current_users.map((user, index) => (
+                          <li
+                            key={user.user_id}
+                            className="realtime-status__popup-user"
+                          >
+                            <span className="realtime-status__popup-user-id">
+                              User {index + 1}
+                            </span>
+                            <span className="realtime-status__popup-user-time">
+                              {new Date(user.joined_at).toLocaleTimeString()}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
               </div>
             </Popup>
           )}
@@ -383,11 +424,13 @@ const RealtimeStatus = () => {
                     location.status || "empty"
                   }`}
                 >
-                  {location.status === "empty" || !location.status
-                    ? "Empty"
-                    : location.status === "inline"
-                    ? "In Line"
-                    : "Ongoing"}
+                  {location.current_users?.some(
+                    (user) => user.user_id === localStorage.getItem("userId")
+                  )
+                    ? "Leave"
+                    : location.current_occupancy >= location.capacity
+                    ? "Full"
+                    : "Enter"}
                 </button>
               )}
             </div>

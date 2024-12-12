@@ -362,16 +362,16 @@ const TourApprovalTable = () => {
                 currentPageReportTemplate="{first} to {last} of {totalRecords}"
                 rowClassName={rowClassName}
             >
-                <Column field="tour_id" header="Tour ID" style={{ width: '5%' }}></Column>
+                <Column field="tour_id" header="Tour ID" style={{ width: '10%' }}></Column>
                 <Column field="display_status" header="Tour Status" style={{ width: '10%' }}></Column>
-                <Column field="school_name" header="School Name" style={{ width: '20%' }}></Column>
+                <Column field="school_name" header="School Name" style={{ width: '10%' }}></Column>
                 <Column field="city" header="City" style={{ width: '10%' }}></Column>
                 <Column header="Date (Day)" body={dateBodyTemplate} style={{ width: '10%' }}></Column>
                 <Column header="Credit Score" body={creditBodyTemplate} style={{ width: '10%' }}></Column>
-                <Column field="tour_size" header="Tour Size" style={{ width: '5%' }}></Column>
+                <Column field="tour_size" header="Tour Size" style={{ width: '10%' }}></Column>
                 <Column field="teacher_name" header="Teacher Name" style={{ width: '10%' }}></Column>
                 <Column field="teacher_phone" header="Teacher Phone" style={{ width: '10%' }}></Column>
-                <Column field="time" header="Selected Time" style={{ width: '5%' }}></Column>
+                <Column field="time" header="Selected Time" style={{ width: '10%' }}></Column>
                 <Column header="Notes" body={notesBodyTemplate} style={{ width: '10%' }}></Column>
                 <Column header="Approve/Reject" body={actionBodyTemplate} style={{ width: '10%' }}></Column>
             </DataTable>

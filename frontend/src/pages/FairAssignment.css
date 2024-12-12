@@ -56,13 +56,21 @@
 
 /* Action buttons */
 .p-button {
-    background-color: #007bff; /* Blue for "Request to Join" */
+    background-color: #2563eb;
+    color: white;
     border: none;
-    color: #fff;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: normal;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: none;
 }
 
 .p-button:hover {
-    background-color: #0056b3; /* Darker blue on hover */
+    background-color: #3b82f6;
+    transform: scale(1.02);
 }
 
 .p-button:disabled {

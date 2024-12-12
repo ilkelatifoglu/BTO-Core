@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import "./GuideFilterBar.css";
+import '../common/CommonComp.css';
 
 const GuideFilterBar = ({ onFilter }) => {
   const [name, setName] = useState("");
@@ -151,7 +152,10 @@ const GuideFilterBar = ({ onFilter }) => {
         )}
       </div>
 
-      <button onClick={applyFilter}>Apply</button>
+      <button className="apply-button" onClick={applyFilter}>
+    Apply
+</button>
+
     </div>
   );
 };

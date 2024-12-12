@@ -11,6 +11,7 @@ import { getAllTours, approveTour, rejectTour } from "../../services/ApproveTour
 import FilterByStatus from "./FilterByStatus";
 import SortByDate from "./SortByDate";
 import "./TourApprovalTable.css";
+import '../common/CommonComp.css';
 
 const TourApprovalTable = () => {
     const [tours, setTours] = useState([]);
@@ -303,9 +304,10 @@ const TourApprovalTable = () => {
     });
 
     return (
-        <div className="tour-approval-table-container">
+        <div className="page-container">
+            <div className="page-content">
             <Toast ref={toast} /> {/* (5) Adding the Toast component to the JSX */}
-            <h1 style={{ textAlign: "center", margin: "40px 0" }}>Tour Approval Page</h1>
+            <h1 >Tour Approval</h1>
             <div style={{marginLeft: "65px", textAlign: "center", justifyContent: "center", alignItems: "center"}}>
                 <div
                     className="filter-sort-container"
@@ -412,6 +414,7 @@ const TourApprovalTable = () => {
                     In case of conflicts, assign the tour hour to the school with the highest credit score. 🏆😊
                 </p>
             </div>
+        </div>
         </div>
     );
 };

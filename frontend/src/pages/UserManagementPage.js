@@ -4,6 +4,7 @@ import "./UserManagementPage.css"; // Include CSS for styling
 import Sidebar from "../components/common/Sidebar";
 import { MultiSelect } from "primereact/multiselect"; // Import MultiSelect component
 import { Toast } from "primereact/toast"; // Import Toast
+import '../components/common/CommonComp.css';
 
 const daysOptions = [
     { label: "Monday", value: "Monday" },

@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { InputText } from "primereact/inputtext";
 import { Calendar } from "primereact/calendar";
 import { Dropdown } from "primereact/dropdown";
-import { Button } from "primereact/button";
 import "./FilterBar.css";
+import "../common/CommonComp.css";
 
 export default function FilterBar({ onFilterChange }) {
   const [filters, setFilters] = useState({
@@ -102,11 +102,9 @@ export default function FilterBar({ onFilterChange }) {
       {/* School Filter */}
 
       {/* Clear Filters Button */}
-      <Button
-        label="Clear Filters"
-        onClick={clearFilters}
-        className="p-button-outlined p-button-danger"
-      />
+      <button className="button clearfilters-button" onClick={clearFilters}>
+        Clear Filters
+      </button>
     </div>
   );
 }

@@ -7,6 +7,7 @@ import ToursByCityChart from "../components/data/ToursByCityChart";
 import SchoolStudentChart from "../components/data/SchoolStudent";
 import { fetchTourData } from "../services/DataService";
 import "./DataInsightPage.css";
+import '../components/common/CommonComp.css';
 
 const DataInsightPage = () => {
   const [filter, setFilter] = useState("weekly");
@@ -69,12 +70,11 @@ const DataInsightPage = () => {
   };
 
   return (
-    <div className="data-insight-page">
+    <div className="page-container">
       <Sidebar />
       <Toast ref={toast} /> {/* (5) Adding Toast component to JSX */}
-      <div className="data-insight-container">
-      <div className="data-insight-content">
-        <h1 className="data-insight-title">Data Insights</h1>
+      <div className="page-content">
+        <h1 >Data Insights</h1>
         <div className="filter-buttons">
           {["Yearly", "Monthly", "Weekly"].map((type) => (
             <button
@@ -124,7 +124,7 @@ const DataInsightPage = () => {
         </div>
       </div>
     </div>
-    </div>
+
   );
 };
 

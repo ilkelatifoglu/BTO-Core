@@ -7,6 +7,7 @@ import { Toast } from "primereact/toast"; // (2) Importing Toast
 import { fetchFairs, requestToJoinFair } from "../services/fairService";
 import Sidebar from '../components/common/Sidebar';
 import "./FairAssignment.css";
+import '../components/common/CommonComp.css';
 
 export default function FairAssignmentPage() {
     const [fairs, setFairs] = useState([]);

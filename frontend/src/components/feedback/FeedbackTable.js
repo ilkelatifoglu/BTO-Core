@@ -7,6 +7,7 @@ import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { FileUpload } from "primereact/fileupload";
 import { Toast } from "primereact/toast"; // (2) Importing Toast
+import '../common/CommonComp.css';
 
 const FeedbackTable = () => {
   const [feedback, setFeedback] = useState([]);
@@ -124,7 +125,7 @@ const FeedbackTable = () => {
   return (
     <div>
       <Toast ref={toast} /> {/* (5) Adding Toast to JSX */}
-      <h2>Feedback Table</h2>
+     
       <DataTable
         value={feedback}
         paginator

@@ -1,26 +1,4 @@
-/* Align container to the top but center it horizontally */
-.assign-tour-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Center horizontally */
-    padding: 30px;
-    box-sizing: border-box;
-    background-color: white; 
-    border-radius: 10px;
-    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
-    flex: 1;
-    margin: 20px 40px 20px auto;
-    overflow-y: auto;
-    max-width: 80%;
-}
 
-/* Table title styling */
-.table-title {
-    font-size: 2rem;
-    font-weight: bold;
-    margin-bottom: 1.5rem;
-    margin-left: -100px;
-}  
   .action-buttons {
     display: flex;
     align-items: center;

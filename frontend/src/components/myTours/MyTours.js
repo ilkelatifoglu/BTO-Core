@@ -7,6 +7,7 @@ import { Toast } from "primereact/toast";
 import { Dialog } from "primereact/dialog"; // Import Dialog from PrimeReact
 import "./MyTours.css";
 import Sidebar from '../../components/common/Sidebar';
+import '../common/CommonComp.css';
 
 export default function MyTours() {
     const [items, setItems] = useState([]);
@@ -148,11 +149,11 @@ export default function MyTours() {
     );
 
     return (
-        <div className="my-tours-container">
+        <div className="page-container">
             <Sidebar />
             <Toast ref={toast} />
-            <div className="my-tours-content">
-                <h1>My Assignments</h1>
+            <div className="page-content">
+                <h1>My Tours</h1>
                 <DataTable value={items} paginator rows={10}>
                     <Column field="date" header="Date" body={dateTemplate}></Column>
                     <Column field="date" header="Day" body={dayTemplate}></Column>

@@ -8,6 +8,7 @@ import { Button } from "primereact/button";
 import { Toast } from "primereact/toast"; // (2) Importing Toast
 import { Dialog } from "primereact/dialog"; // Use Dialog instead of window.confirm
 import "./PuantajComponents.css";
+import '../common/CommonComp.css';
 
 export default function UserWorkTable() {
     const [workEntries, setWorkEntries] = useState([]);
@@ -258,8 +259,8 @@ export default function UserWorkTable() {
     return (
         <div className="page-container">
           <Toast ref={toast} /> {/* Toast for UserWorkTable */}
-          <div className="content-container">
-            <h1 className="table-title">All Work Entries</h1>
+          <div className="page-content">
+            <h1>All Work Entries</h1>
                 <DataTable
                     value={workEntries}
                     dataKey="work_id"

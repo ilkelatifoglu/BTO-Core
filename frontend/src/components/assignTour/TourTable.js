@@ -9,6 +9,7 @@ import "./ReadyToursTable.css";
 import io from "socket.io-client";
 import FilterBar from "./FilterBar"; // Import the FilterBar component
 import { Toast } from "primereact/toast"; // Import Toast
+import "../common/CommonComp.css";
 
 const userType = parseInt(localStorage.getItem("userType"), 10);
 const socket = io("http://localhost:3001");
@@ -270,7 +271,7 @@ export default function ReadyToursTable() {
 
   return (
     <div className="page-container">
-    <div className="assign-tour-container">
+    <div className="page-content">
       <Toast ref={toast} /> {/* Added Toast here */}
       <h1 className="table-title">Tour Assignment</h1>
       <FilterBar onFilterChange={handleFilterChange} />

@@ -469,7 +469,7 @@ exports.cancelTour = async (req, res) => {
     }
 
     await checkAndSetToursReady();
-    
+
     res.status(200).send("<h1>Tour successfully canceled.</h1>");
   } catch (error) {
     console.error("Error canceling tour:", error);
@@ -555,18 +555,103 @@ exports.withdrawFromTour = async (req, res) => {
   const { id: tourId } = req.params; // Retrieve tour ID from the route parameter
 
   try {
-    // Remove the user from the tour
+    // 1. Remove the user from the tour
     await query(
       `DELETE FROM tour_guide WHERE guide_id = $1 AND tour_id = $2`,
       [userId, tourId]
     );
 
-    res.status(200).json({ success: true, message: "Successfully withdrawn from the tour" });
+    // 2. Fetch the withdrawing user's first_name and last_name
+    const userResult = await query(
+      `SELECT first_name, last_name FROM users WHERE id = $1`,
+      [userId]
+    );
+
+    if (userResult.rows.length === 0) {
+      console.error("Withdrawing user not found in the database");
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    const { first_name, last_name } = userResult.rows[0];
+
+    // 3. Fetch admins (user_type = 4)
+    const adminsResult = await query(
+      `SELECT email FROM users WHERE user_type = 4 AND email IS NOT NULL`
+    );
+
+    const adminEmails = adminsResult.rows.map(row => row.email).filter(e => e);
+
+    // If no admin emails found, we still proceed, but no emails will be sent
+    if (adminEmails.length === 0) {
+      console.log("No admin found with user_type = 4 or no email set.");
+    }
+
+    // 4. Fetch more information about the tour and associated school
+    // Assume 'tours' table has columns: date, day, time, tour_size, teacher_name, tour_status, school_id
+    // and 'schools' table has 'school_name'
+    const tourQuery = `
+      SELECT 
+        t.date, t.day, t.time, t.tour_size, t.teacher_name, t.tour_status, s.school_name
+      FROM tours t
+      JOIN schools s ON t.school_id = s.id
+      WHERE t.id = $1
+    `;
+    const tourResult = await query(tourQuery, [tourId]);
+
+    if (tourResult.rows.length === 0) {
+      console.error("Tour not found in the database");
+      // Tour doesn't exist, but the withdrawal is done anyway
+      return res.status(200).json({ success: true, message: "Successfully withdrawn from the tour, but no tour data found." });
+    }
+
+    const { date, day, time, tour_size, teacher_name, tour_status, school_name } = tourResult.rows[0];
+
+    // 5. Prepare and send email to admins if available
+    if (adminEmails.length > 0) {
+      const subject = "Guide Withdrawn from Tour";
+      const formattedDate = new Date(date).toLocaleDateString();
+      const html = `
+        <p>Dear Admin,</p>
+        <p>The following guide has withdrawn from the tour:</p>
+        <ul>
+          <li><strong>Guide Name:</strong> ${first_name} ${last_name}</li>
+          <li><strong>Guide ID:</strong> ${userId}</li>
+          <li><strong>Tour ID:</strong> ${tourId}</li>
+        </ul>
+        <p>Tour Details:</p>
+        <ul>
+          <li><strong>School Name:</strong> ${school_name}</li>
+          <li><strong>Date:</strong> ${formattedDate}</li>
+          <li><strong>Day:</strong> ${day}</li>
+          <li><strong>Time:</strong> ${time}</li>
+          <li><strong>Tour Size:</strong> ${tour_size}</li>
+          <li><strong>Teacher Name:</strong> ${teacher_name}</li>
+        </ul>
+        <p>Please update your records accordingly.</p>
+        <p>Best regards,<br/>Tour Management System</p>
+      `;
+
+      try {
+        await sendEmail({
+          to: adminEmails.join(","),
+          subject,
+          html
+        });
+        console.log("Notification emails sent to admins:", adminEmails);
+      } catch (emailError) {
+        console.error("Failed to send notification emails to admins:", emailError);
+        // Not throwing error to ensure the endpoint returns success for the withdrawal
+      }
+    }
+
+    res.status(200).json({ success: true, message: "Successfully withdrawn from the tour and admins notified" });
   } catch (error) {
     console.error("Error withdrawing from tour:", error.message || error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
+
 exports.fetchDoneTours = async (req, res) => {
   try {
     const doneTours = await getDoneTours();

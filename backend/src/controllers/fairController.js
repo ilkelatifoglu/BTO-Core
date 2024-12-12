@@ -89,18 +89,94 @@ exports.assignGuide = async (req, res) => {
 
     try {
         // Dynamically assign the guide to the selected column
-        const query = `UPDATE fairs SET ${column} = $1 WHERE id = $2 RETURNING *`;
-        const result = await db.query(query, [guideId, id]);
+        const updateQuery = `UPDATE fairs SET ${column} = $1 WHERE id = $2 RETURNING *`;
+        const result = await db.query(updateQuery, [guideId, id]);
 
-        console.log("Updated Fair:", result.rows[0]); // Log updated fair data
-        res.send({ message: 'Guide assigned successfully', updatedFair: result.rows[0] });
+        if (result.rows.length === 0) {
+            return res.status(404).send({ message: 'Fair not found' });
+        }
+
+        const updatedFair = result.rows[0];
+        console.log("Updated Fair:", updatedFair); // Log updated fair data
+
+        // Extract assigned guide IDs (some might be null if not assigned)
+        const assignedGuideIds = [updatedFair.guide_1_id, updatedFair.guide_2_id, updatedFair.guide_3_id]
+            .filter(gid => gid !== null);
+
+        if (assignedGuideIds.length === 0) {
+            // No guides assigned yet
+            return res.send({
+                message: 'Guide assigned successfully, but no assigned guides found to email.',
+                updatedFair
+            });
+        }
+
+        // Fetch details for assigned guides
+        // We assume `users` table has `id`, `email`, `first_name`, and `last_name`
+        const usersQuery = `
+            SELECT id, email, first_name, last_name
+            FROM users
+            WHERE id = ANY($1::int[])
+        `;
+        const usersResult = await db.query(usersQuery, [assignedGuideIds]);
+
+        const assignedGuides = usersResult.rows; // [{id, email, first_name, last_name}, ...]
+
+        // Prepare email content
+        // Include fair info: date, organization_name, city, applicant_name, applicant_email, applicant_phone, status
+        const {
+            date,
+            organization_name,
+            city,
+            applicant_name,
+            applicant_email,
+            applicant_phone,
+            status
+        } = updatedFair;
+
+        const subject = "You have been assigned to a fair";
+        const htmlContent = `
+            <p>Dear Guide,</p>
+            <p>You have been assigned to the following fair:</p>
+            <ul>
+              <li><strong>Organization Name:</strong> ${organization_name}</li>
+              <li><strong>City:</strong> ${city}</li>
+              <li><strong>Date:</strong> ${new Date(date).toLocaleDateString()}</li>
+              <li><strong>Applicant Name:</strong> ${applicant_name}</li>
+              <li><strong>Applicant Email:</strong> ${applicant_email}</li>
+              <li><strong>Applicant Phone:</strong> ${applicant_phone}</li>
+              <li><strong>Status:</strong> ${status}</li>
+            </ul>
+            <p>Thank you for being part of our team!</p>
+            <p>Best regards,<br/>Fair Management Team</p>
+        `;
+
+        // Send email to all assigned guides
+        for (const guide of assignedGuides) {
+            // Optionally, personalize the email for each guide
+            const personalizedHtml = `
+                <p>Dear ${guide.first_name} ${guide.last_name},</p>
+                ${htmlContent}
+            `;
+            
+            try {
+                await sendEmail({
+                    to: guide.email,
+                    subject,
+                    html: personalizedHtml
+                });
+                console.log(`Email sent successfully to guide_id ${guide.id}: ${guide.email}`);
+            } catch (emailError) {
+                console.error(`Failed to send email to guide_id ${guide.id}: ${guide.email}`, emailError);
+            }
+        }
+
+        res.send({ message: 'Guide assigned successfully and emails sent', updatedFair });
     } catch (error) {
         console.error('Error assigning guide:', error);
         res.status(500).send({ message: 'Error assigning guide' });
     }
 };
-
-
 
 exports.getAvailableGuides = async (req, res) => {
     const { fairId } = req.query;

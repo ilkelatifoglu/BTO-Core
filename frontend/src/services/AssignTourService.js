@@ -5,6 +5,17 @@ import { formatDate } from "../components/common/dateUtils";
 const API_BASE_URL = "http://localhost:3001";
 
 const AssignTourService = {
+  async requestToJoinTour(tourId, userId) {
+    try {
+      console.log("Sending request to join:", { tourId, userId }); // Debug log
+      const response = await axios.post(`${API_BASE_URL}/tour/requestToJoin`, { tourId, guideId: userId });
+      return response.data;
+    } catch (error) {
+      console.error("Error in requestToJoinTour service:", error.response?.data || error);
+      throw new Error(error.response?.data?.message || "Unable to send request");
+    }
+  },  
+    
   getReadyTours: async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/tour/readyTours`);
@@ -25,9 +36,11 @@ const AssignTourService = {
     }
   },
 
-  getCandidateGuides: async () => {
+  getCandidateGuides: async (tourId) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/tour/candidateGuides`);
+      const response = await axios.get(`${API_BASE_URL}/tour/candidateGuides`, {
+        params: { tourId },
+      });
       return response.data;
     } catch (error) {
       console.error("Error fetching candidate guides:", error);

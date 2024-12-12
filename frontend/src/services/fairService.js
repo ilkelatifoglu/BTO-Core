@@ -76,3 +76,20 @@ export const unassignGuide = async (fairId, column) => {
         throw error;
     }
 };
+
+export const fetchAvailableFairsForUser = async () => {
+    try {
+        const token = localStorage.getItem("tempToken");
+        if (!token) throw new Error("No authentication token found.");
+
+        const response = await axios.get(`${BASE_URL}/available-fairs`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching available fairs:", error);
+        throw error;
+    }
+};

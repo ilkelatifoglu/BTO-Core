@@ -9,6 +9,11 @@
         border-radius: 50%;
         box-shadow: none;
     }
+    .date-column {
+        width: 150px;
+        text-align: center;
+    }
+    
 
     /* Unassign button styles */
     .unassign-button {

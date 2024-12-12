@@ -315,3 +315,32 @@ exports.getAssignedFairs = async (req, res) => {
         res.status(500).send({ message: "Error fetching assigned fairs" });
     }
 };
+
+exports.getAvailableFairsForUser = async (req, res) => {
+    const userId = req.user.userId; // Assuming `userId` is set by middleware
+    try {
+        const query = `
+            SELECT fairs.*,
+                u1.first_name || ' ' || u1.last_name AS guide_1_name,
+                u2.first_name || ' ' || u2.last_name AS guide_2_name,
+                u3.first_name || ' ' || u3.last_name AS guide_3_name
+            FROM fairs
+            LEFT JOIN users u1 ON fairs.guide_1_id = u1.id
+            LEFT JOIN users u2 ON fairs.guide_2_id = u2.id
+            LEFT JOIN users u3 ON fairs.guide_3_id = u3.id
+            WHERE fairs.status = 'APPROVED'
+            AND NOT EXISTS (
+                SELECT 1 FROM fair_requests
+                WHERE fair_requests.fair_id = fairs.id
+                AND fair_requests.guide_id = $1
+            )
+        `;
+
+        const result = await db.query(query, [userId]); // Filter fairs for the specific user
+        res.json(result.rows);
+    } catch (error) {
+        console.error("Error fetching available fairs:", error);
+        res.status(500).send({ message: "Error fetching available fairs" });
+    }
+};
+

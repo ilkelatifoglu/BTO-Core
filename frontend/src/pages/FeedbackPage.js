@@ -3,27 +3,23 @@ import Sidebar from "../components/common/Sidebar";
 import FeedbackTable from "../components/feedback/FeedbackTable";
 import FeedbackForm from "../components/feedback/FeedbackForm";
 import { Card } from "primereact/card";
+import '../components/common/CommonComp.css';
 
 const FeedbackPage = () => {
   return (
-    <div style={{ display: "flex", minHeight: "100vh" }}>
+    <div>
       <Sidebar />
-      <div
-        style={{
-          flexGrow: 1,
-          marginLeft: "250px", // Adjust this value based on your sidebar width
-          padding: "20px",
-          backgroundColor: "#f8f9fa",
-        }}
-      >
-        <Card>
-          <div className="mb-4">
-            <h1 className="text-3xl font-bold text-gray-800">Feedback</h1>
-          </div>
+    <div className="page-container"  >
+      <div className="page-content" >
+      
+       
+            <h1 >Feedback Page</h1>
+          
           <FeedbackTable />
           <FeedbackForm />
-        </Card>
+  
       </div>
+    </div>
     </div>
   );
 };

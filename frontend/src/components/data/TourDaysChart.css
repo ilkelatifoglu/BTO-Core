@@ -10,20 +10,8 @@
 
 .chart-title {
   margin-bottom: 15px;
-  font-size: 16px;
+  font-size: 20px;
   font-weight: bold;
-}
-/* chart.css */
-.navigation-buttons {
-  display: flex;
-  justify-content: center;
-  margin-top: 10px;
-}
-
-.navigation-buttons button {
-  margin: 0 5px;
-  padding: 5px 10px;
-  font-size: 14px;
 }
 
 /* Pie Chart Container */

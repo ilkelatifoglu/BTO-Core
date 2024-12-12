@@ -4,16 +4,11 @@ import "./TourApproval.css"; // Create a CSS file for additional styling, if nec
 
 function TourApprovalPage() {
     return (
-        <div className="tour-approval-page">
-            {/* Sidebar Section */}
-            <div className="sidebar-container">
-                <Sidebar />
-            </div>
-            {/* Main Content Section */}
-            <div className="main-content-container">
-                <TourApprovalTable />
-            </div>
+        <div>
+            <Sidebar />
+            <TourApprovalTable />
         </div>
     );
 }
-export default TourApprovalPage
+
+export default TourApprovalPage;

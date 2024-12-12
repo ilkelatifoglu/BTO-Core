@@ -5,6 +5,7 @@ import { Column } from "primereact/column";
 import "./AdvisorPage.css"; // CSS for the page
 import Sidebar from "../components/common/Sidebar";
 import { Toast } from "primereact/toast";
+import '../components/common/CommonComp.css';
 
 const daysOptions = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Weekend"];
 
@@ -92,9 +93,9 @@ const AdvisorPage = () => {
             <Sidebar />
             {/* Toast component placed here */}
             <Toast ref={toast} />
-            <div className="advisor-page-container">
-            <div className="advisor-page-content">
-                <h1 className="advisor-page-title">Advisor Schedule</h1>
+            <div className="page-container">
+            <div className="page-content">
+                <h1>Advisor Schedule</h1>
                 <DataTable
                     value={[{ key: "schedule" }]}
                     className="p-datatable-striped"

@@ -193,7 +193,6 @@ const IndividualToursTable = () => {
     return (
         <div className="table-wrapper" style={{ marginLeft: "10px", overflowX: "hidden" }}>
           <Toast ref={toast} /> {/* (5) Adding the Toast to the JSX */}
-            <h1 style={{ textAlign: "center", margin: "20px 0" }}>Individual Tours</h1>
             <DataTable
                 value={tours}
                 paginator

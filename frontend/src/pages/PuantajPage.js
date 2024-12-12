@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Sidebar from "../components/common/Sidebar";
 import AdminWorkTable from "../components/puantajpage/AdminWorkTable";
 import UserWorkTable from "../components/puantajpage/UserWorkTable";
+import '../components/common/CommonComp.css';
 
 function PuantajPage() {
     const [userType, setUserType] = useState(null);
@@ -13,9 +14,9 @@ function PuantajPage() {
     }, []);
 
     return (
-        <div className="puantaj-page">
+        <div className="page-container">
             <Sidebar />
-            <div className="puantaj-content">
+            <div className="page-content">
                 {userType === 4 ? <AdminWorkTable /> : <UserWorkTable />}
                 <div className="submit-button-container">
                   

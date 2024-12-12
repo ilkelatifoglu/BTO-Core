@@ -33,14 +33,14 @@ const DashboardPage = () => {
                       <div className="content-container">
                           <div className="text-content">
                               <ol>
-                                  <li>From the Tour Tables section, you can view the approved tours and their dates. If you’re a guide, you can apply for a suitable tour and lead it. Additionally, you can see details about the tour, such as which school is attending, the date, and the number of students participating.</li>
+                                  <li>From the Tour Tables section, you can view the approved tours and their dates. Additionally, you can see details about the tour.</li>
                                   <li>In the Information table, you can access the names, surnames, roles, departments, phone numbers, and IBANs of guides and other individuals in the system. You can also view their lesson schedules.</li>
-                                  <li>On the Puantaj Page, you can record and submit your workload within the monthly calendar. The system will automatically calculate your total workload, and you can then wait for your payment.</li>
+                                  <li>On the Puantaj Page, you can submit your workload within the monthly calendar. The system will calculate your payment.</li>
                                   <li>If you have the role of an advisor or higher, you can accept or reject tour applications via the Review Tour Request section.</li>
                                   <li>In the Data Insights section, you can view graphical representations of the collected data and take rational actions accordingly.</li>
                                   <li>From the Register User section, you can add new candidate guides, guides, and advisors. You can also promote individuals to higher ranks.</li>
                                   <li>The Real-time Status section allows you to communicate with other guides during tours, track their locations, and share your own. This ensures a smoother tour experience.</li>
-                                  <li>If you are a candidate guide, guide, or advisor, you can view feedback given to you by others in the Feedback Page and write feedback for them as well. If you hold the position of coordinator, secretary, or director, you can view feedback from schools regarding tours.</li>
+                                  <li>If you are a candidate guide, guide, or advisor, you can view feedback given to you by others in the Feedback Page and write feedback for them as well.</li>
                                   <li>From the Settings section at the bottom left, you can manage your profile information, learn more about our application and organization, and adjust your preference.</li>
                               </ol>
                           </div>

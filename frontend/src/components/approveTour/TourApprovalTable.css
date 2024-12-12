@@ -1,19 +1,4 @@
-/* src/components/TourApprovalTable.css */
 
-/* Container for the entire TourApprovalTable component */
-.tour-approval-table-container {
-    padding: 20px;
-    background-color: #ffffff;
-    border-radius: 10px;
-    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
-}
-
-/* Title Styling */
-.tour-approval-table-container h2 {
-    margin-bottom: 20px;
-    text-align: center;
-    color: #ffffff;
-}
 
 /* Filter and Sorting Container */
 .filter-sort-container {
@@ -56,7 +41,8 @@
 
 /* Row Coloring */
 .green-row {
-    background-color: #d4edda !important; /* Light green */
+    background-color: #9ae8ac  !important; /* Light green */
+    transition: all 0.3s ease;
 }
 
 .yellow-row {
@@ -64,8 +50,32 @@
 }
 
 .red-row {
-    background-color: #f8d7da !important; /* Light red */
+    background-color: hsl(355, 77%, 82%) !important; /* Light red */
+    transition: all 0.3s ease; 
 }
+
+  .red-row:hover, .done-row:hover {
+    background-color: hsl(355, 72%, 71%) !important; /* Even more vivid red */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); /* Add a shadow for emphasis */
+    transform: scale(1.02); /* Slightly enlarge the row */
+    cursor: pointer; /* Indicate interactivity */
+}
+
+.green-row:hover {
+    background-color: hsl(140, 50%, 65%) !important; /* Slightly darker green */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); /* Add a shadow for emphasis */
+    transform: scale(1.02); /* Slightly enlarge the row */
+    cursor: pointer; /* Indicate interactivity */
+}
+
+.yellow-row:hover {
+    background-color: hsl(55, 82%, 78%) !important; /* Slightly darker green */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); /* Add a shadow for emphasis */
+    transform: scale(1.02); /* Slightly enlarge the row */
+    cursor: pointer; /* Indicate interactivity */
+}
+
+
 
 /* DataTable Styling */
 .p-datatable {
@@ -79,7 +89,7 @@
 }
 
 .p-datatable .p-datatable-tbody > tr > td {
-    text-align: center;
+    text-align: left;
     color: #495057;
 }
 

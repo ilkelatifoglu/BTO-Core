@@ -1,26 +1,4 @@
-/* Align container to the top but center it horizontally */
-.assign-tour-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Center horizontally */
-    padding: 30px;
-    box-sizing: border-box;
-    background-color: white; 
-    border-radius: 10px;
-    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
-    flex: 1;
-    margin: 20px 40px 20px auto;
-    overflow-y: auto;
-    max-width: 80%;
-}
 
-/* Table title styling */
-.table-title {
-    font-size: 2rem;
-    font-weight: bold;
-    margin-bottom: 1.5rem;
-    margin-left: -100px;
-}  
   .action-buttons {
     display: flex;
     align-items: center;
@@ -101,6 +79,7 @@
 
 /* Add margin for the message */
 .message {
+  font-family: "Tiempos Text Regular";
     font-size: 1rem;
     color: #28a745; /* Success message color */
     margin-bottom: 1rem;
@@ -166,10 +145,28 @@
     
 /* Row colors for different statuses */
 .cancelled-row {
-    background-color: #e11f1f 
+    background-color: hsl(355, 77%, 82%) !important;
+    transition: all 0.3s ease; 
+    
   }
   
   .done-row {
-    background-color: #3fbf3f 
+    background-color: #9ae8ac !important;
+    transition: all 0.3s ease;
   }
+
+  .cancelled-row:hover, .done-row:hover {
+    background-color: hsl(355, 72%, 71%) !important; /* Even more vivid red */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); /* Add a shadow for emphasis */
+    transform: scale(1.02); /* Slightly enlarge the row */
+    cursor: pointer; /* Indicate interactivity */
+}
+
+.done-row:hover {
+    background-color: hsl(140, 50%, 65%) !important; /* Slightly darker green */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); /* Add a shadow for emphasis */
+    transform: scale(1.02); /* Slightly enlarge the row */
+    cursor: pointer; /* Indicate interactivity */
+}
   
+

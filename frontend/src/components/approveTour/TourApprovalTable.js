@@ -11,6 +11,7 @@ import { getAllTours, approveTour, rejectTour } from "../../services/ApproveTour
 import FilterByStatus from "./FilterByStatus";
 import SortByDate from "./SortByDate";
 import "./TourApprovalTable.css";
+import '../common/CommonComp.css';
 
 const TourApprovalTable = () => {
     const [tours, setTours] = useState([]);
@@ -303,9 +304,10 @@ const TourApprovalTable = () => {
     });
 
     return (
-        <div className="tour-approval-table-container">
+        <div className="page-container">
+            <div className="page-content">
             <Toast ref={toast} /> {/* (5) Adding the Toast component to the JSX */}
-            <h1 style={{ textAlign: "center", margin: "40px 0" }}>Tour Approval Page</h1>
+            <h1 >Tour Approval</h1>
             <div style={{marginLeft: "65px", textAlign: "center", justifyContent: "center", alignItems: "center"}}>
                 <div
                     className="filter-sort-container"
@@ -360,16 +362,16 @@ const TourApprovalTable = () => {
                 currentPageReportTemplate="{first} to {last} of {totalRecords}"
                 rowClassName={rowClassName}
             >
-                <Column field="tour_id" header="Tour ID" style={{ width: '5%' }}></Column>
+                <Column field="tour_id" header="Tour ID" style={{ width: '10%' }}></Column>
                 <Column field="display_status" header="Tour Status" style={{ width: '10%' }}></Column>
-                <Column field="school_name" header="School Name" style={{ width: '20%' }}></Column>
+                <Column field="school_name" header="School Name" style={{ width: '10%' }}></Column>
                 <Column field="city" header="City" style={{ width: '10%' }}></Column>
                 <Column header="Date (Day)" body={dateBodyTemplate} style={{ width: '10%' }}></Column>
                 <Column header="Credit Score" body={creditBodyTemplate} style={{ width: '10%' }}></Column>
-                <Column field="tour_size" header="Tour Size" style={{ width: '5%' }}></Column>
+                <Column field="tour_size" header="Tour Size" style={{ width: '10%' }}></Column>
                 <Column field="teacher_name" header="Teacher Name" style={{ width: '10%' }}></Column>
                 <Column field="teacher_phone" header="Teacher Phone" style={{ width: '10%' }}></Column>
-                <Column field="time" header="Selected Time" style={{ width: '5%' }}></Column>
+                <Column field="time" header="Selected Time" style={{ width: '10%' }}></Column>
                 <Column header="Notes" body={notesBodyTemplate} style={{ width: '10%' }}></Column>
                 <Column header="Approve/Reject" body={actionBodyTemplate} style={{ width: '10%' }}></Column>
             </DataTable>
@@ -398,7 +400,7 @@ const TourApprovalTable = () => {
                     backgroundColor: "#f9f9f9",
                 }}
             >
-                <p style={{ fontSize: "14px", color: "#333" }}>
+                <p style={{ font: "Tiempos Text Regular", fontSize: "14px", color: "#333" }}>
                     If you want to assign the most appropriate days according to the most suitable schools based on prioritization, follow these steps:
                     <br /><br />
                     1. Filter by <strong>WAITING</strong> status. 🕒
@@ -412,6 +414,7 @@ const TourApprovalTable = () => {
                     In case of conflicts, assign the tour hour to the school with the highest credit score. 🏆😊
                 </p>
             </div>
+        </div>
         </div>
     );
 };

@@ -1,0 +1,16 @@
+/* index.css or App.css */
+body {
+    font-family: "Tiempos Text Regular"; /* Replace with your desired font */
+    color: #333; /* Default text color */
+
+  }
+  
+  * {
+    box-sizing: border-box; /* Ensure consistent box-sizing */
+  }
+
+  h2 {
+    font-weight: bold; /* Makes only h2 tags bold */
+}
+
+  

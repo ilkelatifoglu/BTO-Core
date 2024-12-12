@@ -1,11 +1,13 @@
 import IndividualTourTable from "../components/individualTours/IndividualTourTable"
-import Sidebar from '../components/common/Sidebar'; 
+import Sidebar from '../components/common/Sidebar';
+import '../components/common/CommonComp.css'; 
 
 function IndividualTourPage() {
     return (
-        <div className="individual-tour-page">
+        <div className="page-container">
             <Sidebar />
-            <div className="individual-tour-content">
+            <div className="page-content">
+                <h1>Individual Tours</h1>
                 <IndividualTourTable />
             </div>
         </div>

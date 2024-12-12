@@ -3,6 +3,7 @@ import Map, { Marker, Popup } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { MapPin, RefreshCw, Crosshair } from "lucide-react";
 import "./RealtimeStatus.css";
+import { Toast } from "primereact/toast";
 
 const RealtimeStatus = () => {
   const MOCK_USER_LOCATION = {
@@ -21,6 +22,7 @@ const RealtimeStatus = () => {
   const [locationDenied, setLocationDenied] = useState(false);
 
   const mapRef = useRef();
+  const toast = useRef(null);
 
   // Get user location
   const getUserLocation = () => {
@@ -32,11 +34,23 @@ const RealtimeStatus = () => {
             longitude: position.coords.longitude,
           });
           setLocationDenied(false);
+          toast.current.show({
+            severity: "success",
+            summary: "Success",
+            detail: "Location access granted!",
+            life: 3000,
+          });
         },
         (error) => {
           console.error("Location access denied:", error);
           setLocationDenied(true);
           setError("Location access denied");
+          toast.current.show({
+            severity: "error",
+            summary: "Error",
+            detail: "Location access denied. Some features may be limited.",
+            life: 3000,
+          });
         }
       );
     }
@@ -152,9 +166,23 @@ const RealtimeStatus = () => {
       }
 
       await fetchLocations();
+      toast.current.show({
+        severity: "success",
+        summary: "Success",
+        detail: isUserInLocation
+          ? "Successfully left the location"
+          : "Successfully entered the location",
+        life: 3000,
+      });
     } catch (error) {
       console.error("Error updating location status:", error);
       setError(error.message);
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: error.message,
+        life: 3000,
+      });
     }
   };
 
@@ -264,6 +292,7 @@ const RealtimeStatus = () => {
 
   return (
     <div className="realtime-status">
+      <Toast ref={toast} />
       <div className="realtime-status__map-container">
         <Map
           ref={mapRef}
@@ -420,8 +449,14 @@ const RealtimeStatus = () => {
               {isTourActive && (
                 <button
                   onClick={() => handleStatusChange(location.id)}
-                  className={`realtime-status__button realtime-status__marker--${
-                    location.status || "empty"
+                  className={`realtime-status__button ${
+                    location.current_users?.some(
+                      (user) => user.user_id === localStorage.getItem("userId")
+                    )
+                      ? "realtime-status__button--leave"
+                      : location.current_occupancy >= location.capacity
+                      ? "realtime-status__button--full"
+                      : "realtime-status__button--enter"
                   }`}
                 >
                   {location.current_users?.some(

@@ -25,6 +25,7 @@ const { getSchoolId } = require("../queries/schoolQueries"); // Import from scho
 const { sendConfirmationEmail } = require('../utils/email'); // Import the function
 const { query } = require("../config/database");
 const { verifyToken, generateCancellationToken } = require("../utils/jwt");
+const { checkAndSetToursReady } = require('../jobs/tourStatusJob');
 
 require("dotenv").config(); // At the top of your entry file (e.g., server.js or app.js)
 
@@ -85,6 +86,8 @@ exports.addTour = async (req, res) => {
       school_name,
       time_preferences,
     });
+
+    await checkAndSetToursReady();
 
     res.status(200).json({
       success: true,
@@ -332,6 +335,8 @@ exports.approveTour = async (req, res) => {
       html: emailContent,
     });
 
+    await checkAndSetToursReady();
+    
     res.status(200).json({ message: "Tour approved, status updated, and email sent" });
   } catch (error) {
     console.error("Error approving tour:", error);
@@ -463,6 +468,8 @@ exports.cancelTour = async (req, res) => {
       console.log("No guides assigned to this tour.");
     }
 
+    await checkAndSetToursReady();
+    
     res.status(200).send("<h1>Tour successfully canceled.</h1>");
   } catch (error) {
     console.error("Error canceling tour:", error);

@@ -3,6 +3,9 @@ import axios from 'axios';
 import './ChangePassword.css';
 import { Toast } from 'primereact/toast';
 
+const API_BASE_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3001';
+const token = localStorage.getItem('token') || localStorage.getItem('tempToken');
+
 const ChangePassword = ({ userEmail }) => {
     const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
@@ -37,12 +40,17 @@ const ChangePassword = ({ userEmail }) => {
 
         try {
             const response = await axios.put(
-                'http://localhost:3001/auth/update-password',
+                `${API_BASE_URL}/auth/update-password`,
                 {
                     email: userEmail,
                     oldPassword,
                     newPassword,
                     confirmNewPassword,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
                 }
             );
 

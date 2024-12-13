@@ -2,23 +2,25 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Unauthorized.css'; // Import the CSS file
-import PropTypes from 'prop-types'; // For prop type validation (optional)
 
-const Unauthorized = ({ from }) => {
+const Unauthorized = () => {
     const navigate = useNavigate();
-    const [count, setCount] = useState(2); // Start countdown from 2 seconds
-
-    // Determine the path to redirect to. If 'from' is not provided, default to home.
-    const fromPath = from?.pathname || '/';
+    const [count, setCount] = useState(2); 
+    const token = localStorage.getItem('token') || localStorage.getItem('tempToken');
 
     useEffect(() => {
         if (count <= 0) {
-            navigate(fromPath, { replace: true }); // Redirect back to the originating page
+            if(token){
+                navigate('/dashboard', { replace: true }); // Redirect to the dashboard if user is logged in
+            }
+            else{
+                navigate('/login', { replace: true }); // Redirect to the login page if user is not logged in
+            }
         } else {
             const timer = setTimeout(() => setCount(count - 1), 1000);
-            return () => clearTimeout(timer); // Clear timeout if component unmounts
+            return () => clearTimeout(timer); 
         }
-    }, [count, navigate, fromPath]);
+    }, [count, navigate]);
 
     return (
         <div className="unauthorized-container">
@@ -29,11 +31,6 @@ const Unauthorized = ({ from }) => {
             </p>
         </div>
     );
-};
-
-// Optional: Define prop types for better maintainability
-Unauthorized.propTypes = {
-    from: PropTypes.object.isRequired,
 };
 
 export default Unauthorized;

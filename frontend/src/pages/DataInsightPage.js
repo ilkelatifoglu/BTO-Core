@@ -10,15 +10,13 @@ import "./DataInsightPage.css";
 import '../components/common/CommonComp.css';
 import Unauthorized from './Unauthorized'; // Import the Unauthorized component
 import useProtectRoute from '../hooks/useProtectRoute';
-import { useLocation } from "react-router-dom";
 
 const DataInsightPage = () => {
-  const isAuthorized = useProtectRoute([1,2,3,4]); // Check authorization
+  const isAuthorized = useProtectRoute([4]); // Check authorization
   const [filter, setFilter] = useState("weekly");
   const [periodIndex, setPeriodIndex] = useState(0);
   const [tourData, setTourData] = useState(null);
   const toast = useRef(null); // (3) Toast ref
-  const location = useLocation();
 
   useEffect(() => {
     setPeriodIndex(0); 
@@ -74,7 +72,7 @@ const DataInsightPage = () => {
     setFilter(type.toLowerCase());
   };
   if (!isAuthorized) {
-    return <Unauthorized from={location}/>;
+    return <Unauthorized />;
   }
   return (
     <div className="page-container">

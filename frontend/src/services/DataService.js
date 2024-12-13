@@ -1,6 +1,9 @@
+const BASE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:3001";
+const token = localStorage.getItem("token") || localStorage.getItem("tempToken");
+
 export const fetchTourData = async (filter, periodIndex) => {
   try {
-    const response = await fetch(`http://localhost:3001/data/${filter}/${periodIndex}`);
+    const response = await fetch(`${BASE_URL}/data/${filter}/${periodIndex}`, {headers: {Authorization: `Bearer ${token}`}}); // Correct endpoint
     if (!response.ok) {
       throw new Error("Failed to fetch tour data");
     }
@@ -14,7 +17,7 @@ export const fetchTourData = async (filter, periodIndex) => {
 
 export const fetchSchoolStudentData = async (year) => { // Ensure 'year' is required
   try {
-    const response = await fetch(`http://localhost:3001/data/yearly/${year}`); // Correct endpoint
+    const response = await fetch(`${BASE_URL}/data/yearly/${year}`, {headers: {Authorization: `Bearer ${token}`}}); // Correct endpoint
     if (!response.ok) {
       throw new Error("Failed to fetch school student data");
     }

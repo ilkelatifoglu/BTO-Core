@@ -1,6 +1,6 @@
 import axios from "axios";
-
-const BASE_URL = "http://localhost:3001/fairs";
+const BASE_URL = (process.env.REACT_APP_BACKEND_URL || "http://localhost:3001") + "/fairs";
+const token = localStorage.getItem("token") || localStorage.getItem("tempToken");
 
 export const fetchFairs = async (status = null) => {
     try {
@@ -79,9 +79,7 @@ export const unassignGuide = async (fairId, column) => {
 
 export const fetchAvailableFairsForUser = async () => {
     try {
-        const token = localStorage.getItem("tempToken");
         if (!token) throw new Error("No authentication token found.");
-
         const response = await axios.get(`${BASE_URL}/available-fairs`, {
             headers: {
                 Authorization: `Bearer ${token}`,

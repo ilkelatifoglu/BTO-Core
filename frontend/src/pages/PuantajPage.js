@@ -5,12 +5,10 @@ import UserWorkTable from "../components/puantajpage/UserWorkTable";
 import '../components/common/CommonComp.css';
 import Unauthorized from './Unauthorized'; // Import the Unauthorized component
 import useProtectRoute from '../hooks/useProtectRoute';
-import { useLocation } from "react-router-dom";
 
 function PuantajPage() {
-    const isAuthorized = useProtectRoute([1,2,3,4]); // Check authorization
+    const isAuthorized = useProtectRoute([2,3,4]); // Check authorization
     const [userType, setUserType] = useState(null);
-    const location = useLocation();
 
     useEffect(() => {
         // Retrieve userType from localStorage or other state management
@@ -19,7 +17,7 @@ function PuantajPage() {
     }, []);
 
     if (!isAuthorized) {
-        return <Unauthorized from={location}/>;
+        return <Unauthorized />;
       }
 
     return (

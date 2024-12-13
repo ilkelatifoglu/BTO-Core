@@ -6,11 +6,9 @@ import welcomeImage from '../assets/btowelcome.jpeg';
 import btoimg from '../assets/btoimg.jpeg';
 import useProtectRoute from '../hooks/useProtectRoute';
 import Unauthorized from './Unauthorized'; // Import the Unauthorized component
-import { useLocation } from 'react-router-dom';
 
 const DashboardPage = () => {
     const isAuthorized = useProtectRoute([1,2,3,4]); // Check authorization
-    const location = useLocation();
 
     const [currentPage, setCurrentPage] = useState('default'); // Default page
     const { user } = useContext(AuthContext);
@@ -58,7 +56,7 @@ const DashboardPage = () => {
 
   // If not authorized, render the Unauthorized component
   if (!isAuthorized) {
-    return <Unauthorized from={location}/>;
+    return <Unauthorized />;
   }
 
   return (

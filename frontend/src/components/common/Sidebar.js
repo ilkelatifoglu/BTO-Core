@@ -9,6 +9,7 @@ import { Toast } from "primereact/toast";
 let cachedProfileImage = null;
 let cachedUserProfile = null;
 let cachedUserId = null;
+const token = localStorage.getItem("token") || localStorage.getItem("tempToken");
 
 const Sidebar = ({ setCurrentPage }) => {
   const [isExpanded, setIsExpanded] = useState(true);
@@ -55,8 +56,6 @@ const Sidebar = ({ setCurrentPage }) => {
 
     setIsLoadingPicture(true);
     try {
-      const token =
-        localStorage.getItem("token") || localStorage.getItem("tempToken");
       if (!token) throw new Error("Authentication token is missing.");
 
       const url = `${process.env.REACT_APP_BACKEND_URL}/profile/get-profile-picture/${userId}`;
@@ -88,7 +87,7 @@ const Sidebar = ({ setCurrentPage }) => {
         {
           headers: {
             Authorization: `Bearer ${
-              localStorage.getItem("token") || localStorage.getItem("tempToken")
+              token
             }`,
           },
         }

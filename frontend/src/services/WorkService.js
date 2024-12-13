@@ -1,11 +1,17 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:3001";
-
+const API_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:3001";
+const token = localStorage.getItem('token') || localStorage.getItem('tempToken');
 
 export const getAllWorkEntries = async () => {
     try {
-        const response = await axios.get(`${API_URL}/work`);
+        const response = await axios.get(`${API_URL}/work`,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+              },
+            });
         return response.data;
     } catch (error) {
         console.error("Error fetching all work entries:", error);
@@ -32,7 +38,13 @@ export const getAllNonApprovedWorkEntries = async () => {
  */
 export const getWorkEntryById = async (id) => {
     try {
-        const response = await axios.get(`${API_URL}/work/${id}`);
+        const response = await axios.get(`${API_URL}/work/${id}`,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+              },
+            });
         return response.data;
     } catch (error) {
         console.error(`Error fetching work entry with id ${id}:`, error);
@@ -43,7 +55,13 @@ export const getWorkEntryById = async (id) => {
 
 export const addWork = async (workData) => {
     try {
-        const response = await axios.post(`${API_URL}/work/add`, workData);
+        const response = await axios.post(`${API_URL}/work/add`, workData,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+              },
+            });
         return response.data;
     } catch (error) {
         console.error("Error adding work entry:", error);
@@ -56,7 +74,13 @@ export const addWork = async (workData) => {
  */
 export const getUserWorkEntries = async (userId) => {
     try {
-        const response = await axios.get(`${API_URL}/work/user-work?user_id=${userId}`);
+        const response = await axios.get(`${API_URL}/work/user-work?user_id=${userId}`,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+              },
+            });
         return response.data;
     } catch (error) {
         console.error("Error fetching user-specific work entries:", error);
@@ -65,7 +89,13 @@ export const getUserWorkEntries = async (userId) => {
 };
 export const deleteWorkEntry = async (id) => {
     try {
-        const response = await axios.delete(`${API_URL}/work/delete/${id}`);
+        const response = await axios.delete(`${API_URL}/work/delete/${id}`,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+              },
+            });
         return response.data;
     } catch (error) {
         console.error(`Error deleting work entry with id ${id}:`, error);
@@ -77,6 +107,7 @@ export const editWorkEntry = async (id, updatedWork) => {
         const response = await axios.put(`${API_URL}/work/edit/${id}`, updatedWork, {
             headers: {
                 "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
             },
         });
         return response.data;
@@ -90,6 +121,11 @@ export const updateWorkEntry = async (id, isApproved, workType) => {
         const response = await axios.put(`${API_URL}/work/update/${id}`, {
             is_approved: isApproved,
             work_type: workType, // Include work_type in the payload
+        }, {
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            }
         });
         return response.data;
     } catch (error) {
@@ -101,7 +137,10 @@ export const updateWorkEntry = async (id, isApproved, workType) => {
 export const saveWorkload = async (workId, workload) => {
 
     try {
-        const response = await axios.put(`${API_URL}/work/${workId}/workload`, { workload });
+        const response = await axios.put(`${API_URL}/work/${workId}/workload`, { workload }, { headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        }});
         return response.data;
     } catch (error) {
         console.error("Error saving workload:", error);

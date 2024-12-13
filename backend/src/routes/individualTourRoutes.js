@@ -1,5 +1,6 @@
 // routes/tourRoutes.js
 const express = require("express");
+require('dotenv').config();
 const { getAllIndividualTours, approveTour, rejectTour, addIndividualTour } = require("../controllers/individualTourController");
 const router = express.Router();
 const authenticateToken = require('../middleware/auth'); 

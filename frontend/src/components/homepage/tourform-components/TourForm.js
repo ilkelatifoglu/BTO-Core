@@ -11,6 +11,8 @@ import Modal from 'react-modal';
 
 Modal.setAppElement('#root');
 
+const API_BASE_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3001';
+
 const TourForm = () => {
   // ============================
   // State Variables for LeftForm
@@ -78,9 +80,11 @@ const TourForm = () => {
     };
 
     try {
-      const response = await fetch('http://localhost:3001/tour/addTour', {
+      const response = await fetch(`${API_BASE_URL}/tour/addTour`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify(submissionData),
       });
 

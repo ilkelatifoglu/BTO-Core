@@ -3,13 +3,11 @@ import Sidebar from '../components/common/Sidebar';
 import '../components/common/CommonComp.css'; 
 import Unauthorized from './Unauthorized'; // Import the Unauthorized component
 import useProtectRoute from '../hooks/useProtectRoute';
-import { useLocation } from "react-router-dom";
 
 function IndividualTourPage() {
-    const isAuthorized = useProtectRoute([1,2,3,4]); // Check authorization
-    const location = useLocation();
+    const isAuthorized = useProtectRoute([2,3,4]); // Check authorization
     if (!isAuthorized) {
-        return <Unauthorized from={location}/>;
+        return <Unauthorized />;
       }
     return (
         <div className="page-container">

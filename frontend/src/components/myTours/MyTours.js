@@ -8,8 +8,11 @@ import { Dialog } from "primereact/dialog"; // Import Dialog from PrimeReact
 import "./MyTours.css";
 import Sidebar from '../../components/common/Sidebar';
 import '../common/CommonComp.css';
+import Unauthorized from '../../pages/Unauthorized'; // Import the Unauthorized component
+import useProtectRoute from '../../hooks/useProtectRoute';
 
 export default function MyTours() {
+    const isAuthorized = useProtectRoute([1,2,3,4]); // Check authorization
     const [items, setItems] = useState([]);
     const [confirmVisible, setConfirmVisible] = useState(false); // Manage dialog visibility
     const [pendingItem, setPendingItem] = useState(null); // Item to withdraw from
@@ -147,7 +150,9 @@ export default function MyTours() {
             </button>
         </div>
     );
-
+    if (!isAuthorized) {
+        return <Unauthorized />;
+      }
     return (
         <div className="page-container">
             <Sidebar />

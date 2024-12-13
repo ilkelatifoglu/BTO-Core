@@ -10,11 +10,9 @@ import "./FairAssignment.css";
 import '../components/common/CommonComp.css';
 import Unauthorized from './Unauthorized'; // Import the Unauthorized component
 import useProtectRoute from '../hooks/useProtectRoute';
-import { useLocation } from "react-router-dom";
 
 export default function FairAssignmentPage() {
-    const isAuthorized = useProtectRoute([1,2,3,4]); // Check authorization
-    const location = useLocation();
+    const isAuthorized = useProtectRoute([2,3,4]); // Check authorization
     const [fairs, setFairs] = useState([]);
     const toast = useRef(null); // (3) Toast ref
     const [confirmVisible, setConfirmVisible] = useState(false);
@@ -130,7 +128,7 @@ export default function FairAssignmentPage() {
     );
 
     if (!isAuthorized) {
-        return <Unauthorized from= {location}/>;
+        return <Unauthorized />;
       }
 
     return (

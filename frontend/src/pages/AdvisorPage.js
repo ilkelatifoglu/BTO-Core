@@ -8,13 +8,13 @@ import { Toast } from "primereact/toast";
 import '../components/common/CommonComp.css';
 import Unauthorized from './Unauthorized'; // Import the Unauthorized component
 import useProtectRoute from '../hooks/useProtectRoute';
-import { useLocation } from "react-router-dom";
 
 const daysOptions = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Weekend"];
+const token = localStorage.getItem("token") || localStorage.getItem("tempToken");
+const API_BASE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:3001";
 
 const AdvisorPage = () => {
-    const isAuthorized = useProtectRoute([1,2,3,4]); // Check authorization
-    const location = useLocation(); // Get current location
+    const isAuthorized = useProtectRoute([2,3,4]); // Check authorization
     const [advisors, setAdvisors] = useState([]);
     const [groupedAdvisors, setGroupedAdvisors] = useState(
         daysOptions.reduce((acc, day) => ({ ...acc, [day]: [] }), {}) // Initialize grouped advisors
@@ -25,10 +25,13 @@ const AdvisorPage = () => {
     useEffect(() => {
         const fetchAdvisors = async () => {
             try {
-                const response = await axios.get("http://localhost:3001/advisors");
+                const response = await axios.get(`${API_BASE_URL}/advisors`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
                 const advisorsData = response.data;
 
-                // Group advisors by their assigned days
                 const grouped = daysOptions.reduce((acc, day) => ({ ...acc, [day]: [] }), {});
                 advisorsData.forEach((advisor) => {
                     advisor.days.forEach((day) => {
@@ -92,13 +95,14 @@ const AdvisorPage = () => {
             </div>
         );
     };
+
     if (!isAuthorized) {
-        return <Unauthorized from={location} />; 
+        return <Unauthorized />; 
       }
+
     return (
         <div>
             <Sidebar />
-            {/* Toast component placed here */}
             <Toast ref={toast} />
             <div className="page-container">
             <div className="page-content">

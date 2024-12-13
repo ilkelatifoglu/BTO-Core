@@ -8,6 +8,6 @@ const authorizeRole = require("../middleware/authorizeRole");
 router.post("/remove", authenticateToken, authorizeRole(4), userManagementController.removeUser);
 router.post("/changeRole", authenticateToken, authorizeRole(4), userManagementController.changeUserRole);
 router.post("/updateCrewNo", authenticateToken, authorizeRole(4), userManagementController.updateCrewNo);
-router.get("/advisors", userManagementController.getAdvisors);
+router.get("/advisors", authenticateToken, userManagementController.getAdvisors);
 
 module.exports = router;

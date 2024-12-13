@@ -10,14 +10,12 @@ import Sidebar from '../components/common/Sidebar';
 import "./FairApproval.css";
 import Unauthorized from './Unauthorized'; // Import the Unauthorized component
 import useProtectRoute from '../hooks/useProtectRoute';
-import { useLocation } from "react-router-dom";
 
 export default function FairApprovalPage() {
-    const isAuthorized = useProtectRoute([1,2,3,4]); // Check authorization
+    const isAuthorized = useProtectRoute([4]); // Check authorization
     const [fairs, setFairs] = useState([]);
     const [guides, setGuides] = useState({});
     const toast = useRef(null); // (3) Toast ref
-    const location = useLocation();
 
     const [confirmVisible, setConfirmVisible] = useState(false);
     const [confirmAction, setConfirmAction] = useState(null);
@@ -287,7 +285,7 @@ export default function FairApprovalPage() {
         </div>
     );
     if (!isAuthorized) {
-        return <Unauthorized from={location} />;
+        return <Unauthorized />;
       }
     return (
         <div className="fair-approval-page">

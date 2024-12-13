@@ -2,13 +2,14 @@ import axios from "axios";
 import { formatDate } from "../components/common/dateUtils";
 
 
-const API_BASE_URL = "http://localhost:3001";
+const API_BASE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:3001";
+const token = localStorage.getItem("token") || localStorage.getItem("tempToken");
 
 const AssignTourService = {
   async requestToJoinTour(tourId, userId) {
     try {
       console.log("Sending request to join:", { tourId, userId }); // Debug log
-      const response = await axios.post(`${API_BASE_URL}/tour/requestToJoin`, { tourId, guideId: userId });
+      const response = await axios.post(`${API_BASE_URL}/tour/requestToJoin`, { tourId, guideId: userId }, {headers: {Authorization: `Bearer ${token}`}});
       return response.data;
     } catch (error) {
       console.error("Error in requestToJoinTour service:", error.response?.data || error);
@@ -19,7 +20,7 @@ const AssignTourService = {
     try {
         const response = await axios.get(`${API_BASE_URL}/tour/distinctSchoolsAndCities`, {
             params: { city }
-        });
+        }, {headers: {Authorization: `Bearer ${token}`}});
         return response.data;
     } catch (error) {
         console.error("Error fetching distinct schools and cities:", error);
@@ -29,7 +30,7 @@ const AssignTourService = {
 
   getReadyTours: async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/tour/readyTours`);
+      const response = await axios.get(`${API_BASE_URL}/tour/readyTours`, {headers: {Authorization: `Bearer ${token}`}});
       return response.data.data;
     } catch (error) {
       console.error("Error fetching READY tours:", error);
@@ -39,7 +40,7 @@ const AssignTourService = {
 
   getAssignedGuides: async (tourId) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/tour/${tourId}/guideCount`);
+      const response = await axios.get(`${API_BASE_URL}/tour/${tourId}/guideCount`, {headers: {Authorization: `Bearer ${token}`}});
       return response.data.guide_count;
     } catch (error) {
       console.error(`Error fetching assigned guides for tour ${tourId}:`, error);
@@ -51,7 +52,7 @@ const AssignTourService = {
     try {
       const response = await axios.get(`${API_BASE_URL}/tour/candidateGuides`, {
         params: { tourId },
-      });
+      }, {headers: {Authorization: `Bearer ${token}`}});
       return response.data;
     } catch (error) {
       console.error("Error fetching candidate guides:", error);
@@ -61,7 +62,6 @@ const AssignTourService = {
 
   assignGuideToTour: async ({ school_name, city, date, time }) => {
     const userId = localStorage.getItem("userId");
-    const tempToken = localStorage.getItem("tempToken"); // Authorization token
     const formattedDate = formatDate(date); // Format the date
     const userType = localStorage.getItem("userType");
 
@@ -69,7 +69,7 @@ const AssignTourService = {
       const response = await axios.post(
         `${API_BASE_URL}/tour/assignGuide`,
         { school_name, city, date: formattedDate, time, user_id: userId, user_type: userType },
-        { headers: { Authorization: `Bearer ${tempToken}` } }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       return response.data; // Return the server's response
     } catch (error) {
@@ -79,14 +79,13 @@ const AssignTourService = {
   },
 
   assignCandidateGuidesToTour: async ({ school_name, city, date, time, user_ids }) => {
-    const tempToken = localStorage.getItem("tempToken");
     const formattedDate = formatDate(date); // Format the date
 
     try {
       const response = await axios.post(
         `${API_BASE_URL}/tour/assignCandidate`,
         { school_name, city, date: formattedDate, time, user_ids }, // Pass user_ids here
-        { headers: { Authorization: `Bearer ${tempToken}` } }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       return response.data;
     } catch (error) {
@@ -97,7 +96,6 @@ const AssignTourService = {
 
   getMyTours: async () => {
     const userId = localStorage.getItem("userId"); // Assuming user ID is stored in localStorage
-    const token = localStorage.getItem("tempToken"); // For authorization
     try {
       const response = await axios.get(`${API_BASE_URL}/tour/myTours`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -109,10 +107,9 @@ const AssignTourService = {
     }
   },
   withdrawFromTour: async (tourId) => {
-    const tempToken = localStorage.getItem("tempToken"); // Ensure the token is included
     try {
       await axios.delete(`${API_BASE_URL}/tour/withdraw/${tourId}`, {
-        headers: { Authorization: `Bearer ${tempToken}` },
+        headers: { Authorization: `Bearer ${token}` },
       });
     } catch (error) {
       console.error("Error withdrawing from tour:", error.response?.data || error);
@@ -132,7 +129,7 @@ const AssignTourService = {
     try {
       const response = await axios.get(`${API_BASE_URL}/tour/getToursByUser`, {
         params: { user_id: userId }, // Use query parameters for a single user ID
-      });
+      }, {headers: {Authorization: `Bearer ${token}`}});
       return response.data;
     } catch (error) {
       console.error("Error fetching tours by user ID:", error);
@@ -143,7 +140,7 @@ const AssignTourService = {
     try {
       const response = await axios.get(`${API_BASE_URL}/tour/getUsersByTour`, {
         params: { tour_id: tourId }, // Use query parameters for the API call
-      });
+      }, {headers: {Authorization: `Bearer ${token}`}});
       return response.data;
     } catch (error) {
       console.error("Error fetching users by tour ID:", error);
@@ -153,7 +150,7 @@ const AssignTourService = {
     try {
       const response = await axios.put(`${API_BASE_URL}/tour/${tourId}/updateClassroom`, {
         classroom: classroomInput
-      });
+      }, {headers: {Authorization: `Bearer ${token}`}});
 
       return response.data; // Assuming the response contains a message
     } catch (error) {

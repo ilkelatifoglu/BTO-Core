@@ -9,7 +9,9 @@ import { Toast } from "primereact/toast";
 let cachedProfileImage = null;
 let cachedUserProfile = null;
 let cachedUserId = null;
+
 const token = localStorage.getItem("token") || localStorage.getItem("tempToken");
+const API_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:3001";
 
 const Sidebar = ({ setCurrentPage }) => {
   const [isExpanded, setIsExpanded] = useState(true);
@@ -58,7 +60,7 @@ const Sidebar = ({ setCurrentPage }) => {
     try {
       if (!token) throw new Error("Authentication token is missing.");
 
-      const url = `${process.env.REACT_APP_BACKEND_URL}/profile/get-profile-picture/${userId}`;
+      const url = `${API_URL}/profile/get-profile-picture/${userId}`;
       const response = await axios.get(url, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -83,12 +85,10 @@ const Sidebar = ({ setCurrentPage }) => {
     setIsLoadingProfile(true);
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/profile/getProfile`,
+        `${API_URL}/profile/getProfile`,
         {
           headers: {
-            Authorization: `Bearer ${
-              token
-            }`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );

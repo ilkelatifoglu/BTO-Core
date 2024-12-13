@@ -5,6 +5,9 @@ import Sidebar from "../components/common/Sidebar";
 import { MultiSelect } from "primereact/multiselect"; // Import MultiSelect component
 import { Toast } from "primereact/toast"; // Import Toast
 import '../components/common/CommonComp.css';
+import Unauthorized from './Unauthorized'; // Import the Unauthorized component
+import useProtectRoute from '../hooks/useProtectRoute';
+import { useLocation } from "react-router-dom";
 
 const daysOptions = [
     { label: "Monday", value: "Monday" },
@@ -16,8 +19,10 @@ const daysOptions = [
 ];
 
 const UserManagementPage = () => {
+    const isAuthorized = useProtectRoute([1,2,3,4]); // Check authorization
     const [action, setAction] = useState("register"); // Default to "register"
     const [advisors, setAdvisors] = useState([]); // List of advisors
+    const location = useLocation(); // Get current location
     const [formData, setFormData] = useState({
         first_name: "",
         last_name: "",
@@ -175,7 +180,7 @@ const UserManagementPage = () => {
             });
         }
     };
-
+    
     const handleUpdateCrewNoSubmit = async (e) => {
         e.preventDefault();
         try {
@@ -202,6 +207,10 @@ const UserManagementPage = () => {
             });
         }
     };
+
+    if (!isAuthorized) {
+        return <Unauthorized from={location}/>;
+      }
 
     return (
         <div>

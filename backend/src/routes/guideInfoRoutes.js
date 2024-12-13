@@ -4,7 +4,7 @@ const express = require('express');
 const router = express.Router();
 const { getGuideInfo } = require('../controllers/guideInfoController');
 const authenticateToken = require('../middleware/auth'); // Middleware for authentication
+const authorizeRole = require('../middleware/authorizeRole'); // Middleware for role-based authorization
 
-// router.get('/', authenticateToken, getGuideInfo);
-router.get('/', getGuideInfo);
+router.get('/', authenticateToken, authorizeRole(2,3,4), getGuideInfo);
 module.exports = router;

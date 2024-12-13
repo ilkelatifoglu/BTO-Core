@@ -2,7 +2,6 @@ import React, { useState, useRef } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom"; // (1) Import useNavigate
 import { cancelTour } from "../services/ApproveTourService"; 
 import { Toast } from "primereact/toast"; 
-import Sidebar from '../components/common/Sidebar';
 
 const CancelConfirmation = () => {
     const [searchParams] = useSearchParams();
@@ -51,7 +50,6 @@ const CancelConfirmation = () => {
             setIsLoading(false);
         }
     };
-
     return (
         <div style={{ textAlign: "center", marginTop: "50px" }}>
             <Toast ref={toast} />

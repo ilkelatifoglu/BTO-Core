@@ -6,8 +6,13 @@ import GuideInfoTable from '../components/guideInfo/GuideInfoTable';
 import { fetchGuideInfo } from '../services/guideInfoService';
 import './GuideInfoPage.css';
 import { Toast } from "primereact/toast"; 
+import Unauthorized from './Unauthorized'; // Import the Unauthorized component
+import useProtectRoute from '../hooks/useProtectRoute';
+import { useLocation } from "react-router-dom";
 
 const GuideInfoPage = () => {
+    const isAuthorized = useProtectRoute([1,2,3,4]); // Check authorization
+    const location = useLocation();
     const [guides, setGuides] = useState([]);
     const [filters, setFilters] = useState({ name: '', role: '', department: '' });
     const [loading, setLoading] = useState(false);
@@ -51,6 +56,9 @@ const GuideInfoPage = () => {
         loadGuides();
     }, [filters]);
 
+    if (!isAuthorized) {
+        return <Unauthorized from={location}/>;
+      }
     return (
         <div className="page-container">
             <Sidebar />

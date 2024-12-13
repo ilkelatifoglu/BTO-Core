@@ -3,7 +3,8 @@
 const express = require('express');
 const { body, param, validationResult } = require('express-validator');
 const schoolController = require('../controllers/schoolController');
-
+const authenticateToken = require('../middleware/auth'); 
+const authorizeRole = require("../middleware/authorizeRole");
 const router = express.Router();
 
 const schoolValidationRules = [
@@ -56,6 +57,7 @@ const validate = (req, res, next) => {
 // Add a new school
 router.post(
   '/addSchool',
+  authenticateToken,
   schoolValidationRules,
   validate,
   schoolController.addSchool
@@ -64,12 +66,14 @@ router.post(
 // Get all schools
 router.get(
   '/getAllSchools',
+  authenticateToken,
   schoolController.getAllSchools
 );
 
 // Get a school by ID
 router.get(
   '/schools/:id',
+  authenticateToken,
   [
     param('id')
       .exists().withMessage('ID parameter is required')
@@ -82,6 +86,7 @@ router.get(
 // Update a school by ID
 router.put(
   '/schools/:id',
+  authenticateToken,
   [
     param('id')
       .exists().withMessage('ID parameter is required')
@@ -95,6 +100,7 @@ router.put(
 // Delete a school by ID
 router.delete(
   '/schools/:id',
+  authenticateToken,
   [
     param('id')
       .exists().withMessage('ID parameter is required')

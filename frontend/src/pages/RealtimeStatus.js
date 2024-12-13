@@ -12,6 +12,7 @@ import { Toast } from "primereact/toast";
 
 import useProtectRoute from "../hooks/useProtectRoute";
 import Unauthorized from "./Unauthorized";
+import {useLocation} from "react-router-dom";
 
 const BILKENT_BOUNDS = [
   [32.73, 39.85], // Southwest coordinates [lng, lat]
@@ -47,6 +48,7 @@ const RealtimeStatus = () => {
 
   const mapRef = useRef();
   const toast = useRef(null);
+  const location = useLocation(); // Add useLocation hook
 
   // Add new state for map initialization
   const [mapLoaded, setMapLoaded] = useState(false);
@@ -365,7 +367,7 @@ const RealtimeStatus = () => {
   };
 
   if (!isAuthorized) {
-    return <Unauthorized />;
+    return <Unauthorized from = {location}/>;
   }
 
   return (

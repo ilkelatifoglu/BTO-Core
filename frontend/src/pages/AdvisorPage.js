@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef} from "react";
 import axios from "axios";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
@@ -6,10 +6,15 @@ import "./AdvisorPage.css"; // CSS for the page
 import Sidebar from "../components/common/Sidebar";
 import { Toast } from "primereact/toast";
 import '../components/common/CommonComp.css';
+import Unauthorized from './Unauthorized'; // Import the Unauthorized component
+import useProtectRoute from '../hooks/useProtectRoute';
+import { useLocation } from "react-router-dom";
 
 const daysOptions = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Weekend"];
 
 const AdvisorPage = () => {
+    const isAuthorized = useProtectRoute([1,2,3,4]); // Check authorization
+    const location = useLocation(); // Get current location
     const [advisors, setAdvisors] = useState([]);
     const [groupedAdvisors, setGroupedAdvisors] = useState(
         daysOptions.reduce((acc, day) => ({ ...acc, [day]: [] }), {}) // Initialize grouped advisors
@@ -87,7 +92,9 @@ const AdvisorPage = () => {
             </div>
         );
     };
-
+    if (!isAuthorized) {
+        return <Unauthorized from={location} />; 
+      }
     return (
         <div>
             <Sidebar />

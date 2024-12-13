@@ -757,3 +757,32 @@ exports.requestToJoinTour = async (req, res) => {
   }
 };
 
+exports.getDistinctSchoolsAndCities = async (req, res) => {
+  const { city } = req.query;
+
+  try {
+    let schoolQuery = `
+      SELECT DISTINCT school_name
+      FROM schools
+    `;
+    const queryParams = [];
+
+    if (city) {
+      schoolQuery += ` WHERE city = $1`;
+      queryParams.push(city);
+    }
+
+    const schoolsResult = await query(schoolQuery, queryParams);
+    const citiesResult = await query(`SELECT DISTINCT city FROM schools`);
+
+    res.status(200).json({
+      success: true,
+      schools: schoolsResult.rows.map((row) => row.school_name),
+      cities: citiesResult.rows.map((row) => row.city),
+    });
+  } catch (error) {
+    console.error("Error fetching distinct schools and cities:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+

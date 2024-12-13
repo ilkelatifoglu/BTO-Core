@@ -67,7 +67,7 @@
     color: #fff;
     padding: 5px 10px;
     border-radius: 4px;
-    font: "Tiempos Text Regular";
+    font: 'Lato', sans-serif;
     font-size: 12px;
     white-space: nowrap;
   }
@@ -81,6 +81,6 @@
 .navigation-buttons button {
   margin: 0 5px;
   padding: 5px 10px;
-  font-family: "Tiempos Text Regular";
+  font-family:'Lato', sans-serif;
   font-size: 14px;
 }

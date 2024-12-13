@@ -1,6 +1,6 @@
 .about-container {
     padding: 20px; /* Increase padding for better spacing */
-    font-family: "Tiempos Text Regular";
+    font-family: 'Lato', sans-serif;
     display: flex;
     flex-direction: column;
     gap: 20px; /* Adjust gap for sections */

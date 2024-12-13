@@ -28,7 +28,7 @@
   cursor: pointer;
   margin-top: 10px;
   font-size: 1.2em;
-  font-family: "Tiempos Text Regular";
+  font-family: 'Lato', sans-serif;
   padding: 0;
   margin-left: auto; /* Align toggle to the right */
   transition: color 0.3s;

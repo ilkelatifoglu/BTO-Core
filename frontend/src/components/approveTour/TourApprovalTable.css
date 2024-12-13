@@ -41,7 +41,7 @@
 
 /* Row Coloring */
 .green-row {
-    background-color: #9ae8ac  !important; /* Light green */
+    background-color:  #aff5bf !important; /* Light green */
     transition: all 0.3s ease;
 }
 
@@ -50,7 +50,7 @@
 }
 
 .red-row {
-    background-color: hsl(355, 77%, 82%) !important; /* Light red */
+    background-color:hsl(355, 77%, 82%)  !important; /* Light red */
     transition: all 0.3s ease; 
 }
 

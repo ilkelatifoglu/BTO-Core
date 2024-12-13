@@ -1,6 +1,6 @@
 .help-support-container {
     padding: 20px;
-    font-family: "Tiempos Text Regular";
+    font-family: 'Lato', sans-serif;
     display: flex;
     flex-direction: column;
     gap: 20px;

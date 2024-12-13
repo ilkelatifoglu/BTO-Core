@@ -195,9 +195,24 @@ const Sidebar = ({ setCurrentPage }) => {
         {/* Divider */}
         {isExpanded && <div className="sidebar__divider"></div>}
 
-        {isExpanded && <p className="sidebar__dashboard">Dashboard</p>}
-
-        <ul className="sidebar__menu">
+        {isExpanded && (
+        <p
+          className={`sidebar__dashboard ${
+            currentPath === "dashboard" ? "active" : ""
+          }`}
+          onClick={() => handleNavigation("dashboard")}
+          style={{
+            cursor: "pointer", // Make it clickable
+            color: currentPath === "dashboard" ? "rgb(0, 74, 119)" : "#000",
+            fontWeight: currentPath === "dashboard" ? "bold" : "normal",
+            textDecoration: currentPath === "dashboard" ? "underline" : "none",
+          }}
+        >
+          Dashboard
+        </p>
+         )}
+         
+          <ul className="sidebar__menu">
           {(userType === 4 ||
             userType === 3 ||
             userType === 2 ||
@@ -353,7 +368,7 @@ const Sidebar = ({ setCurrentPage }) => {
         </ul>
         <div className="sidebar__footer">
           <button
-            className="menu__item"
+           className={`menu__item ${currentPath === "Settings" ? "active" : ""}`}
             onClick={() => handleNavigation("Settings")}
           >
             <i className="pi pi-cog"></i>

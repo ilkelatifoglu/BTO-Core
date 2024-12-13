@@ -227,12 +227,14 @@
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   cursor: pointer;
-  transition: background 0.3s, box-shadow 0.3s;
+  transition: background 0.3s, box-shadow 0.3s, transform 0.2s ease;
 }
 
 .sidebar__footer .menu__item:hover {
-  background-color: #f1f3f4;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  background-color: rgb(0, 104, 159); /* Highlight background on hover */
+  transform: scale(1.02); /* Slight zoom effect */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Elevated shadow on hover */
+  color: white; /* Change text color */
 }
 
 .sidebar__footer .menu__item i {
@@ -256,10 +258,15 @@
   text-align: left;
   margin-left: 10px;
 }
+.sidebar__footer .menu__item.active {
+  background-color: rgb(0, 74, 119);
+  border-left: 0px solid #ffffff;
+  color: white;
+}
 
 .menu__item.active {
-  background-color: #2563eb;
-  border-left: 3px solid #ffffff;
+  background-color: rgb(0, 74, 119);
+  border-left: 0px solid #ffffff;
   color: white;
 }
 
@@ -269,8 +276,8 @@
 }
 
 .menu__item:hover {
-  background-color: #3b82f6;
-  color: white;
+  background-color: rgb(0, 104, 159);
+  transform: scale(1.02);
 }
 
 /* Add this to ensure icons also change color on hover */

@@ -268,19 +268,20 @@ export default function FairApprovalPage() {
             <Button
                 label="Approve"
                 icon="pi pi-check"
-                className="p-button-success"
+                className="fair-approve-button"
                 onClick={() => handleApproveFair(rowData.id)}
                 disabled={rowData.status === 'APPROVED' || rowData.status === 'CANCELLED'}
             />
             <Button
                 label="Cancel"
                 icon="pi pi-times"
-                className="p-button-danger"
+                className="fair-cancel-button"
                 onClick={() => handleCancelFair(rowData.id)}
                 disabled={rowData.status === 'CANCELLED'}
             />
         </div>
     );
+    
 
     return (
         <div className="fair-approval-page">

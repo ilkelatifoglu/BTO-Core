@@ -3,6 +3,7 @@
 .left-form {
   flex: 1;
   padding-right: 20px;
+  
 }
 
 .form-group {
@@ -103,4 +104,5 @@
 
 .add-button:hover {
   background-color: #c3e6cb;
+  transform: scale(1.02);
 }

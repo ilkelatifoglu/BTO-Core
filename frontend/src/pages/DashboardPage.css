@@ -1,56 +1,84 @@
 .dashboard-body {
   font-family: "Tiempos Text Regular";
   background-color: #f9f9f9;
+  margin: 0;
+  padding: 0;
 }
 
-.welcome-section h1 {
-  font-size: 2rem;
+.dashboard-header {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #333;
+}
+
+.dashboard-header h1 {
+  font-size: 2.5rem;
   font-weight: bold;
+}
+
+.dashboard-header p {
+  font-size: 1.2rem;
+  color: #555;
+}
+
+.dashboard-content {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  align-items: center;
+}
+
+.images-section {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 40px; /* Adds space between images and cards */
+}
+
+.dashboard-image {
+  width: 100%;
+  max-width: 400px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.dashboard-image:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+}
+
+.features-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  width: 100%;
+  max-width: 1200px;
+}
+
+.feature-card {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+}
+
+.feature-card h2 {
+  font-size: 1.5rem;
+  color: #003366;
   margin-bottom: 10px;
 }
 
-.welcome-section p {
-  font-size: 1.2rem;
-  margin-bottom: 20px;
-}
-
-.content-container {
-  display: flex;
-  gap: 20px;
-}
-.framed-content {
-  border: 1px solid #ddd; /* Adds a light gray border */
-  border-radius: 8px;
-  padding: 20px;
-  background-color: #fff; /* White background */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-  margin-bottom: 20px;
-  max-width: 2000px; /* Adjust width if needed */
-  margin: 0 auto; /* Center the content */
-}
-
-.welcome-divider {
-  border: none;
-  border-top: 2px solid #000; /* Horizontal line */
-  width: 50%; /* Adjust the width as needed */
-  margin: 10px 0 20px 0; /* Center the line horizontally */
-}
-
-.text-content ol li {
-  margin-bottom: 20px; /* Adds spacing between list items */
-}
-
-.image-content {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 20px;
-  margin-top: -50px;
-}
-
-.welcome-image {
-  width: 100%;
-  max-width: 10000px; /* Increase image size */
-  height: auto;
-  border-radius: 8px;
+.feature-card p {
+  font-size: 1rem;
+  color: #555;
 }

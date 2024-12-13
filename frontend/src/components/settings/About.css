@@ -1,6 +1,6 @@
 .about-container {
     padding: 20px; /* Increase padding for better spacing */
-    font-family: Arial, sans-serif;
+    font-family: "Tiempos Text Regular";
     display: flex;
     flex-direction: column;
     gap: 20px; /* Adjust gap for sections */
@@ -40,7 +40,7 @@
 }
 
 .about-section p {
-    font-size: 15px; /* Smaller font size for paragraphs */
+    font-size: 17px; /* Smaller font size for paragraphs */
     line-height: 1.5; /* Adjust line spacing */
     color: #000000;
 }

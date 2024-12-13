@@ -158,9 +158,6 @@ const Sidebar = ({ setCurrentPage }) => {
   return (
     <div style={{ display: "flex" }}>
       <div className={`sidebar ${isExpanded ? "expanded" : "collapsed"}`}>
-      <button className="home-button" onClick={() => handleNavigation("home")}>
-    <i className="pi pi-home"></i> {/* PrimeIcons home icon */}
-  </button>
         <Toast ref={toast} position="top-right" />
         <button
           className="sidebar__toggle"

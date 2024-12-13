@@ -82,7 +82,7 @@ function AddWork({ refreshData }) {
     };
 
     return (
-        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center',  justifyContent: "space-between",}}>
             <Toast ref={toast} /> {/* Toast for AddWork */}
             <select
                 value={selectedWorkType}
@@ -146,7 +146,7 @@ function AddWork({ refreshData }) {
                 />
             </div>
             <button
-                className="p-button p-button-success"
+                className="add-work-button"
                 style={{
                     display: 'flex',
                     alignItems: 'center',

@@ -44,26 +44,33 @@
     width: auto; /* Allow columns to adjust automatically */
 }
 
-/* Styles for the download button */
+/* Download button styles */
 .guide-info-table .p-button {
     padding: 0.5rem 1rem;
     font-size: 0.9rem;
-    color: #007bff;
+    color: rgb(0, 74, 119); /* Default text color */
     background-color: transparent;
     border: none;
     cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease; /* Smooth transition for hover effects */
 }
 
 .guide-info-table .p-button:hover {
-    text-decoration: underline;
-}
-
-.guide-info-table .p-button:disabled {
-    color: #ccc;
-    cursor: not-allowed;
+    text-decoration: none; /* Remove underline */
+    background-color: rgb(0, 104, 159); /* Change background color on hover */
+    color: white; /* Change text color to white */
+    transform: scale(1.05); /* Slightly enlarge the button */
 }
 
 .guide-info-table .p-button:active {
-    color: #0056b3;
+    color: white; /* Keep text color white on click */
+    transform: scale(0.98); /* Slightly reduce size on click */
 }
+
+/* Disabled button styling */
+.guide-info-table .p-button:disabled {
+    color: #ccc; /* Greyed-out text */
+    cursor: not-allowed; /* Disabled cursor */
+}
+
 

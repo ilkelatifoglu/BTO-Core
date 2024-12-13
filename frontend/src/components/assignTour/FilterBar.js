@@ -135,7 +135,7 @@ export default function FilterBar({ onFilterChange }) {
         />
       </div>
       {(localStorage.getItem("userType") === '3' || localStorage.getItem("userType") === '4' || localStorage.getItem("userType") === '2') && (
-          
+        <>
           <div className="filter-row">
           {/* Guide Filter */}
           <InputText
@@ -146,7 +146,6 @@ export default function FilterBar({ onFilterChange }) {
           />
         </div>
       
-      )}
       <div className="filter-row">
         <Dropdown
           value={filters.city}
@@ -163,8 +162,8 @@ export default function FilterBar({ onFilterChange }) {
           className="filter-input"
         />
       </div>
-
-      {/* Clear Filters Button */}
+      </>
+ )}
       
       <button className="button clearfilters-button" onClick={clearFilters}>
         Clear Filters

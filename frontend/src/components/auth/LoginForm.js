@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';  // For prop type validation (optional)
 import { Card } from 'primereact/card';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
+import '../../pages/LoginPage.css'
 
 // Import CSS
 import './LoginForm.css';
@@ -53,15 +54,19 @@ const LoginForm = ({ onSubmit, onForgotPassword }) => {
         </div>
 
         {/* Submit Button */}
-        <Button type="submit" label="Login" icon="pi pi-sign-in" className="w-full" />
+        <button type="submit" className="login-button">
+          <i className="pi pi-sign-in" style={{ marginRight: '8px' }}></i>Login
+        </button>
 
         {/* Forgot Password Button */}
-        <Button
-          label="Forgot Password?"
-          className="p-button-link w-full"
+        <button
+          type="button"
+          className="forgot-button"
           onClick={onForgotPassword}
           style={{marginTop: '0.5rem'}}
-        />
+        >
+          Forgot Password?
+        </button>
       </form>
     </Card>
   );

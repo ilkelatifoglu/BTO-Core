@@ -78,7 +78,7 @@ const FairForm = ({ onClose }) => {
       <form className="tour-form-container" onSubmit={handleSubmit}>
         <div className="tour-form-inner">
           <h1 style={{ textAlign: 'center', fontSize: '24px', marginBottom: '20px' }}>
-            Apply to a Fair!
+            Invite to a Fair!
           </h1>
           <div className="tour-form-sections">
             <FairLeftForm

@@ -15,7 +15,18 @@ const AssignTourService = {
       throw new Error(error.response?.data?.message || "Unable to send request");
     }
   },  
-    
+  async getDistinctSchoolsAndCities(city = null) {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/tour/distinctSchoolsAndCities`, {
+            params: { city }
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching distinct schools and cities:", error);
+        throw new Error("Unable to fetch schools and cities");
+    }
+},
+
   getReadyTours: async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/tour/readyTours`);
@@ -138,7 +149,8 @@ const AssignTourService = {
       console.error("Error fetching users by tour ID:", error);
       throw new Error("Unable to fetch users by tour ID");
     }
-  }, updateClassroom: async (tourId, classroomInput) => {
+  }, 
+  updateClassroom: async (tourId, classroomInput) => {
     try {
       const response = await axios.put(`${API_BASE_URL}/tour/${tourId}/updateClassroom`, {
         classroom: classroomInput
@@ -151,6 +163,6 @@ const AssignTourService = {
     }
   },
 
-};
+  };
 
-export default AssignTourService;
+  export default AssignTourService;

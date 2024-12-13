@@ -8,10 +8,12 @@ import { fetchFairs, fetchAvailableGuides, assignGuide, approveFair, cancelFair,
 import DropdownOrText from '../components/fair/DropdownOrText';
 import Sidebar from '../components/common/Sidebar';
 import "./FairApproval.css";
+import Unauthorized from './Unauthorized'; // Import the Unauthorized component
+import useProtectRoute from '../hooks/useProtectRoute';
 import FilterBar from "../components/fair/FilterBar"; // Import the FilterBar component
 
-
 export default function FairApprovalPage() {
+    const isAuthorized = useProtectRoute([4]); // Check authorization
     const [fairs, setFairs] = useState([]);
     const [guides, setGuides] = useState({});
     const [filteredFairs, setFilteredFairs] = useState([]); // For filtered data
@@ -310,8 +312,9 @@ export default function FairApprovalPage() {
             />
         </div>
     );
-    
-
+    if (!isAuthorized) {
+        return <Unauthorized />;
+      }
     return (
         <div className="fair-approval-page">
             <Sidebar />

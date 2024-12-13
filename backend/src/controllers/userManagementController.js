@@ -1,4 +1,5 @@
 const pool = require('../config/database'); // Ensure this points to your DB connection
+require('dotenv').config();
 
 exports.removeUser = async (req, res) => {
     const { email } = req.body;

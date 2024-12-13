@@ -2,7 +2,8 @@
 
 import axios from 'axios';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3001';
+const token = localStorage.getItem('token') || localStorage.getItem('tempToken');
 
 /**
  * Fetch guide information with optional filters.
@@ -15,6 +16,10 @@ export const fetchGuideInfo = async (filters = {}) => {
         // Make a GET request to the backend server
         const response = await axios.get(`${BACKEND_URL}/guide-info`, {
             params: filters,
+        }, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
         });
 
         // Return the data from the response
@@ -37,8 +42,11 @@ export const fetchGuideInfo = async (filters = {}) => {
 export const fetchGuideSchedule = async (userId) => {
     try {
         // Make a GET request to fetch the schedule
-        const response = await axios.get(`${BACKEND_URL}/schedule/getSchedule/${userId}`);
-
+        const response = await axios.get(`${BACKEND_URL}/schedule/getSchedule/${userId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
         // Return the schedule data from the response
         return response.data;
     } catch (error) {

@@ -39,7 +39,7 @@ const departments = [
 ];
 
 const ProfileSettings = () => {
-    const token = localStorage.getItem('tempToken');
+    const token = localStorage.getItem('token') || localStorage.getItem('tempToken');
     const toast = useRef(null);
 
     const [userData, setUserData] = useState({

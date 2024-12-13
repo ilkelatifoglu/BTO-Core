@@ -1,22 +1,20 @@
 const express = require("express");
 const tourLocationController = require("../controllers/tourLocationController");
-const authenticateToken = require("../middleware/auth");
+const authenticateToken = require('../middleware/auth'); 
+const authorizeRole = require("../middleware/authorizeRole");
 
 const router = express.Router();
 
-// TODO: Uncomment this when testing is done
-// router.use(authenticateToken);
-
 // Basic CRUD operations
-router.get("/", tourLocationController.getAllLocations);
-router.get("/:id", tourLocationController.getLocationById);
-router.post("/", tourLocationController.createLocation);
-router.put("/:id", tourLocationController.updateLocation);
-router.delete("/:id", tourLocationController.deleteLocation);
+router.get("/",  authenticateToken, tourLocationController.getAllLocations);
+router.get("/:id",  authenticateToken, tourLocationController.getLocationById);
+router.post("/",  authenticateToken, tourLocationController.createLocation);
+router.put("/:id",  authenticateToken, tourLocationController.updateLocation);
+router.delete("/:id",  authenticateToken, tourLocationController.deleteLocation);
 
 // Tour management endpoints
-router.post("/start-tour", tourLocationController.startTour);
-router.post("/end-tour", tourLocationController.endTour);
-router.post("/reset-occupancies", tourLocationController.resetAllOccupancies);
+router.post("/start-tour", authenticateToken, authorizeRole(1,2,3,4), tourLocationController.startTour);
+router.post("/end-tour", authenticateToken, authorizeRole(1,2,3,4), tourLocationController.endTour);
+router.post("/reset-occupancies", authenticateToken, authorizeRole(1,2,3,4), tourLocationController.resetAllOccupancies);
 
 module.exports = router;

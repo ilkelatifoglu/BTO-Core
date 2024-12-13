@@ -8,6 +8,9 @@ import { Button } from 'primereact/button';
 import { ProgressBar } from 'primereact/progressbar';
 import imageCompression from 'browser-image-compression';
 
+const token = localStorage.getItem('token') || localStorage.getItem('tempToken');
+const API_BASE_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3001';
+
 const Uploads = () => {
     const toast = useRef(null);
 
@@ -87,9 +90,12 @@ const Uploads = () => {
             setUploadProgress(0);
 
             await axios.post(
-                `http://localhost:3001/schedule/uploadSchedule/${userId}`,
+                `${API_BASE_URL}/schedule/uploadSchedule/${userId}`,
                 formData,
                 {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
                     onUploadProgress: (progressEvent) => {
                         const percentCompleted = Math.round(
                             (progressEvent.loaded * 100) / progressEvent.total
@@ -189,11 +195,11 @@ const Uploads = () => {
             setUploadProgress(0);
 
             await axios.post(
-                `http://localhost:3001/profile/upload-profile-picture/${userId}`,
+                `${API_BASE_URL}/profile/upload-profile-picture/${userId}`,
                 formData,
                 {
                     headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('tempToken')}`,
+                        'Authorization': `Bearer ${token}`,
                     },
                     onUploadProgress: (progressEvent) => {
                         const percentCompleted = Math.round(

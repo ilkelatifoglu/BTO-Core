@@ -12,7 +12,8 @@ import { Toast } from "primereact/toast"; // Import Toast
 import "../common/CommonComp.css";
 
 const userType = parseInt(localStorage.getItem("userType"), 10);
-const socket = io("http://localhost:3001");
+const backend = `${process.env.REACT_APP_BACKEND_URL}` || "http://localhost:3001";
+const socket = io(backend);
 
 export default function ReadyToursTable() {
   const [tours, setTours] = useState([]);

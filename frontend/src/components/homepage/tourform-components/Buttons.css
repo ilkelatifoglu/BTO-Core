@@ -11,22 +11,23 @@
   /* Styling for both buttons */
   .submit-button,
   .clear-button {
-    padding: 12px 20px;
-    font-size: 16px;
-    font-weight: bold;
-    color: #ffffff;
-    background-color: #555555;
+    background-color: rgb(0, 74, 119);
+    color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: normal;
     cursor: pointer;
-    min-width: 180px;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: none;
   }
   
   /* Hover effects for buttons */
   .submit-button:hover,
   .clear-button:hover {
-    background-color: #333333;
+    background-color: rgb(0, 104, 159);
+    transform: scale(1.02);
   }
   
   /* Focus states for accessibility */
@@ -74,5 +75,6 @@
   
   .link-button:hover {
     color: #333333;
+    transform: scale(1.02);
   }
   

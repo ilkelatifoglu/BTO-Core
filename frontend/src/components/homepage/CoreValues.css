@@ -11,6 +11,18 @@
     display: flex;
     flex-wrap: wrap; /* Ensure responsiveness */
     justify-content: space-between; /* Space between items */
+    cursor: pointer; /* Makes the container appear clickable */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; 
+}
+
+.outer-container:hover {
+    transform: scale(1.02); /* Slightly enlarges on hover */
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2); /* More prominent shadow on hover */
+}
+
+.outer-container:active {
+    transform: scale(0.98); /* Slightly shrinks when clicked */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); /* Subtle shadow during click */
 }
 
 /* Individual Value Boxes */
@@ -48,14 +60,14 @@
     align-items: center;
     justify-content: center;
     border-radius: 50%; /* Ensures a perfect circle */
-    font-size: 1rem; /* Ensures text fits inside the circle */
+    font-size: 1.1rem; /* Ensures text fits inside the circle */
     font-weight: bold;
     line-height: 1; /* Prevent text from stretching the circle */
 }
 
 /* Title */
 .value-title {
-    font-size: 1.3rem; /* Title adjusts independently */
+    font-size: 1.4rem; /* Title adjusts independently */
     font-weight: bold;
     flex: 1; /* Allow title to use remaining space */
     white-space: nowrap; /* Prevent title from wrapping to the next line */
@@ -71,7 +83,7 @@
 
 /* Description */
 .value-description {
-    font-size: clamp(0.85rem, 1.25vw, 0.95rem); /* Reduced font size for responsiveness */
+    font-size: clamp(1rem, 1.25vw, 0.95rem); /* Reduced font size for responsiveness */
     line-height: 1.5;
 }
 

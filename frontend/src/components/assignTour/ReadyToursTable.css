@@ -19,14 +19,45 @@
     padding: 1rem; /* Add padding for expanded row */
   }  
 
-/* Align headers and content to the left */
-.p-datatable thead th,
-.p-datatable tbody td {
-    text-align: left; /* Align headers and cells to the left */
-    vertical-align: middle;
-    padding-left: 1rem; /* Add padding for consistent spacing */
+/* Tablonun tüm satırları için hover efekti */
+.p-datatable-tbody > tr {
+  transition: all 0.3s ease; /* Yumuşak geçiş */
+  text-align: left; 
+  padding-left: 10px; /* Add padding for consistent spacing */
+  font-family: "Arial", sans-serif; 
+  font-size: 15px; 
 }
 
+.p-datatable-tbody > tr:hover {
+  background-color: rgba(200, 200, 200, 0.3); /* Hafif gri arka plan */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); /* Gölge efekti */
+  transform: scale(1.02); /* Hafif büyüme */
+  cursor: pointer; /* İşaretçi değişikliği */
+}
+
+/* Kırmızı satırları hariç tutmak için özel düzenleme */
+.p-datatable-tbody > .cancelled-row:hover {
+  background-color: hsl(355, 72%, 71%) !important; /* Kırmızı satır için özel hover */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); /* Shadow efekti aynı */
+  transform: scale(1.02); /* Hafif büyüme aynı */
+}
+
+/* Yeşil satırları hariç tutmak için özel düzenleme */
+.p-datatable-tbody > .done-row:hover {
+  background-color: hsl(140, 50%, 65%) !important; /* Yeşil satır için özel hover */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); /* Shadow efekti aynı */
+  transform: scale(1.02); /* Hafif büyüme aynı */
+}
+
+
+.input-classroom {
+  width: 130%; /* Input genişliği */
+  margin-left: -15px;
+}
+
+.save-button {
+  width: 20%; /* Save butonu genişliği */
+}
 /* Table container width */
 .assign-tour-table {
     width: 100%; /* Adjust table width */
@@ -67,10 +98,23 @@
 }
 
 
-/* Styling for the action buttons */
-.p-button-rounded.p-button-success {
-    background-color: #28a745;
-    border: none;
+.p-button-success {
+  background-color: rgb(0, 74, 119) !important; /* Buton rengini şirket rengine ayarladık */
+  border: none;
+  color: white;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: none;
+  cursor: pointer;
+
+}
+
+.p-button-success:hover {
+  background-color: rgb(0, 104, 159);
+    transform: scale(1.02);
+}
+
+.p-button-success:active {
+  transform: scale(0.98); 
 }
 
 .p-datatable-tbody > tr > td {
@@ -134,13 +178,13 @@
     transform: rotate(90deg);  /* Rotating the arrow when expanded */
   }
   .guide-link, .candidate-link {
-    color: blue;
+    color: rgb(0, 104, 159);
     text-decoration: underline;
     cursor: pointer;
   }
   
   .guide-link:hover, .candidate-link:hover {
-    color: darkblue;
+    color: rgb(0, 104, 159);
   }
     
 /* Row colors for different statuses */

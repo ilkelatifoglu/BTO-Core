@@ -59,36 +59,71 @@
     margin-top: 20px; /* Add spacing above the button */
     
 }
-
-/* Submit button styling */
+/* Add Work Button Styling */
 .add-work-button {
-    padding: 0.5rem 1rem; /* Add padding */
-    background-color: rgb(0, 74, 119);; /* Green background */
+    padding: 0.5rem 1.5rem; /* Add padding */
+    background-color: rgb(0, 74, 119); /* Default blue background */
     color: white; /* White text */
     border: none; /* Remove border */
     border-radius: 5px; /* Rounded corners */
     cursor: pointer; /* Pointer cursor on hover */
     font-size: 1rem; /* Font size */
-    transition: background-color 0.3s ease; /* Smooth hover effect */
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth hover effect */
 }
 
 .add-work-button:hover {
-    background-color: #45a049; /* Darker green on hover */
-}
-/* Align bottom section to the right */
-.add-work-container {
-    display: flex; /* Flex layout for proper alignment */
-    margin-left: 450px;  /* Push the content to the right */
-    margin-top: 20px; /* Add spacing from the top */
-    padding-right: 20px; /* Add some padding on the right */
+    background-color: rgb(0, 104, 159); /* Darker blue on hover */
+    transform: scale(1.05); /* Slightly enlarge on hover */
 }
 
-/* Optional: Adjust button size and spacing for better visuals */
-.add-work-container button {
-    padding: 0.5rem 1.5rem; /* Adjust padding for the button */
-    font-size: 1rem; /* Adjust font size for better readability */
-    border-radius: 5px; /* Make the button look consistent */
+/* Aligning elements in the container */
+.add-work-container {
+    display: flex; /* Flex layout for proper alignment */
+    margin-left: auto; /* Push the content to the right */
+    margin-top: 20px; /* Add spacing from the top */
+    gap: 1rem; /* Add consistent spacing */
+    justify-content: flex-end;
 }
+
+
+/* Align bottom section to the right */
+
+/* Actions column buttons styling */
+.actions-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.6rem 1rem; /* Equal padding for same size */
+    font-size: 14px;
+    color: white; /* Default white text */
+    border: none;
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth hover effect */
+}
+
+/* Edit Button */
+.actions-button.edit {
+    background-color: rgb(0, 74, 119); /* Default blue color */
+    width: 100px; /* Fixed width for consistent size */
+}
+
+.actions-button.edit:hover {
+    background-color: rgb(0, 104, 159); /* Darker blue on hover */
+    transform: scale(1.05); /* Slightly enlarge */
+}
+
+/* Delete Button */
+.actions-button.delete {
+    background-color: rgb(220, 53, 69); /* Default red color */
+    width: 100px; /* Fixed width for consistent size */
+}
+
+.actions-button.delete:hover {
+    background-color: rgb(200, 35, 51); /* Darker red on hover */
+    transform: scale(1.05); /* Slightly enlarge */
+}
+
 
 /* Responsive design */
 @media screen and (max-width: 768px) {

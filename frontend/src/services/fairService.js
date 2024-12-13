@@ -5,7 +5,11 @@ const token = localStorage.getItem("token") || localStorage.getItem("tempToken")
 export const fetchFairs = async (status = null) => {
     try {
         const params = status ? { status } : {};
-        const response = await axios.get(BASE_URL, { params });
+        const response = await axios.get(BASE_URL, { params }, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
         return response.data;
     } catch (error) {
         console.error("Error fetching fairs:", error);
@@ -15,7 +19,11 @@ export const fetchFairs = async (status = null) => {
 
 export const requestToJoinFair = async (fairId, guideId) => {
     try {
-        await axios.post(`${BASE_URL}/fair-requests`, { fair_id: fairId, guide_id: guideId });
+        await axios.post(`${BASE_URL}/fair-requests`, { fair_id: fairId, guide_id: guideId }, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
     } catch (error) {
         if (error.response?.status === 400) {
             alert(error.response.data.message); // Show "You already applied" message
@@ -29,7 +37,11 @@ export const requestToJoinFair = async (fairId, guideId) => {
 
 export const fetchAvailableGuides = async (fairId) => {
     try {
-        const response = await axios.get(`${BASE_URL}/available-guides`, { params: { fairId } });
+        const response = await axios.get(`${BASE_URL}/available-guides`, { params: { fairId } }, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
         console.log(response.data)
         return response.data;
     } catch (error) {
@@ -40,7 +52,12 @@ export const fetchAvailableGuides = async (fairId) => {
 
 export const assignGuide = async (fairId, column, guideId) => {
     try {
-        await axios.put(`${BASE_URL}/${fairId}/assign`, { column, guideId });
+        await axios.put(`${BASE_URL}/${fairId}/assign`, { column, guideId }, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+            }
+        );
     } catch (error) {
         console.error("Error assigning guide:", error);
         throw error;
@@ -49,7 +66,11 @@ export const assignGuide = async (fairId, column, guideId) => {
 
 export const approveFair = async (fairId) => {
     try {
-        const response = await axios.put(`${BASE_URL}/${fairId}/approve`);
+        const response = await axios.put(`${BASE_URL}/${fairId}/approve`, {headers: 
+            {
+                Authorization: `Bearer ${token}`,
+            },
+        });
         return response.data;
     } catch (error) {
         console.error("Error approving fair:", error);
@@ -59,7 +80,11 @@ export const approveFair = async (fairId) => {
 
 export const cancelFair = async (fairId) => {
     try {
-        const response = await axios.put(`${BASE_URL}/${fairId}/cancel`);
+        const response = await axios.put(`${BASE_URL}/${fairId}/cancel`, {headers: 
+            {
+                Authorization: `Bearer ${token}`,
+            },
+        });
         return response.data;
     } catch (error) {
         console.error("Error cancelling fair:", error);
@@ -69,7 +94,11 @@ export const cancelFair = async (fairId) => {
 
 export const unassignGuide = async (fairId, column) => {
     try {
-        const response = await axios.put(`${BASE_URL}/${fairId}/unassign`, { column });
+        const response = await axios.put(`${BASE_URL}/${fairId}/unassign`, { column }, {headers: 
+            {
+                Authorization: `Bearer ${token}`,
+            },
+        });
         return response.data;
     } catch (error) {
         console.error("Error unassigning guide:", error);

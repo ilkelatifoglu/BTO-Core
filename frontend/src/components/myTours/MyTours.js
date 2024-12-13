@@ -154,12 +154,41 @@ export default function MyTours() {
             <Toast ref={toast} />
             <div className="page-content">
                 <h1>My Tours</h1>
-                <DataTable value={items} paginator rows={10}>
-                    <Column field="date" header="Date" body={dateTemplate}></Column>
-                    <Column field="date" header="Day" body={dayTemplate}></Column>
-                    <Column field="event" header="Event"></Column>
-                    <Column field="time" header="Time" body={timeTemplate}></Column>
-                    <Column body={actionTemplate} header="Actions"></Column>
+                <DataTable
+                    value={items}
+                    paginator
+                    rows={10}
+                    className="my-tours-table"
+                    tableStyle={{ tableLayout: "fixed" }}
+                >
+                    <Column
+                        field="date"
+                        header="Date"
+                        body={dateTemplate}
+                        style={{ width: "20%" }}
+                    ></Column>
+                    <Column
+                        field="day"
+                        header="Day"
+                        body={dayTemplate}
+                        style={{ width: "20%" }}
+                    ></Column>
+                    <Column
+                        field="event"
+                        header="Event"
+                        style={{ width: "40%" }}
+                    ></Column>
+                    <Column
+                        field="time"
+                        header="Time"
+                        body={timeTemplate}
+                        style={{ width: "10%" }}
+                    ></Column>
+                    <Column
+                        body={actionTemplate}
+                        header="Actions"
+                        style={{ width: "10%" }}
+                    ></Column>
                 </DataTable>
             </div>
 
@@ -172,7 +201,10 @@ export default function MyTours() {
                 modal
                 closable={false}
             >
-                <p>Are you sure you want to withdraw from this {pendingItem?.type === "fair" ? "fair" : "tour"}?</p>
+                <p>
+                    Are you sure you want to withdraw from this{" "}
+                    {pendingItem?.type === "fair" ? "fair" : "tour"}?
+                </p>
             </Dialog>
         </div>
     );

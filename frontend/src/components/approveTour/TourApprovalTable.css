@@ -75,7 +75,55 @@
     cursor: pointer; /* Indicate interactivity */
 }
 
+/* Approve Button */
+.approve-button {
+    background-color: #26a544!important; /* Green color for approve */
+    color: white !important; /* White text */
+    border: none !important;
+    border-radius: 6px !important; /* Rounded corners */
+    padding: 8px 16px !important;
+    font-size: 14px !important;
+    font-weight: bold !important; /* Bold text */
+    cursor: pointer !important;
+    width: 90px;
+    transition: background-color 0.3s ease, transform 0.2s ease !important; /* Hover effect */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important; /* Slight shadow */
+}
 
+.approve-button:hover {
+    background-color: rgb(34, 148, 85)!important; /* Slightly darker green on hover */
+    transform: scale(1.05) !important; /* Slight zoom */
+}
+
+/* Reject Button */
+.reject-button {
+    background-color: rgb(220, 53, 69)!important; /* Red color for reject */
+    color: white !important; /* White text */
+    border: none !important;
+    border-radius: 6px !important; /* Rounded corners */
+    padding: 8px 16px !important;
+    font-size: 14px !important;
+    font-weight: bold !important; /* Bold text */
+    cursor: pointer !important;
+    width: 90px;
+    transition: background-color 0.3s ease, transform 0.2s ease !important; /* Hover effect */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important; /* Slight shadow */
+}
+
+.reject-button:hover {
+    background-color: rgb(200, 35, 51) !important; /* Slightly darker red on hover */
+    transform: scale(1.05) !important; /* Slight zoom */
+}
+
+/* Disabled Buttons */
+.approve-button:disabled,
+.reject-button:disabled {
+    background-color: #ddd !important; /* Gray for disabled buttons */
+    color: #666 !important;
+    cursor: not-allowed !important;
+    box-shadow: none !important;
+    transform: none !important;
+}
 
 /* DataTable Styling */
 .p-datatable {

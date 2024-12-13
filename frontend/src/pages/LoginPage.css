@@ -80,6 +80,61 @@
   font-size: 14px;
 }
 
+.login-form {
+  display: flex;
+  flex-direction: column; /* Stack elements vertically */
+  gap: 1.5rem; /* Add spacing between elements */
+}
+
+.login-button,
+.forgot-button {
+  width: 100%; /* Make buttons full width */
+}
+
+.login-button {
+  background-color: #2563eb; /* Same color as home button */
+  color: white;
+  border: none;
+  border-radius: 8px; /* Matching rounded corners */
+  padding: 10px 20px; /* Matching padding */
+  font-size: 16px; /* Slightly larger for readability */
+  font-weight: bold;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.login-button:hover {
+  background-color: #004080; /* Darker blue for hover */
+  transform: scale(1.05);
+}
+
+.login-button:active {
+  transform: scale(0.95); /* Slightly smaller when clicked */
+}
+
+.forgot-button {
+  background-color: #2563eb; /* Same color as home button */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px; /* Matching padding */
+  font-size: 16px; /* Slightly larger font for readability */
+  font-weight: bold;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.forgot-button:hover {
+  background-color: #004080; /* Darker blue for hover */
+  transform: scale(1.05);
+}
+
+.forgot-button:active {
+  transform: scale(0.95); /* Slightly smaller when clicked */
+}
+
+
+
 .go-home-button {
   position: absolute; /* Enable positioning relative to the parent */
   top: 10px; /* Distance from the top of the parent/container */

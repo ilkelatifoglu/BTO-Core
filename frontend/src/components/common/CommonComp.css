@@ -150,7 +150,7 @@
 
 /* Dropdown Active State */
 .dropdown-button.active {
-    border-color: #2563eb; /* Highlighted border color */
+    border-color: rgb(0, 74, 119); /* Highlighted border color */
 }
 
 /* Dropdown Menu */
@@ -180,6 +180,6 @@
 
 /* Hover Effect for Dropdown Items */
 .dropdown-item:hover {
-    background-color: #2563eb; /* Highlight background */
+    background-color:  rgb(0, 104, 159); /* Highlight background */
     color: white; /* White text */
 }

@@ -65,28 +65,31 @@ const AdvisorPage = () => {
             advisorRefs.current[id].scrollIntoView({ behavior: "smooth" });
         }
     };
-
     const renderDayColumn = (day) => {
         return (
-            <div style={{ display: "flex", flexDirection: "column" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                 {groupedAdvisors[day]?.map((advisor) => (
                     <div
                         key={advisor.advisor_id}
-                        className="advisor-button"
+                        className="advisor-name-container"
                         onClick={() => scrollToAdvisor(advisor.advisor_id)}
-                        style={{
-                            margin: "5px 0",
-                            cursor: "pointer",
-                            textDecoration: "underline",
-                            color: "blue",
-                        }}
                     >
-                        {advisor.advisor_name}
+                        <span className="advisor-name">{advisor.advisor_name}</span>
+                        <button
+                            className="hover-button"
+                            onClick={(e) => {
+                                e.stopPropagation(); // Prevent triggering parent click
+                                scrollToAdvisor(advisor.advisor_id);
+                            }}
+                        >
+                            Go to Details
+                        </button>
                     </div>
                 ))}
             </div>
         );
     };
+    
 
     return (
         <div>

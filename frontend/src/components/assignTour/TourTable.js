@@ -363,7 +363,7 @@ export default function ReadyToursTable() {
                   }
                   return null;
                 }}
-                style={{ width: "10%", textAlign: "center" }}
+                style={{ width: "13%", textAlign: "center" }}
               />
             )}
      {(localStorage.getItem("userType") === '3' || localStorage.getItem("userType") === '4' || localStorage.getItem("userType") === '2') && (

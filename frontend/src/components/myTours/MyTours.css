@@ -18,30 +18,60 @@
     text-align: center; /* Center text by default */
 }
 
-/* Adjust table width to ensure it fits within available space */
-.p-datatable {
-    width: 90%; /* Adjust table width */
-    margin: auto; /* Center the table within the content area */
+/* Styling for My Tours Table */
+.my-tours-table {
+    width: 100%; /* Full width */
+    margin: auto; /* Center the table */
+    table-layout: auto; /* Allow flexible column widths */
+    border-collapse: collapse; /* Remove gaps between cells */
 }
 
-/* Center title */
-.my-tours-content h1 {
-    font-family: "Tiempos Text Regular";
-    font-size: 35px; /* Large heading size */
-    margin-bottom: 20px;
-    font-weight: bold; /* Bold for emphasis */
-    text-align: center; /* Center-align heading */
+/* Header styling */
+.my-tours-table .p-datatable-thead > tr > th {
+    text-align: left;
+    padding: 8px 10px;
+    background-color: #f4f4f4; /* Light gray header background */
+    border-bottom: 2px solid #ddd; /* Add a subtle border */
 }
 
-/* Error message styling */
-.error-message {
-    color: red;
-    text-align: center;
-    margin-bottom: 20px;
+/* Row styling */
+.my-tours-table .p-datatable-tbody > tr > td {
+    text-align: left;
+    padding: 8px 10px;
+    border-bottom: 1px solid #eee; /* Add a light row border */
+    overflow: hidden; /* Prevent content overflow */
+    white-space: nowrap; /* Prevent wrapping */
+    text-overflow: ellipsis; /* Add ellipsis for overflowing text */
+}
+
+/* Specific column widths */
+.my-tours-table .p-datatable-thead > tr > th:first-child,
+.my-tours-table .p-datatable-tbody > tr > td:first-child {
+    width: 15%; /* Date column */
+}
+
+.my-tours-table .p-datatable-thead > tr > th:nth-child(2),
+.my-tours-table .p-datatable-tbody > tr > td:nth-child(2) {
+    width: 15%; /* Day column */
+}
+
+.my-tours-table .p-datatable-thead > tr > th:nth-child(3),
+.my-tours-table .p-datatable-tbody > tr > td:nth-child(3) {
+    width: 40%; /* Event column */
+}
+
+.my-tours-table .p-datatable-thead > tr > th:nth-child(4),
+.my-tours-table .p-datatable-tbody > tr > td:nth-child(4) {
+    width: 15%; /* Time column */
+}
+
+.my-tours-table .p-datatable-thead > tr > th:nth-child(5),
+.my-tours-table .p-datatable-tbody > tr > td:nth-child(5) {
+    width: 15%; /* Actions column */
 }
 
 /* Withdraw button styling */
-.withdraw-button {
+.my-tours-table .withdraw-button {
     background-color: rgb(220, 53, 69);
     color: white;
     border: none;
@@ -51,21 +81,7 @@
     font-size: 0.9rem;
 }
 
-.withdraw-button:hover {
+.my-tours-table .withdraw-button:hover {
     background-color: rgb(200, 35, 51);
-    transform: scale(1.02);
-}
-
-.event-button {
-    background: none;
-    border: none;
-    color: rgb(0, 74, 119);
-    text-decoration: underline;
-    cursor: pointer;
-    font-size: 1rem;
-}
-
-.event-button:hover {
-    color: rgb(0, 104, 159);
     transform: scale(1.02);
 }

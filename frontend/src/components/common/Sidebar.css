@@ -260,13 +260,13 @@
 }
 .sidebar__footer .menu__item.active {
   background-color: rgb(0, 74, 119);
-  border-left: 3px solid #ffffff;
+  border-left: 0px solid #ffffff;
   color: white;
 }
 
 .menu__item.active {
   background-color: rgb(0, 74, 119);
-  border-left: 3px solid #ffffff;
+  border-left: 0px solid #ffffff;
   color: white;
 }
 

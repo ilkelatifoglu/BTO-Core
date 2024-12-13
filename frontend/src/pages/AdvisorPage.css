@@ -50,6 +50,60 @@
     flex-direction: column;
     gap: 20px;
 }
+/* Container for advisor names */
+.advisor-name-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid rgb(0, 74, 119);
+    border-radius: 4px;
+    padding: 8px 12px;
+    transition: box-shadow 0.3s ease;
+    background-color: #fff;
+    position: relative; /* To position the hover button */
+
+}
+
+.advisor-name-container:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Plain text styling for advisor names */
+.advisor-name {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    flex: 1;
+    margin-right: 50px; /* Space between name and button */
+    margin-left: -40px;
+}
+
+/* Hidden button that appears on hover */
+.hover-button {
+    position: absolute;
+    right: 10px; /* Position the button on the right */
+    background-color: rgb(0, 74, 119);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    opacity: 0; /* Hide by default */
+    pointer-events: none; /* Prevent clicking when hidden */
+    transition: opacity 0.3s ease, transform 0.2s ease;
+}
+
+/* Show button on hover */
+.advisor-name-container:hover .hover-button {
+    opacity: 1;
+    pointer-events: auto; /* Enable clicking when visible */
+    transform: translateY(0);
+}
+
+/* Button hover effect */
+.hover-button:hover {
+    background-color: rgb(0, 104, 159);
+}
 
 .advisor-card {
     background-color: #fff;

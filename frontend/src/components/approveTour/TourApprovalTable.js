@@ -246,13 +246,13 @@ const TourApprovalTable = () => {
                 <div style={{ display: "flex", gap: "8px", justifyContent: "center" }}>
                     <Button
                         label="Approve"
-                        className="p-button-success"
+                        className="approve-button"
                         onClick={() => handleApprove(rowData)}
                         disabled={rowData.tour_status !== "WAITING"}
                     />
                     <Button
                         label="Reject"
-                        className="p-button-danger"
+                        className="reject-button"
                         onClick={() => handleReject(rowData)}
                         disabled={rowData.tour_status !== "WAITING"}
                     />

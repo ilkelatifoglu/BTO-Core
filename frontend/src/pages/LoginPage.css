@@ -99,6 +99,7 @@
   padding: 10px 20px; /* Matching padding */
   font-size: 16px; /* Slightly larger for readability */
   font-weight: bold;
+  cursor: pointer;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
@@ -120,6 +121,7 @@
   padding: 10px 20px; /* Matching padding */
   font-size: 16px; /* Slightly larger font for readability */
   font-weight: bold;
+  cursor: pointer;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
   transition: background-color 0.3s ease, transform 0.2s ease;
 }

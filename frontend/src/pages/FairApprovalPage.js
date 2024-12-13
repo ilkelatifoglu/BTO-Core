@@ -8,10 +8,13 @@ import { fetchFairs, fetchAvailableGuides, assignGuide, approveFair, cancelFair,
 import DropdownOrText from '../components/fair/DropdownOrText';
 import Sidebar from '../components/common/Sidebar';
 import "./FairApproval.css";
+import FilterBar from "../components/fair/FilterBar"; // Import the FilterBar component
+
 
 export default function FairApprovalPage() {
     const [fairs, setFairs] = useState([]);
     const [guides, setGuides] = useState({});
+    const [filteredFairs, setFilteredFairs] = useState([]); // For filtered data
     const toast = useRef(null); // (3) Toast ref
 
     const [confirmVisible, setConfirmVisible] = useState(false);
@@ -21,7 +24,9 @@ export default function FairApprovalPage() {
     useEffect(() => {
         fetchFairs()
             .then((data) => {
-                setFairs(data);
+                const sortedFairs = data.sort((a, b) => new Date(a.date) - new Date(b.date));
+                setFairs(sortedFairs);
+                setFilteredFairs(sortedFairs); // Initialize filtered data
                 // Show success toast after data loaded
                 toast.current.clear(); // (4) Clear before showing toast
                 toast.current.show({
@@ -80,6 +85,30 @@ export default function FairApprovalPage() {
                 });
             }
         }
+    };
+    
+    const handleFilterChange = (filters) => {
+        let filtered = [...fairs];
+    
+        if (filters.date) {
+            filtered = filtered.filter(
+                (fair) =>
+                    new Date(fair.date).toLocaleDateString() ===
+                    new Date(filters.date).toLocaleDateString()
+            );
+        }
+    
+        if (filters.organization) {
+            filtered = filtered.filter((fair) =>
+                fair.organization_name.toLowerCase().includes(filters.organization.toLowerCase())
+            );
+        }
+    
+        if (filters.status) {
+            filtered = filtered.filter((fair) => fair.status === filters.status);
+        }
+    
+        setFilteredFairs(filtered);
     };
 
     const handleAssignGuide = async (fairId, column, guideId) => {
@@ -289,8 +318,10 @@ export default function FairApprovalPage() {
             <Toast ref={toast} /> {/* (5) Adding Toast component to JSX */}
             <div className="fair-approval-content">
                 <h2>Fair Approval</h2>
+                <FilterBar onFilterChange={handleFilterChange} />
+
                 <DataTable
-                    value={fairs}
+                    value={filteredFairs} // Use filtered data
                     paginator
                     rows={10}
                     responsiveLayout="scroll"

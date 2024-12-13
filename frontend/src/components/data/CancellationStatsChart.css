@@ -6,8 +6,14 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
     text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
-  
+
+  .chart:hover {
+    transform: scale(1.03); /* Slightly enlarge the chart */
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15); /* Enhance shadow on hover */
+  }
+
   .chart-title {
     margin-bottom: 15px;
     font-size: 20px;
@@ -29,6 +35,13 @@
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .pie-chart:hover{
+    transform: scale(1.09); /* Slightly enlarge the chart */
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+
   }
   
   .pie-segment {

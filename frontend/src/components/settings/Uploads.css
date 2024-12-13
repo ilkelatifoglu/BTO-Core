@@ -38,8 +38,37 @@
 }
 
 .upload-button {
-    width: 250px;
+    background-color: rgb(0, 74, 119); /* Consistent primary color */
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 20px; /* Consistent padding */
+    font-size: 1rem; /* Ensure readability */
+    font-weight: normal;
+    cursor: pointer;
+    width: 250px; /* Fixed width for uniformity */
+    text-align: center;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
 }
+
+.upload-button:hover {
+    background-color: rgb(0, 104, 159); /* Lighter hover color */
+    transform: scale(1.02); /* Slight hover effect */
+}
+
+.upload-button:active {
+    transform: scale(0.98); /* Slight shrink on click */
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2); /* Adjust shadow on click */
+}
+
+.upload-button:disabled {
+    background-color: #ccc; /* Disabled state color */
+    color: #666;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
 
 /* Loading Overlay */
 .loading-overlay {

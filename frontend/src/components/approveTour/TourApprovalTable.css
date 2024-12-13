@@ -80,17 +80,15 @@
 /* DataTable Styling */
 .p-datatable {
     border: none;
+    table-layout: auto; /* Allow the table to adjust column widths dynamically */
+    width: 100%; 
 }
 
+.p-datatable .p-datatable-tbody > tr > td,
 .p-datatable .p-datatable-thead > tr > th {
-    background-color: #e9ecef;
-    text-align: center;
-    color: #495057;
-}
-
-.p-datatable .p-datatable-tbody > tr > td {
-    text-align: left;
-    color: #495057;
+    padding: 8px 10px; /* Reduce padding slightly for a more compact layout */
+    font-size: 0.9rem; /* Reduce font size for better fit */
+    text-align: center; /* Ensure consistent alignment */
 }
 
 /* Dialog Styling */
@@ -99,7 +97,7 @@
 }
 
 .p-dialog .p-dialog-header {
-    background-color: #007ad9;
+    background-color: rgb(0, 74, 119);
     color: white;
 }
 

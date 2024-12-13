@@ -42,22 +42,54 @@
 }
 
 .p-button-notes {
-    background-color: #007bff !important;
+    background-color: rgb(0, 74, 119) !important;
     color: white !important;
     border: none !important;
 }
 
-.p-button-approve {
-    background-color: #28a745 !important; 
-    color: white !important; 
-    border: none !important;
+.p-button-notes:hover {
+    background-color: rgb(0, 104, 159) !important;
+    transform: scale(1.02) !important;;
 }
 
-.p-button-reject {
-    background-color: #dc3545 !important; 
-    color: white !important; 
-    border: none !important;
+/* Wrapper for action buttons */
+.action-buttons {
+    display: flex; /* Align buttons side by side */
+    gap: 8px; /* Add space between buttons */
+    justify-content: center; /* Center align buttons */
+    align-items: center; /* Vertical alignment */
 }
+
+/* Approve Button */
+.p-button-approve {
+    background-color: #26a544 !important; /* Green */
+    color: white !important;
+    border: none !important;
+    padding: 6px 10px !important; /* Smaller padding */
+    font-size: 0.9rem !important; /* Smaller font size */
+    border-radius: 5px !important; /* Slightly rounded corners */
+}
+
+.p-button-approve:hover {
+    background-color: rgb(34, 148, 85) !important;
+    transform: scale(1.02) !important;;
+}
+
+/* Reject Button */
+.p-button-reject {
+    background-color:  rgb(220, 53, 69) !important; /* Red */
+    color: white !important;
+    border: none !important;
+    padding: 6px 10px !important; /* Smaller padding */
+    font-size: 0.9rem !important; /* Smaller font size */
+    border-radius: 5px !important; /* Slightly rounded corners */
+}
+
+.p-button-reject:hover {
+    background-color: rgb(200, 35, 51) !important;
+    transform: scale(1.02) !important;;
+}
+
 
 @media (max-width: 768px) {
     .individual-tour-content {

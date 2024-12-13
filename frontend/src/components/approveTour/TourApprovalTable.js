@@ -357,7 +357,7 @@ const TourApprovalTable = () => {
                 value={sortedTours}
                 paginator
                 rows={rows}
-                tableStyle={{ minWidth: '90rem' }}
+                tableStyle={{  width: '100%'}}
                 paginatorTemplate="FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
                 currentPageReportTemplate="{first} to {last} of {totalRecords}"
                 rowClassName={rowClassName}

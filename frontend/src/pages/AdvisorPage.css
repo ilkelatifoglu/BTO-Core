@@ -32,15 +32,17 @@
 
 .advisor-button {
     margin: 5px 0;
-    cursor: pointer;
-    text-decoration: underline;
-    color: blue;
+    cursor: pointer; 
+    color: rgb(0, 74, 119);/* New color for the button (e.g., Bootstrap blue) */
     font-size: 14px;
+    transition: color 0.3s ease, transform 0.2s ease; /* Add smooth color and hover effects */
 }
 
 .advisor-button:hover {
-    color: #0056b3;
+    color: rgb(0, 104, 159);/* Darker blue for hover state */
+    transform: translateX(3px); /* Slight move to the right on hover */
 }
+
 
 .advisor-details-section {
     margin-top: 20px;

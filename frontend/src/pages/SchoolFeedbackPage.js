@@ -10,7 +10,32 @@ const SchoolFeedbackPage = () => {
   const [searchParams] = useSearchParams();
   const [feedback, setFeedback] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isValidToken, setIsValidToken] = useState(false); // Track token validity
+  const [errorMessage, setErrorMessage] = useState(""); // Track error message for invalid token
+
   const toast = React.useRef(null);
+
+  useEffect(() => {
+    const validateToken = async () => {
+      const token = searchParams.get("token");
+      if (!token) {
+        setIsValidToken(false);
+        setErrorMessage("Invalid or missing token.");
+        return;
+      }
+  
+      try {
+        const isValid = await FeedbackService.verifyFeedbackToken(token);
+        setIsValidToken(isValid);
+      } catch (error) {
+        setIsValidToken(false);
+        setErrorMessage("Failed to validate feedback token.");
+      }
+    };
+  
+    validateToken();
+  }, [searchParams]);
+  
 
   const handleSubmit = async () => {
     const token = searchParams.get("token");
@@ -31,7 +56,7 @@ const SchoolFeedbackPage = () => {
         summary: "Success",
         detail: "Thank you for your feedback!",
       });
-      setFeedback(""); // Clear the feedback input
+      setFeedback(""); 
     } catch (error) {
       toast.current.show({
         severity: "error",
@@ -43,6 +68,15 @@ const SchoolFeedbackPage = () => {
       setIsSubmitting(false);
     }
   };
+
+  if (!isValidToken) {
+    return (
+      <div className="feedback-page">
+        <h1>Feedback</h1>
+        <p>{errorMessage || "Unable to validate your feedback link."}</p>
+      </div>
+    );
+  }  
 
   return (
     <div className="feedback-page">

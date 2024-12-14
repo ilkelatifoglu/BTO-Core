@@ -1,13 +1,31 @@
 // feedbackController.js
+const jwt = require("jsonwebtoken"); 
+const JWT_SECRET = process.env.JWT_SECRET; 
 const aws = require("aws-sdk");
 const { query } = require("../config/database");
 const { getFeedbackByRole, deleteFeedback, updateFeedback, createFeedback } = require("../queries/feedbackQueries");
-const { verifyToken } = require("../utils/jwt");
+const jwtUtils = require("../utils/jwt"); 
+
+exports.validateToken = async (req, res) => {
+  const { token } = req.query;
+
+  try {
+    jwt.verify(token, JWT_SECRET); // Use the verify method with your secret
+    res.status(200).json({ success: true });
+  } catch (error) {
+    console.error("Error validating token:", error.message);
+    res.status(401).json({
+      success: false,
+      message: error.name === "TokenExpiredError" ? "Token has expired." : "Invalid token.",
+    });
+  }
+};
+
 
 exports.submitFeedback = async (req, res) => {
   const { token, feedback } = req.body;
   try {
-    const decoded = verifyToken(token); 
+    const decoded = jwtUtils.verifyToken(token);
     const { tourId, type } = decoded;
 
     if (type == "individual_tour") {

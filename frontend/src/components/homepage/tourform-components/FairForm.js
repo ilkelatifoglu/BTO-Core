@@ -54,12 +54,21 @@ const FairForm = ({ onClose }) => {
         handleClear(); 
       } else {
         const errorData = await response.json();
-        toastRef.current.show({
-          severity: 'error',
-          summary: 'Submission Failed',
-          detail: errorData.message || 'An error occurred while submitting the form.',
-          life: 5000,
-        });
+        if (errorData.message === "This fair invitation already exists!") {
+          toastRef.current.show({
+            severity: 'error',
+            summary: 'Error',
+            detail: errorData.message, 
+            life: 5000,
+          });
+        } else {
+          toastRef.current.show({
+            severity: 'error',
+            summary: 'Submission Failed',
+            detail: errorData.message || 'An error occurred while submitting the form.',
+            life: 5000,
+          });
+        }
       }
     } catch (error) {
       console.error('Error:', error);

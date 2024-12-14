@@ -10,6 +10,7 @@ router.post("/createFeedback", feedbackController.createFeedback);
 router.put("/updateFeedback", feedbackController.updateFeedback);
 router.delete("/:feedbackId", feedbackController.deleteFeedback);  
 router.post("/submitFeedback", feedbackController.submitFeedback); 
+router.get("/validateToken", feedbackController.validateToken);
 
 module.exports = router;
 

@@ -35,17 +35,28 @@ exports.getFairs = async (req, res) => {
 exports.createFair = async (req, res) => {
     const { date, organization_name, city, applicant_name, applicant_email, applicant_phone } = req.body;
     try {
+        const existingFair = await db.query(
+            `SELECT * FROM fairs WHERE date = $1 AND organization_name = $2`,
+            [date, organization_name]
+        );
+
+        if (existingFair.rows.length > 0) {
+            return res.status(400).json({ message: 'This fair invitation already exists!' });
+        }
+
         const result = await db.query(
             `INSERT INTO fairs (date, organization_name, city, applicant_name, applicant_email, applicant_phone, status)
              VALUES ($1, $2, $3, $4, $5, $6, 'WAITING') RETURNING *`,
             [date, organization_name, city, applicant_name, applicant_email, applicant_phone]
         );
+
         res.status(201).json(result.rows[0]);
     } catch (error) {
         console.error('Error creating fair:', error);
         res.status(500).send({ message: 'Error creating fair' });
     }
 };
+
 
 exports.createFairRequest = async (req, res) => {
     const { fair_id, guide_id } = req.body;

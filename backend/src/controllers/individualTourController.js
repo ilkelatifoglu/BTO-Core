@@ -6,7 +6,6 @@ const { sendEmail } = require("../utils/email");
 const {
     insertIndividualTour,
 } = require("../queries/individualTourQueries");
-
 exports.addIndividualTour = async (req, res) => {
     const {
         name,
@@ -20,6 +19,19 @@ exports.addIndividualTour = async (req, res) => {
     } = req.body;
 
     try {
+        // Check if a tour with the same email and date already exists
+        const existingTour = await query(
+            `SELECT id FROM individual_tours WHERE contact_email = $1 AND date = $2`,
+            [email, tour_date]
+        );
+
+        if (existingTour.rows.length > 0) {
+            return res.status(400).json({
+                success: false,
+                message: "You already have a tour on this day!",
+            });
+        }
+
         const day = new Date(tour_date).toLocaleString("en-GB", { weekday: "long" });
         const tourId = await insertIndividualTour({
             name,
@@ -46,7 +58,18 @@ exports.addIndividualTour = async (req, res) => {
         });
     } catch (error) {
         console.error("Error adding tour:", error.message || error);
-        res.status(500).json({ success: false, message: "Server error" });
+        
+        if (error.message === "You already have a tour on this day!") {
+            return res.status(400).json({
+                success: false,
+                message: error.message,
+            });
+        }
+
+        res.status(500).json({
+            success: false,
+            message: "An error occurred while adding the tour.",
+        });
     }
 };
 

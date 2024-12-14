@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import './LeftForm.css';
-import Select from 'react-select';
-import PropTypes from 'prop-types';
+import React, { useState, useEffect } from "react";
+import "./LeftForm.css";
+import Select from "react-select";
+import PropTypes from "prop-types";
 
 const LeftForm = ({
   city,
@@ -17,16 +17,87 @@ const LeftForm = ({
 }) => {
   // List of Turkish cities
   const citiesList = [
-    'Adana', 'Adıyaman', 'Afyonkarahisar', 'Ağrı', 'Aksaray', 'Amasya', 'Ankara', 'Antalya',
-    'Ardahan', 'Artvin', 'Aydın', 'Balıkesir', 'Bartın', 'Batman', 'Bayburt', 'Bilecik',
-    'Bingöl', 'Bitlis', 'Bolu', 'Burdur', 'Bursa', 'Çanakkale', 'Çankırı', 'Çorum', 'Denizli',
-    'Diyarbakır', 'Düzce', 'Edirne', 'Elazığ', 'Erzincan', 'Erzurum', 'Eskişehir', 'Gaziantep',
-    'Giresun', 'Gümüşhane', 'Hakkâri', 'Hatay', 'Iğdır', 'Isparta', 'İstanbul', 'İzmir',
-    'Kahramanmaraş', 'Karabük', 'Karaman', 'Kars', 'Kastamonu', 'Kayseri', 'Kilis', 'Kırıkkale',
-    'Kırklareli', 'Kırşehir', 'Kocaeli', 'Konya', 'Kütahya', 'Malatya', 'Manisa', 'Mardin',
-    'Mersin', 'Muğla', 'Muş', 'Nevşehir', 'Niğde', 'Ordu', 'Osmaniye', 'Rize', 'Sakarya',
-    'Samsun', 'Şanlıurfa', 'Siirt', 'Sinop', 'Sivas', 'Şırnak', 'Tekirdağ', 'Tokat', 'Trabzon',
-    'Tunceli', 'Uşak', 'Van', 'Yalova', 'Yozgat', 'Zonguldak',
+    "Adana",
+    "Adıyaman",
+    "Afyonkarahisar",
+    "Ağrı",
+    "Aksaray",
+    "Amasya",
+    "Ankara",
+    "Antalya",
+    "Ardahan",
+    "Artvin",
+    "Aydın",
+    "Balıkesir",
+    "Bartın",
+    "Batman",
+    "Bayburt",
+    "Bilecik",
+    "Bingöl",
+    "Bitlis",
+    "Bolu",
+    "Burdur",
+    "Bursa",
+    "Çanakkale",
+    "Çankırı",
+    "Çorum",
+    "Denizli",
+    "Diyarbakır",
+    "Düzce",
+    "Edirne",
+    "Elazığ",
+    "Erzincan",
+    "Erzurum",
+    "Eskişehir",
+    "Gaziantep",
+    "Giresun",
+    "Gümüşhane",
+    "Hakkâri",
+    "Hatay",
+    "Iğdır",
+    "Isparta",
+    "İstanbul",
+    "İzmir",
+    "Kahramanmaraş",
+    "Karabük",
+    "Karaman",
+    "Kars",
+    "Kastamonu",
+    "Kayseri",
+    "Kilis",
+    "Kırıkkale",
+    "Kırklareli",
+    "Kırşehir",
+    "Kocaeli",
+    "Konya",
+    "Kütahya",
+    "Malatya",
+    "Manisa",
+    "Mardin",
+    "Mersin",
+    "Muğla",
+    "Muş",
+    "Nevşehir",
+    "Niğde",
+    "Ordu",
+    "Osmaniye",
+    "Rize",
+    "Sakarya",
+    "Samsun",
+    "Şanlıurfa",
+    "Siirt",
+    "Sinop",
+    "Sivas",
+    "Şırnak",
+    "Tekirdağ",
+    "Tokat",
+    "Trabzon",
+    "Tunceli",
+    "Uşak",
+    "Van",
+    "Yalova",
+    "Yozgat",
+    "Zonguldak",
   ];
 
   // Convert cities array to options for react-select
@@ -36,7 +107,7 @@ const LeftForm = ({
   }));
 
   // Predefined tour start times
-  const timeOptions = ['09:00', '11:00', '13:30', '16:00'];
+  const timeOptions = ["09:00", "11:00", "13:30", "16:00"];
 
   // State variables for school options, loading state, and error state
   const [schoolOptions, setSchoolOptions] = useState([]);
@@ -46,8 +117,19 @@ const LeftForm = ({
   // Fetch schools from backend when component mounts
   useEffect(() => {
     const fetchSchools = async () => {
+      setLoadingSchools(true);
+      setSchoolFetchError(null);
+
       try {
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/school/getAllSchools`);
+        // Construct URL based on whether a city is selected
+        const url = city?.value
+          ? `${
+              process.env.REACT_APP_BACKEND_URL
+            }/school/getAllSchools?city=${encodeURIComponent(city.value)}`
+          : `${process.env.REACT_APP_BACKEND_URL}/school/getAllSchools`;
+
+        const response = await fetch(url);
+
         if (response.ok) {
           const data = await response.json();
           // Extract school names and convert to options
@@ -56,25 +138,30 @@ const LeftForm = ({
             label: school.school_name,
           }));
           setSchoolOptions(options);
-          setLoadingSchools(false);
         } else {
           const errorData = await response.json();
-          setSchoolFetchError(errorData.message || 'Failed to fetch schools.');
-          setLoadingSchools(false);
+          setSchoolFetchError(errorData.message || "Failed to fetch schools.");
         }
       } catch (error) {
-        console.error('Error fetching schools:', error);
-        setSchoolFetchError('Network error. Please try again later.');
+        console.error("Error fetching schools:", error);
+        setSchoolFetchError("Network error. Please try again later.");
+      } finally {
         setLoadingSchools(false);
       }
     };
 
     fetchSchools();
-  }, []);
+  }, [city]); // Add city as a dependency
+
+  // Add this useEffect after the previous one
+  useEffect(() => {
+    // Reset school selection when city changes
+    setSchoolName({ value: "", label: "" });
+  }, [city, setSchoolName]);
 
   // Handler to add a new time preference slot
   const addTimePreference = () => {
-    setSelectedTimes([...selectedTimes, '']);
+    setSelectedTimes([...selectedTimes, ""]);
   };
 
   // Handler to update a specific time preference
@@ -98,7 +185,7 @@ const LeftForm = ({
     // Allow only digits, and limit to values between 0 and 300
     if (
       /^\d{0,3}$/.test(value) &&
-      (value === '' || (Number(value) >= 0 && Number(value) <= 300))
+      (value === "" || (Number(value) >= 0 && Number(value) <= 300))
     ) {
       setNumberOfStudents(value);
     }
@@ -119,11 +206,13 @@ const LeftForm = ({
           onChange={(selectedOption) => setCity(selectedOption)}
           placeholder="Select City"
           isSearchable
+          isClearable={true}
           required
           filterOption={(candidate, input) => {
-            const candidateLabel = candidate.label.toLocaleLowerCase('tr'); // Convert label to lowercase using Turkish locale
-            const inputValue = input.toLocaleLowerCase('tr'); // Convert input to lowercase using Turkish locale
-            return candidateLabel.includes(inputValue); // Perform case-insensitive search
+            if (!input) return true;
+            const candidateLabel = candidate.label.toLocaleLowerCase("tr");
+            const inputValue = input.toLocaleLowerCase("tr");
+            return candidateLabel.includes(inputValue);
           }}
         />
       </div>
@@ -148,8 +237,8 @@ const LeftForm = ({
             isSearchable
             required
             filterOption={(candidate, input) => {
-              const candidateLabel = candidate.label.toLocaleLowerCase('tr');
-              const inputValue = input.toLocaleLowerCase('tr');
+              const candidateLabel = candidate.label.toLocaleLowerCase("tr");
+              const inputValue = input.toLocaleLowerCase("tr");
               return candidateLabel.includes(inputValue);
             }}
           />
@@ -158,7 +247,9 @@ const LeftForm = ({
 
       {/* Number of Students */}
       <div className="form-group">
-        <label htmlFor="numberOfStudents">Number of Students Joining the Tour</label>
+        <label htmlFor="numberOfStudents">
+          Number of Students Joining the Tour
+        </label>
         <input
           type="text"
           id="numberOfStudents"
@@ -184,7 +275,7 @@ const LeftForm = ({
           min={(() => {
             const today = new Date();
             today.setDate(today.getDate() + 1); // Add one day to today, at least don't apply for today.
-            return today.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+            return today.toISOString().split("T")[0]; // Format as YYYY-MM-DD
           })()} // Immediately calculate and set the value
           required
         />
@@ -205,7 +296,8 @@ const LeftForm = ({
                 Select Time
               </option>
               {timeOptions.map((availableTime) =>
-                !selectedTimes.includes(availableTime) || availableTime === time ? (
+                !selectedTimes.includes(availableTime) ||
+                availableTime === time ? (
                   <option key={availableTime} value={availableTime}>
                     {availableTime}
                   </option>

@@ -2,6 +2,7 @@
 
 const {
   getAllSchools,
+  getSchools,
   getSchoolById,
   insertSchool,
   updateSchool: updateSchoolQuery,
@@ -9,98 +10,98 @@ const {
   getSchoolId,
 } = require("../queries/schoolQueries");
 
-const ss = require('simple-statistics');
-const geolib = require('geolib');
+const ss = require("simple-statistics");
+const geolib = require("geolib");
 
 // Static Weights Configuration
 const WEIGHTS = {
-  lgs: 0.45,      // Weight for LGS Score
-  students: 0.20, // Weight for Students Sent
-  pattern: 0.25,  // Weight for Strength Pattern
-  city: 0.10      // Weight for City Score
+  lgs: 0.45, // Weight for LGS Score
+  students: 0.2, // Weight for Students Sent
+  pattern: 0.25, // Weight for Strength Pattern
+  city: 0.1, // Weight for City Score
 };
 
 const otherCityCoordinates = {
-  "adana": { "latitude": 37.0000, "longitude": 35.3213 },
-  "adıyaman": { "latitude": 37.7648, "longitude": 38.2786 },
-  "afyonkarahisar": { "latitude": 38.7507, "longitude": 30.5567 },
-  "ağrı": { "latitude": 39.7191, "longitude": 43.0503 },
-  "aksaray": { "latitude": 38.3687, "longitude": 34.0360 },
-  "amasya": { "latitude": 40.6499, "longitude": 35.8353 },
-  "antalya": { "latitude": 36.8848, "longitude": 30.7040 },
-  "ardahan": { "latitude": 41.1087, "longitude": 42.7022 },
-  "artvin": { "latitude": 41.1828, "longitude": 41.8183 },
-  "aydın": { "latitude": 37.8560, "longitude": 27.8416 },
-  "balıkesir": { "latitude": 39.6484, "longitude": 27.8826 },
-  "bartın": { "latitude": 41.6358, "longitude": 32.3375 },
-  "batman": { "latitude": 37.8812, "longitude": 41.1351 },
-  "bayburt": { "latitude": 40.2566, "longitude": 40.2220 },
-  "bilecik": { "latitude": 40.0567, "longitude": 30.0665 },
-  "bingöl": { "latitude": 39.0626, "longitude": 40.7696 },
-  "bitlis": { "latitude": 38.3938, "longitude": 42.1232 },
-  "bolu": { "latitude": 40.5760, "longitude": 31.5788 },
-  "burdur": { "latitude": 37.4613, "longitude": 30.0665 },
-  "bursa": { "latitude": 40.2669, "longitude": 29.0634 },
-  "çanakkale": { "latitude": 40.1553, "longitude": 26.4142 },
-  "çankırı": { "latitude": 40.6013, "longitude": 33.6134 },
-  "çorum": { "latitude": 40.5506, "longitude": 34.9556 },
-  "denizli": { "latitude": 37.7765, "longitude": 29.0864 },
-  "diyarbakır": { "latitude": 37.9144, "longitude": 40.2306 },
-  "düzce": { "latitude": 40.8389, "longitude": 31.1639 },
-  "edirne": { "latitude": 41.6818, "longitude": 26.5623 },
-  "elâzığ": { "latitude": 38.6810, "longitude": 39.2264 },
-  "erzincan": { "latitude": 39.7500, "longitude": 39.5000 },
-  "erzurum": { "latitude": 39.9000, "longitude": 41.2700 },
-  "eskişehir": { "latitude": 39.7767, "longitude": 30.5206 },
-  "gaziantep": { "latitude": 37.0662, "longitude": 37.3833 },
-  "giresun": { "latitude": 40.9128, "longitude": 38.3895 },
-  "gümüşhane": { "latitude": 40.4386, "longitude": 39.5086 },
-  "hakkâri": { "latitude": 37.5833, "longitude": 43.7333 },
-  "hatay": { "latitude": 36.4018, "longitude": 36.3498 },
-  "ığdır": { "latitude": 39.8882, "longitude": 44.0048 },
-  "ısparta": { "latitude": 37.7648, "longitude": 30.5566 },
-  "istanbul": { "latitude": 41.0151, "longitude": 28.9795 },
-  "izmir": { "latitude": 38.4237, "longitude": 27.1428 },
-  "kahramanmaraş": { "latitude": 37.5753, "longitude": 36.9228 },
-  "karabük": { "latitude": 41.2049, "longitude": 32.6277 },
-  "karaman": { "latitude": 37.1813, "longitude": 33.2150 },
-  "kars": { "latitude": 40.6167, "longitude": 43.1000 },
-  "kastamonu": { "latitude": 41.3887, "longitude": 33.7827 },
-  "kayseri": { "latitude": 38.7312, "longitude": 35.4787 },
-  "kırıkkale": { "latitude": 39.8453, "longitude": 33.5064 },
-  "kırklareli": { "latitude": 41.7333, "longitude": 27.2167 },
-  "kırşehir": { "latitude": 39.1425, "longitude": 34.1709 },
-  "kilis": { "latitude": 36.7184, "longitude": 37.1212 },
-  "kocaeli": { "latitude": 40.8533, "longitude": 29.8815 },
-  "konya": { "latitude": 37.8667, "longitude": 32.4833 },
-  "kütahya": { "latitude": 39.4167, "longitude": 29.9833 },
-  "malatya": { "latitude": 38.3552, "longitude": 38.3095 },
-  "manisa": { "latitude": 38.6306, "longitude": 27.4222 },
-  "mardin": { "latitude": 37.3212, "longitude": 40.7245 },
-  "mersin": { "latitude": 36.8000, "longitude": 34.6333 },
-  "muğla": { "latitude": 37.2153, "longitude": 28.3636 },
-  "muş": { "latitude": 38.9462, "longitude": 41.7539 },
-  "nevşehir": { "latitude": 38.6939, "longitude": 34.6857 },
-  "niğde": { "latitude": 37.9667, "longitude": 34.6833 },
-  "ordu": { "latitude": 40.9844, "longitude": 37.8762 },
-  "osmaniye": { "latitude": 37.0748, "longitude": 36.2474 },
-  "rize": { "latitude": 41.0201, "longitude": 40.5234 },
-  "sakarya": { "latitude": 40.7647, "longitude": 30.4883 },
-  "samsun": { "latitude": 41.2928, "longitude": 36.3312 },
-  "siirt": { "latitude": 37.9333, "longitude": 41.9500 },
-  "sinop": { "latitude": 42.0261, "longitude": 35.1536 },
-  "sivas": { "latitude": 39.7477, "longitude": 37.0179 },
-  "tekirdağ": { "latitude": 40.9783, "longitude": 27.5119 },
-  "tokat": { "latitude": 40.3167, "longitude": 36.5500 },
-  "trabzon": { "latitude": 41.0015, "longitude": 39.7178 },
-  "tunceli": { "latitude": 39.3074, "longitude": 39.4388 },
-  "şanlıurfa": { "latitude": 37.1591, "longitude": 38.7969 },
-  "şırnak": { "latitude": 37.4187, "longitude": 42.4918 },
-  "uşak": { "latitude": 38.6823, "longitude": 29.4082 },
-  "van": { "latitude": 38.4942, "longitude": 43.3832 },
-  "yalova": { "latitude": 40.6550, "longitude": 29.2769 },
-  "yozgat": { "latitude": 39.8200, "longitude": 34.8147 },
-  "zonguldak": { "latitude": 41.4564, "longitude": 31.7987 }
+  adana: { latitude: 37.0, longitude: 35.3213 },
+  adıyaman: { latitude: 37.7648, longitude: 38.2786 },
+  afyonkarahisar: { latitude: 38.7507, longitude: 30.5567 },
+  ağrı: { latitude: 39.7191, longitude: 43.0503 },
+  aksaray: { latitude: 38.3687, longitude: 34.036 },
+  amasya: { latitude: 40.6499, longitude: 35.8353 },
+  antalya: { latitude: 36.8848, longitude: 30.704 },
+  ardahan: { latitude: 41.1087, longitude: 42.7022 },
+  artvin: { latitude: 41.1828, longitude: 41.8183 },
+  aydın: { latitude: 37.856, longitude: 27.8416 },
+  balıkesir: { latitude: 39.6484, longitude: 27.8826 },
+  bartın: { latitude: 41.6358, longitude: 32.3375 },
+  batman: { latitude: 37.8812, longitude: 41.1351 },
+  bayburt: { latitude: 40.2566, longitude: 40.222 },
+  bilecik: { latitude: 40.0567, longitude: 30.0665 },
+  bingöl: { latitude: 39.0626, longitude: 40.7696 },
+  bitlis: { latitude: 38.3938, longitude: 42.1232 },
+  bolu: { latitude: 40.576, longitude: 31.5788 },
+  burdur: { latitude: 37.4613, longitude: 30.0665 },
+  bursa: { latitude: 40.2669, longitude: 29.0634 },
+  çanakkale: { latitude: 40.1553, longitude: 26.4142 },
+  çankırı: { latitude: 40.6013, longitude: 33.6134 },
+  çorum: { latitude: 40.5506, longitude: 34.9556 },
+  denizli: { latitude: 37.7765, longitude: 29.0864 },
+  diyarbakır: { latitude: 37.9144, longitude: 40.2306 },
+  düzce: { latitude: 40.8389, longitude: 31.1639 },
+  edirne: { latitude: 41.6818, longitude: 26.5623 },
+  elâzığ: { latitude: 38.681, longitude: 39.2264 },
+  erzincan: { latitude: 39.75, longitude: 39.5 },
+  erzurum: { latitude: 39.9, longitude: 41.27 },
+  eskişehir: { latitude: 39.7767, longitude: 30.5206 },
+  gaziantep: { latitude: 37.0662, longitude: 37.3833 },
+  giresun: { latitude: 40.9128, longitude: 38.3895 },
+  gümüşhane: { latitude: 40.4386, longitude: 39.5086 },
+  hakkâri: { latitude: 37.5833, longitude: 43.7333 },
+  hatay: { latitude: 36.4018, longitude: 36.3498 },
+  ığdır: { latitude: 39.8882, longitude: 44.0048 },
+  ısparta: { latitude: 37.7648, longitude: 30.5566 },
+  istanbul: { latitude: 41.0151, longitude: 28.9795 },
+  izmir: { latitude: 38.4237, longitude: 27.1428 },
+  kahramanmaraş: { latitude: 37.5753, longitude: 36.9228 },
+  karabük: { latitude: 41.2049, longitude: 32.6277 },
+  karaman: { latitude: 37.1813, longitude: 33.215 },
+  kars: { latitude: 40.6167, longitude: 43.1 },
+  kastamonu: { latitude: 41.3887, longitude: 33.7827 },
+  kayseri: { latitude: 38.7312, longitude: 35.4787 },
+  kırıkkale: { latitude: 39.8453, longitude: 33.5064 },
+  kırklareli: { latitude: 41.7333, longitude: 27.2167 },
+  kırşehir: { latitude: 39.1425, longitude: 34.1709 },
+  kilis: { latitude: 36.7184, longitude: 37.1212 },
+  kocaeli: { latitude: 40.8533, longitude: 29.8815 },
+  konya: { latitude: 37.8667, longitude: 32.4833 },
+  kütahya: { latitude: 39.4167, longitude: 29.9833 },
+  malatya: { latitude: 38.3552, longitude: 38.3095 },
+  manisa: { latitude: 38.6306, longitude: 27.4222 },
+  mardin: { latitude: 37.3212, longitude: 40.7245 },
+  mersin: { latitude: 36.8, longitude: 34.6333 },
+  muğla: { latitude: 37.2153, longitude: 28.3636 },
+  muş: { latitude: 38.9462, longitude: 41.7539 },
+  nevşehir: { latitude: 38.6939, longitude: 34.6857 },
+  niğde: { latitude: 37.9667, longitude: 34.6833 },
+  ordu: { latitude: 40.9844, longitude: 37.8762 },
+  osmaniye: { latitude: 37.0748, longitude: 36.2474 },
+  rize: { latitude: 41.0201, longitude: 40.5234 },
+  sakarya: { latitude: 40.7647, longitude: 30.4883 },
+  samsun: { latitude: 41.2928, longitude: 36.3312 },
+  siirt: { latitude: 37.9333, longitude: 41.95 },
+  sinop: { latitude: 42.0261, longitude: 35.1536 },
+  sivas: { latitude: 39.7477, longitude: 37.0179 },
+  tekirdağ: { latitude: 40.9783, longitude: 27.5119 },
+  tokat: { latitude: 40.3167, longitude: 36.55 },
+  trabzon: { latitude: 41.0015, longitude: 39.7178 },
+  tunceli: { latitude: 39.3074, longitude: 39.4388 },
+  şanlıurfa: { latitude: 37.1591, longitude: 38.7969 },
+  şırnak: { latitude: 37.4187, longitude: 42.4918 },
+  uşak: { latitude: 38.6823, longitude: 29.4082 },
+  van: { latitude: 38.4942, longitude: 43.3832 },
+  yalova: { latitude: 40.655, longitude: 29.2769 },
+  yozgat: { latitude: 39.82, longitude: 34.8147 },
+  zonguldak: { latitude: 41.4564, longitude: 31.7987 },
 };
 
 const ANKARA_COORDS = { latitude: 39.9334, longitude: 32.8597 };
@@ -109,11 +110,16 @@ const calculateDistanceFromAnkara = (city) => {
   const cityKey = city.trim().toLocaleLowerCase("tr-TR");
   if (!otherCityCoordinates[cityKey]) {
     // Default distance if city not found; you can set a default or fetch dynamically
-    console.warn(`City "${cityKey}" not found in otherCityCoordinates. Assigning default distance of 0 km.`);
+    console.warn(
+      `City "${cityKey}" not found in otherCityCoordinates. Assigning default distance of 0 km.`
+    );
     return 0;
   }
-  const distance = geolib.getDistance(ANKARA_COORDS, otherCityCoordinates[cityKey]);
-  console.log(distance/1000);
+  const distance = geolib.getDistance(
+    ANKARA_COORDS,
+    otherCityCoordinates[cityKey]
+  );
+  console.log(distance / 1000);
   return distance / 1000; // Convert meters to kilometers
 };
 
@@ -146,11 +152,12 @@ const calculateTrendSlope = (s1, s2, s3) => {
 const calculateWeightedStudentsSent = (s1, s2, s3) => {
   const weights = {
     //EQUAL WEIGHTS
-    lastYear: 0.33,   
+    lastYear: 0.33,
     secondYear: 0.33,
-    thirdYear: 0.33,  
+    thirdYear: 0.33,
   };
-  const weightedTotal = (s1 * weights.lastYear) + (s2 * weights.secondYear) + (s3 * weights.thirdYear);
+  const weightedTotal =
+    s1 * weights.lastYear + s2 * weights.secondYear + s3 * weights.thirdYear;
   return weightedTotal;
 };
 
@@ -172,7 +179,11 @@ const credit_assign = async (schoolData) => {
   const lgsComponent = lgsNormalized * weights.lgs;
 
   // 2. Calculate Students Sent Component with Time Decay
-  const weightedStudentsSent = calculateWeightedStudentsSent(student_sent_last1, student_sent_last2, student_sent_last3);
+  const weightedStudentsSent = calculateWeightedStudentsSent(
+    student_sent_last1,
+    student_sent_last2,
+    student_sent_last3
+  );
   let studentScore = 0;
 
   if (weightedStudentsSent >= 0 && weightedStudentsSent < 4) {
@@ -188,7 +199,11 @@ const credit_assign = async (schoolData) => {
   const studentComponent = studentScore * weights.students;
 
   // 3. Calculate Strength Pattern Component
-  const slope = calculateTrendSlope(student_sent_last3, student_sent_last2, student_sent_last1);
+  const slope = calculateTrendSlope(
+    student_sent_last3,
+    student_sent_last2,
+    student_sent_last1
+  );
   let patternScore = 0;
 
   if (slope <= -2) {
@@ -216,7 +231,8 @@ const credit_assign = async (schoolData) => {
   const cityComponent = cityScore * weights.city;
 
   // 5. Total Credit Score
-  let totalCreditScore = lgsComponent + studentComponent + patternComponent + cityComponent;
+  let totalCreditScore =
+    lgsComponent + studentComponent + patternComponent + cityComponent;
 
   // Ensure the score is within 0-100
   totalCreditScore = Math.min(Math.max(totalCreditScore, 0), 100);
@@ -224,8 +240,12 @@ const credit_assign = async (schoolData) => {
   // Optional: Log the components for transparency
   console.log(`Calculating credit score for ${schoolData.school_name}:`);
   console.log(`LGS Component (${weights.lgs.toFixed(2)}): ${lgsComponent}`);
-  console.log(`Students Component (${weights.students.toFixed(2)}): ${studentComponent}`);
-  console.log(`Pattern Component (${weights.pattern.toFixed(2)}): ${patternComponent}`);
+  console.log(
+    `Students Component (${weights.students.toFixed(2)}): ${studentComponent}`
+  );
+  console.log(
+    `Pattern Component (${weights.pattern.toFixed(2)}): ${patternComponent}`
+  );
   console.log(`City Component (${weights.city.toFixed(2)}): ${cityComponent}`);
   console.log(`Total Credit Score: ${totalCreditScore}`);
 
@@ -248,7 +268,11 @@ exports.addSchool = async (req, res) => {
 
   try {
     // Check for duplicate schools based on school name, city, and academic year start
-    const existingId = await getSchoolId(school_name, city, academic_year_start);
+    const existingId = await getSchoolId(
+      school_name,
+      city,
+      academic_year_start
+    );
 
     if (existingId) {
       return res.status(400).json({
@@ -296,10 +320,12 @@ exports.addSchool = async (req, res) => {
   }
 };
 
-// Retrieve all schools
+// Retrieve all schools with optional city filtering
 exports.getAllSchools = async (req, res) => {
+  const { city } = req.query; // Get city from query parameters
+
   try {
-    const schools = await getAllSchools();
+    const schools = await getSchools(city); // Fetch schools based on city
 
     res.status(200).json({
       success: true,
@@ -319,7 +345,9 @@ exports.getSchoolById = async (req, res) => {
     const school = await getSchoolById(id);
 
     if (!school) {
-      return res.status(404).json({ success: false, message: "School not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "School not found" });
     }
 
     res.status(200).json({
@@ -342,7 +370,9 @@ exports.updateSchool = async (req, res) => {
     const existingSchool = await getSchoolById(id);
 
     if (!existingSchool) {
-      return res.status(404).json({ success: false, message: "School not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "School not found" });
     }
 
     // Merge existing data with updateData to ensure all fields are present for credit_assign
@@ -390,7 +420,9 @@ exports.deleteSchool = async (req, res) => {
     const existingSchool = await getSchoolById(id);
 
     if (!existingSchool) {
-      return res.status(404).json({ success: false, message: "School not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "School not found" });
     }
 
     // Delete the school from the database

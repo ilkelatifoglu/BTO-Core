@@ -1,7 +1,7 @@
 // src/routes/schoolRoutes.js
 
 const express = require("express");
-const { body, param, validationResult } = require("express-validator");
+const { body, param, query, validationResult } = require("express-validator");
 const schoolController = require("../controllers/schoolController");
 const authenticateToken = require("../middleware/auth");
 const authorizeRole = require("../middleware/authorizeRole");
@@ -81,8 +81,13 @@ router.post(
   schoolController.addSchool
 );
 
-// Get all schools
-router.get("/getAllSchools", schoolController.getAllSchools);
+// Get all schools with optional city filter
+router.get(
+  "/getAllSchools",
+  [query("city").optional().isString().withMessage("City must be a string")],
+  validate,
+  schoolController.getAllSchools
+);
 
 // Get a school by ID
 router.get(

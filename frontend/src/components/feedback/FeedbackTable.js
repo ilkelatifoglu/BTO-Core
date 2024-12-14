@@ -181,10 +181,12 @@ const FeedbackTable = () => {
       <Dialog
         header="Feedback Details"
         visible={popupVisible}
-        style={{ width: "50vw" }}
+        style={{ width: "60vw", height: "60vh", overflowY: "auto" }} // Enlarged popup with vertical scrolling
         onHide={() => setPopupVisible(false)}
       >
-        <p>{popupContent || "No feedback provided."}</p>
+        <div style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+          {popupContent || "No feedback provided."}
+        </div>
       </Dialog>
 
       {/* Feedback Form */}

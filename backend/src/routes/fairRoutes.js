@@ -11,7 +11,7 @@ const authorizeRole = require('../middleware/authorizeRole'); // Middleware for 
 router.get('/', authenticateToken, getFairs);
 router.post('/createFair', authenticateToken, createFair);
 router.post('/fair-requests', authenticateToken, createFairRequest);
-router.put('/:id/assign', authorizeRole(2,3,4), assignGuide);
+router.put('/:id/assign', authenticateToken, authorizeRole(2,3,4), assignGuide);
 router.get('/available-guides', authenticateToken, getAvailableGuides);
 router.put('/:id/approve', authenticateToken, authorizeRole(4), approveFair);
 router.put('/:id/cancel', authenticateToken, cancelFair);

@@ -143,3 +143,19 @@ exports.updateSchool = async (id, updateData) => {
 exports.deleteSchool = async (id) => {
   await query("DELETE FROM schools WHERE id = $1", [id]);
 };
+
+// Fetch schools with an optional city filter
+exports.getSchools = async (city = null) => {
+  if (city) {
+    const result = await query(
+      "SELECT * FROM schools WHERE LOWER(city) = LOWER($1) ORDER BY school_name ASC",
+      [city]
+    );
+    return result.rows;
+  } else {
+    const result = await query(
+      "SELECT * FROM schools ORDER BY school_name ASC"
+    );
+    return result.rows;
+  }
+};

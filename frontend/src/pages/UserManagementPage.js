@@ -5,6 +5,8 @@ import Sidebar from "../components/common/Sidebar";
 import { MultiSelect } from "primereact/multiselect"; // Import MultiSelect component
 import { Toast } from "primereact/toast"; // Import Toast
 import '../components/common/CommonComp.css';
+import Unauthorized from './Unauthorized'; // Import the Unauthorized component
+import useProtectRoute from '../hooks/useProtectRoute';
 
 const daysOptions = [
     { label: "Monday", value: "Monday" },
@@ -16,6 +18,8 @@ const daysOptions = [
 ];
 
 const UserManagementPage = () => {
+    const isAuthorized = useProtectRoute([4]); // Check authorization
+    const token = localStorage.getItem("token"); // Retrieve the token
     const [action, setAction] = useState("register"); // Default to "register"
     const [advisors, setAdvisors] = useState([]); // List of advisors
     const [formData, setFormData] = useState({
@@ -39,7 +43,7 @@ const UserManagementPage = () => {
     useEffect(() => {
         const fetchAdvisors = async () => {
             try {
-                const response = await axios.get("http://localhost:3001/user-management/advisors");
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/user-management/advisors`);
                 setAdvisors(response.data);
             } catch (error) {
                 console.error("Error fetching advisors:", error);
@@ -76,7 +80,7 @@ const UserManagementPage = () => {
     const handleRegisterSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post("http://localhost:3001/auth/register", formData);
+            const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/auth/register`, formData);
             toast.current.clear();
             toast.current.show({
                 severity: "success",
@@ -113,8 +117,13 @@ const UserManagementPage = () => {
         }
 
         try {
-            const response = await axios.post("http://localhost:3001/user-management/remove", {
+            const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/user-management/remove`, {
                 email: formData.email,
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`, // Attach the token here
+                    'Content-Type': 'application/json',
+                },
             });
             toast.current.clear();
             toast.current.show({
@@ -151,10 +160,15 @@ const UserManagementPage = () => {
         }
 
         try {
-            const response = await axios.post("http://localhost:3001/user-management/changeRole", {
+            const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/user-management/changeRole`, {
                 email: formData.email,
                 new_role: formData.role,
                 days: formData.days,
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`, // Attach the token here
+                    'Content-Type': 'application/json',
+                },
             });
             toast.current.clear();
             toast.current.show({
@@ -175,13 +189,18 @@ const UserManagementPage = () => {
             });
         }
     };
-
+    
     const handleUpdateCrewNoSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post("http://localhost:3001/user-management/updateCrewNo", {
+            const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/user-management/updateCrewNo`, {
                 email: formData.email,
                 crew_no: formData.crew_no,
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`, // Attach the token here
+                    'Content-Type': 'application/json',
+                },
             });
             toast.current.clear();
             toast.current.show({
@@ -202,6 +221,10 @@ const UserManagementPage = () => {
             });
         }
     };
+
+    if (!isAuthorized) {
+        return <Unauthorized />;
+      }
 
     return (
         <div>

@@ -55,7 +55,16 @@ const DropdownOrText = ({ row, column, guideNameField, guides, handleAssignGuide
             onFocus={() => loadGuides(row.id)}
             onChange={(e) => handleAssignGuide(row.id, column, e.value)}
             disabled={disabled} // Disable dropdown if the fair is cancelled
-        />
+            style={{
+                width: "90px", // Reduce the width of the dropdown
+                height: "40px", // Adjust height for compactness
+                fontSize: "12px", // Adjust font size
+                padding: "4px", // Adjust padding for a smaller appearance
+            }}
+            panelStyle={{
+                fontSize: "12px", // Adjust font size for dropdown options
+            }}
+            />
     );
 };
 

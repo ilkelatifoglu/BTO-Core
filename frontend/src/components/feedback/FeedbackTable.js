@@ -199,7 +199,7 @@ const FeedbackTable = () => {
                 customUpload
                 uploadHandler={(e) => handleUpload(rowData.tour_id, e.files[0])}
                 chooseLabel="Upload"
-                className="p-button-success"
+               
               />
               <Button
                 label="Download"

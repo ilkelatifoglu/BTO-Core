@@ -8,8 +8,11 @@ import { fetchFairs, requestToJoinFair, fetchAvailableFairsForUser } from "../se
 import Sidebar from '../components/common/Sidebar';
 import "./FairAssignment.css";
 import '../components/common/CommonComp.css';
+import Unauthorized from './Unauthorized'; // Import the Unauthorized component
+import useProtectRoute from '../hooks/useProtectRoute';
 
 export default function FairAssignmentPage() {
+    const isAuthorized = useProtectRoute([2,3,4]); // Check authorization
     const [fairs, setFairs] = useState([]);
     const toast = useRef(null); // (3) Toast ref
     const [confirmVisible, setConfirmVisible] = useState(false);
@@ -123,6 +126,10 @@ export default function FairAssignmentPage() {
             />
         </div>
     );
+
+    if (!isAuthorized) {
+        return <Unauthorized />;
+      }
 
     return (
         <div className="fair-assignment-page">

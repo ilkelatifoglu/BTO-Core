@@ -144,17 +144,17 @@ const IndividualToursTable = () => {
     const actionBodyTemplate = (rowData) => {
         if (rowData.tour_status === "WAITING") {
             return (
-                <div>
+                <div className="action-buttons">
                     <Button
                         icon="pi pi-check"
-                        className="p-button-success p-button-approve p-button-rounded"
+                        className="p-button-approve"
                         onClick={() => handleApproveTour(rowData.id)}
                         aria-label="Approve Tour"
                     />
                     {(userType === "3" || userType === "4") && (
                         <Button
                             icon="pi pi-times"
-                            className="p-button-danger p-button-reject p-button-rounded"
+                           className="p-button-reject"
                             onClick={() => handleRejectTour(rowData.id)}
                             aria-label="Reject Tour"
                         />

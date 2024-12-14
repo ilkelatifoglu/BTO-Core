@@ -8,8 +8,11 @@ import SchoolStudentChart from "../components/data/SchoolStudent";
 import { fetchTourData } from "../services/DataService";
 import "./DataInsightPage.css";
 import '../components/common/CommonComp.css';
+import Unauthorized from './Unauthorized'; // Import the Unauthorized component
+import useProtectRoute from '../hooks/useProtectRoute';
 
 const DataInsightPage = () => {
+  const isAuthorized = useProtectRoute([4]); // Check authorization
   const [filter, setFilter] = useState("weekly");
   const [periodIndex, setPeriodIndex] = useState(0);
   const [tourData, setTourData] = useState(null);
@@ -68,7 +71,9 @@ const DataInsightPage = () => {
   const handleFilterChange = (type) => {
     setFilter(type.toLowerCase());
   };
-
+  if (!isAuthorized) {
+    return <Unauthorized />;
+  }
   return (
     <div className="page-container">
       <Sidebar />

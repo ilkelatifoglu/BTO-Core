@@ -12,7 +12,8 @@
   }
   
   .filter-input {
-    width: 40%;
+    width: 90%;
+    height: 40px;
   }
   
   .filter-row {

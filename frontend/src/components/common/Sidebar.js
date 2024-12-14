@@ -10,6 +10,9 @@ let cachedProfileImage = null;
 let cachedUserProfile = null;
 let cachedUserId = null;
 
+const token = localStorage.getItem("token") || localStorage.getItem("tempToken");
+const API_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:3001";
+
 const Sidebar = ({ setCurrentPage }) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const navigate = useNavigate();
@@ -55,11 +58,9 @@ const Sidebar = ({ setCurrentPage }) => {
 
     setIsLoadingPicture(true);
     try {
-      const token =
-        localStorage.getItem("token") || localStorage.getItem("tempToken");
       if (!token) throw new Error("Authentication token is missing.");
 
-      const url = `${process.env.REACT_APP_BACKEND_URL}/profile/get-profile-picture/${userId}`;
+      const url = `${API_URL}/profile/get-profile-picture/${userId}`;
       const response = await axios.get(url, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -84,12 +85,10 @@ const Sidebar = ({ setCurrentPage }) => {
     setIsLoadingProfile(true);
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/profile/getProfile`,
+        `${API_URL}/profile/getProfile`,
         {
           headers: {
-            Authorization: `Bearer ${
-              localStorage.getItem("token") || localStorage.getItem("tempToken")
-            }`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -159,9 +158,6 @@ const Sidebar = ({ setCurrentPage }) => {
   return (
     <div style={{ display: "flex" }}>
       <div className={`sidebar ${isExpanded ? "expanded" : "collapsed"}`}>
-      <button className="home-button" onClick={() => handleNavigation("home")}>
-    <i className="pi pi-home"></i> {/* PrimeIcons home icon */}
-  </button>
         <Toast ref={toast} position="top-right" />
         <button
           className="sidebar__toggle"
@@ -195,9 +191,24 @@ const Sidebar = ({ setCurrentPage }) => {
         {/* Divider */}
         {isExpanded && <div className="sidebar__divider"></div>}
 
-        {isExpanded && <p className="sidebar__dashboard">Dashboard</p>}
-
-        <ul className="sidebar__menu">
+        {isExpanded && (
+        <p
+          className={`sidebar__dashboard ${
+            currentPath === "dashboard" ? "active" : ""
+          }`}
+          onClick={() => handleNavigation("dashboard")}
+          style={{
+            cursor: "pointer", // Make it clickable
+            color: currentPath === "dashboard" ? "rgb(0, 74, 119)" : "#000",
+            fontWeight: currentPath === "dashboard" ? "bold" : "normal",
+            textDecoration: currentPath === "dashboard" ? "underline" : "none",
+          }}
+        >
+          Dashboard
+        </p>
+         )}
+         
+          <ul className="sidebar__menu">
           {(userType === 4 ||
             userType === 3 ||
             userType === 2 ||
@@ -353,7 +364,7 @@ const Sidebar = ({ setCurrentPage }) => {
         </ul>
         <div className="sidebar__footer">
           <button
-            className="menu__item"
+           className={`menu__item ${currentPath === "Settings" ? "active" : ""}`}
             onClick={() => handleNavigation("Settings")}
           >
             <i className="pi pi-cog"></i>

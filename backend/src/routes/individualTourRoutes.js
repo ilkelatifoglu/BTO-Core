@@ -1,12 +1,14 @@
 // routes/tourRoutes.js
 const express = require("express");
-const { getAllIndividualTours, approveTour, rejectTour, addIndividualTour, getMyIndividualTours, withdrawFromIndividualTour} = require("../controllers/individualTourController");
+require('dotenv').config();
 const router = express.Router();
-const authenticateToken = require('../middleware/auth'); // Middleware for authentication
+const { getAllIndividualTours, approveTour, rejectTour, addIndividualTour, getMyIndividualTours, withdrawFromIndividualTour} = require("../controllers/individualTourController");
+const authenticateToken = require('../middleware/auth'); 
+const authorizeRole = require('../middleware/authorizeRole');
 
-router.get("/getTours", getAllIndividualTours);
-router.put("/approveTour/:tourId", approveTour);
-router.put("/rejectTour/:tourId", rejectTour);
+router.get("/getTours", authenticateToken, getAllIndividualTours);
+router.put("/approveTour/:tourId", authenticateToken, authorizeRole(3,4), approveTour);
+router.put("/rejectTour/:tourId", authenticateToken, authorizeRole(3,4), rejectTour);
 router.post("/addIndividualTour", addIndividualTour);
 router.get("/getMyIndividualTours", authenticateToken, getMyIndividualTours);
 router.delete("/withdrawFromIndividualTour/:id", authenticateToken, withdrawFromIndividualTour); // Ensure DELETE method

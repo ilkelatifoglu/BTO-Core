@@ -1,8 +1,10 @@
 import axios from "axios";
 
+const API_BASE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:3001";
+const token = localStorage.getItem("token") || localStorage.getItem("tempToken");
+
 axios.interceptors.request.use(
   function (config) {
-    const token = localStorage.getItem("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -17,7 +19,7 @@ const AuthService = {
   login: async (credentials) => {
     try {
       const response = await axios.post(
-        "http://localhost:3001/auth/login",
+        `${API_BASE_URL}/auth/login`,
         credentials
       );
       const { token, user_type, user_id } = response.data;

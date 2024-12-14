@@ -1,6 +1,6 @@
 .help-support-container {
     padding: 20px;
-    font-family: Arial, sans-serif;
+    font-family: 'Lato', sans-serif;
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -41,7 +41,7 @@
 }
 
 .help-support-section p {
-    font-size: 15px;
+    font-size: 17px;
     line-height: 1.5;
     color: #000000;
 }

@@ -3,6 +3,9 @@ import axios from "axios";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 
+const API_BASE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:3001";
+const token = localStorage.getItem("token") || localStorage.getItem("tempToken");
+
 const AdvisorTable = () => {
     const [advisors, setAdvisors] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -11,7 +14,11 @@ const AdvisorTable = () => {
         const fetchAdvisors = async () => {
             setLoading(true);
             try {
-                const response = await axios.get("http://localhost:3001/advisors");
+                const response = await axios.get(`${API_BASE_URL}/advisors`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
                 setAdvisors(response.data);
             } catch (error) {
                 console.error("Error fetching advisors:", error);

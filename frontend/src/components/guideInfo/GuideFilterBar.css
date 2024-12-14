@@ -58,7 +58,8 @@
 
 /* Active State for Dropdown Button */
 .dropdown-button.active {
-    border-color: #007bff;
+    border-color:  rgb(0, 74, 119);
+
 }
 
 /* Dropdown Menu */
@@ -86,6 +87,6 @@
 }
 
 .dropdown-item:hover {
-    background-color: #007bff;
+    background-color: rgb(0, 104, 159);
     color: white;
 }

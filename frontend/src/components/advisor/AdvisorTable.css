@@ -23,7 +23,7 @@
 .advisor-table p {
     margin: 5px 0;
     cursor: pointer;
-    color: #007bff;
+    color: rgb(0, 74, 119);
 }
 
 .advisor-table p:hover {

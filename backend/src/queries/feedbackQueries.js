@@ -76,13 +76,13 @@ exports.getFeedbackByRole = async (userId, userType) => {
         SELECT array_agg(u.first_name || ' ' || u.last_name)
         FROM tour_guide tg
         JOIN users u ON tg.guide_id = u.id
-        WHERE tg.tour_id = 51 AND u.user_type != 1
+        WHERE tg.tour_id = t.id AND u.user_type != 1
       ) AS tagged_guides,
       (
         SELECT array_agg(u.first_name || ' ' || u.last_name)
         FROM tour_guide tg
         JOIN users u ON tg.guide_id = u.id
-        WHERE tg.tour_id = 51 AND u.user_type = 1
+        WHERE tg.tour_id = t.id AND u.user_type = 1
       ) AS tagged_candidates,
       s.school_name AS sender_name 
     FROM tours t

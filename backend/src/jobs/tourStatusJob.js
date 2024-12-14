@@ -242,7 +242,7 @@ function scheduleSetToursReady() {
 }
 
 function scheduleSendFeedbackLinks() {
-  cron.schedule('52 2 * * *', async () => {
+  cron.schedule('0 8 * * *', async () => {
     console.log("Running daily feedback link job at 8:00 AM...");
     await sendFeedbackLinksForCompletedTours();
   }, {

@@ -2,7 +2,6 @@ const jwt = require("jsonwebtoken");
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
-
 exports.generateToken = (userId, user_type, isTemp) => {
   const token = jwt.sign({ userId, user_type, isTemp }, JWT_SECRET, { expiresIn: "1h" });
   return token;
@@ -11,10 +10,23 @@ exports.generateToken = (userId, user_type, isTemp) => {
 exports.verifyToken = (token) => {
   return jwt.verify(token, JWT_SECRET);
 };
-exports.generateCancellationToken = (tourId, tourDate) => {
+
+/**
+ * Generate a unique cancellation token for tours or events
+ * @param {string} tourId - The tour ID
+ * @param {string} tourDate - The date of the tour
+ * @param {string} type - The type of entity (e.g., "tour", "individual_tour", "fair")
+ * @returns {string} - The cancellation JWT token
+ */
+exports.generateCancellationToken = (tourId, tourDate, type) => {
   // Convert the tour date to Unix timestamp (seconds since epoch)
   const expirationTime = Math.floor(new Date(tourDate).getTime() / 1000);
 
-  // Generate the token with the tour ID and expiration
-  return jwt.sign({ tourId }, JWT_SECRET, { expiresIn: expirationTime });
+  return jwt.sign({ tourId, type }, JWT_SECRET, { expiresIn: expirationTime });
+};
+
+exports.generateFeedbackToken = (tourId, tourDate, type) => {
+  const expirationTime = Math.floor(new Date(tourDate).getTime() / 1000) + 7 * 24 * 60 * 60;
+
+  return jwt.sign({ tourId, type }, JWT_SECRET, { expiresIn: expirationTime });
 };

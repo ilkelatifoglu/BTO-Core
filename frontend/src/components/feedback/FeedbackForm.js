@@ -7,7 +7,6 @@ import { MultiSelect } from "primereact/multiselect";
 import { Dropdown } from "primereact/dropdown";
 import { Toast } from "primereact/toast";
 import AssignTourService from "../../services/AssignTourService";
-import UserService from "../../services/UserService";
 import FeedbackService from "../../services/FeedbackService";
 
 const FeedbackForm = () => {
@@ -17,7 +16,8 @@ const FeedbackForm = () => {
   const [users, setUsers] = useState([]);
   const [selectedTour, setSelectedTour] = useState(null);
   const [selectedUsers, setSelectedUsers] = useState([]);
-  const toast = useRef(null); 
+  const [sendToCandidates, setSendToCandidates] = useState(false); // Default set to false
+  const toast = useRef(null);
 
   useEffect(() => {
     const fetchTours = async () => {
@@ -106,6 +106,7 @@ const FeedbackForm = () => {
       tour_id: selectedTour,
       text_feedback: content || null,
       sender_id: parseInt(senderId, 10),
+      send_to_candidates: sendToCandidates,
     };
 
     try {
@@ -141,6 +142,7 @@ const FeedbackForm = () => {
     setSelectedTour(null);
     setSelectedUsers([]);
     setUsers([]);
+    setSendToCandidates(false); // Reset to default false
   };
 
   const renderFooter = () => {
@@ -164,7 +166,7 @@ const FeedbackForm = () => {
 
   return (
     <>
-      <Toast ref={toast} /> {/* Toast in JSX */}
+      <Toast ref={toast} />
       <Button
         icon="pi pi-plus"
         className="p-button-rounded p-button-lg"
@@ -197,7 +199,7 @@ const FeedbackForm = () => {
 
           <div className="field mt-4">
             <label htmlFor="users" className="font-bold">
-              Select Users
+              Who Do You Want to Associate This Feedback with?
             </label>
             <MultiSelect
               id="users"
@@ -209,6 +211,34 @@ const FeedbackForm = () => {
               filter
               disabled={!selectedTour}
             />
+          </div>
+
+          <div className="field mt-4">
+            <label htmlFor="sendToCandidates" className="font-bold">
+              Send Feedback to Candidates?
+            </label>
+            <div className="mt-2">
+              <input
+                type="radio"
+                id="sendToCandidates"
+                name="sendToCandidates"
+                value={true}
+                checked={sendToCandidates}
+                onChange={() => setSendToCandidates(true)}
+              />
+              <label htmlFor="sendToCandidates" className="ml-2">Yes</label>
+
+              <input
+                type="radio"
+                id="doNotSendToCandidates"
+                name="sendToCandidates"
+                value={false}
+                checked={!sendToCandidates}
+                onChange={() => setSendToCandidates(false)}
+                className="ml-4"
+              />
+              <label htmlFor="doNotSendToCandidates" className="ml-2">No</label>
+            </div>
           </div>
 
           <div className="field mt-4">

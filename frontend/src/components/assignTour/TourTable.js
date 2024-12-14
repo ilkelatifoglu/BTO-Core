@@ -181,12 +181,24 @@ export default function ReadyToursTable() {
         user_ids: selectedCandidates,
       });
       toast.current.clear();
-      toast.current.show({
-        severity: "success",
-        summary: "Success",
-        detail: response.message,
-        life: 3000,
-      });
+      if (response.message) {
+        toast.current.show({
+          severity: "success",
+          summary: "Success",
+          detail: response.message,
+          life: 3000,
+        });
+      }
+  
+      // Display warning message (if any)
+      if (response.warning) {
+        toast.current.show({
+          severity: "warn", // Use "warn" severity for yellow warnings
+          summary: "Warning",
+          detail: response.warning,
+          life: 3000,
+        });
+      }
 
       const updatedTours = await AssignTourService.getReadyTours();
       setTours(updatedTours);

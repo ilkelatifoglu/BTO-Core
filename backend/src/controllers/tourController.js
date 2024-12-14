@@ -168,22 +168,23 @@ exports.assignCandidateGuidesToTour = async (req, res) => {
     console.log("Fetched assigned candidates before insert:", assigned_candidates);
 
     const newAssignments = [];
+    const unassignableCandidates = []; 
+
     for (const user_id of user_ids) {
-      if (
-        !(await isUserAssignedToTour(tour_id, user_id)) &&
-        !(await hasSchedulingConflict(user_id, date, time))
-      ) {
+      if (await isUserAssignedToTour(tour_id, user_id)) {
+        unassignableCandidates.push({ user_id, reason: "Already assigned to the tour" });
+      } else if (await hasSchedulingConflict(user_id, date, time)) {
+        unassignableCandidates.push({ user_id, reason: "Has a scheduling conflict" });
+      } else {
         newAssignments.push(user_id);
       }
     }
 
     console.log("Newassignment length: " + newAssignments.length);
 
-    // Validate the total candidate quota
     validateQuota(assigned_candidates, newAssignments.length, guide_count, "candidate");
 
     if (newAssignments.length > 0) {
-      // Prepare values for bulk insertion
       const bulkInsertValues = newAssignments
         .map((user_id) => `(${tour_id}, ${user_id})`)
         .join(", ");
@@ -200,7 +201,6 @@ exports.assignCandidateGuidesToTour = async (req, res) => {
       })
     );
 
-    // Update the list of candidate names (comma-separated)
     const updatedCandidateNames = candidate_names
       ? `${candidate_names}, ${candidateNames.join(", ")}`
       : candidateNames.join(", ");
@@ -213,18 +213,26 @@ exports.assignCandidateGuidesToTour = async (req, res) => {
       assignedCandidates: updatedCount,
     });
 
+    const responseMessage = newAssignments.length > 0
+      ? "Candidate guide(s) successfully assigned to the tour!"
+      : null;
+
+    const warningMessage = unassignableCandidates.length > 0
+      ? "Some candidate(s) could not be assigned due to conflicts."
+      : null;
 
     res.status(200).json({
       success: true,
-      message: "Candidate guide(s) successfully assigned to the tour!",
+      message: responseMessage,
+      warning: warningMessage,
       assignedUsers: newAssignments,
+      unassignableCandidates,
     });
   } catch (error) {
     console.error("Error assigning candidate guides:", error.message || error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
-
 
 exports.countAssignedGuides = async (req, res) => {
   const { tour_id } = req.params;

@@ -34,7 +34,7 @@
   }
 
   .pie-chart:hover{
-    transform: scale(1.09); /* Slightly enlarge the chart */
+    transform: scale(1.05); /* Slightly enlarge the chart */
     box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
 
   }

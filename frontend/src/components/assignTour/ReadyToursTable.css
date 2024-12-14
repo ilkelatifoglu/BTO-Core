@@ -31,7 +31,7 @@
 .p-datatable-tbody > tr:hover {
   background-color: rgba(200, 200, 200, 0.3); /* Hafif gri arka plan */
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); /* Gölge efekti */
-  transform: scale(1.02); /* Hafif büyüme */
+  transform: scale(1.01); /* Hafif büyüme */
   cursor: pointer; /* İşaretçi değişikliği */
 }
 
@@ -39,14 +39,14 @@
 .p-datatable-tbody > .cancelled-row:hover {
   background-color: hsl(355, 72%, 71%) !important; /* Kırmızı satır için özel hover */
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); /* Shadow efekti aynı */
-  transform: scale(1.02); /* Hafif büyüme aynı */
+  transform: scale(1.01); /* Hafif büyüme aynı */
 }
 
 /* Yeşil satırları hariç tutmak için özel düzenleme */
 .p-datatable-tbody > .done-row:hover {
   background-color: hsl(140, 50%, 65%) !important; /* Yeşil satır için özel hover */
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); /* Shadow efekti aynı */
-  transform: scale(1.02); /* Hafif büyüme aynı */
+  transform: scale(1.01); /* Hafif büyüme aynı */
 }
 
 
@@ -201,14 +201,14 @@
   .cancelled-row:hover, .done-row:hover {
     background-color: hsl(355, 72%, 71%) !important; /* Even more vivid red */
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); /* Add a shadow for emphasis */
-    transform: scale(1.02); /* Slightly enlarge the row */
+    transform: scale(1.01); /* Slightly enlarge the row */
     cursor: pointer; /* Indicate interactivity */
 }
 
 .done-row:hover {
     background-color: hsl(140, 50%, 65%) !important; /* Slightly darker green */
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); /* Add a shadow for emphasis */
-    transform: scale(1.02); /* Slightly enlarge the row */
+    transform: scale(1.01); /* Slightly enlarge the row */
     cursor: pointer; /* Indicate interactivity */
 }
   

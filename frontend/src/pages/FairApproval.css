@@ -53,28 +53,57 @@
 }
 
 /* Action buttons */
-.p-button-success {
-    background-color: #4caf50; /* Green for approve */
-    border: none;
+.fair-approve-button {
+    background-color: #26a544 !important; /* Green for approve */
+    border: none !important;
+    color: white !important;
+    border-radius: 6px !important;
+    font-weight: bold !important;
+    padding: 10px 20px !important;
+    width: 110px !important;
+    text-align: center !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+    transition: background-color 0.3s ease, transform 0.2s ease !important;
 }
 
-.p-button-success:hover {
-    background-color: #45a049; /* Darker green on hover */
+.fair-approve-button:hover {
+    background-color: rgb(34, 148, 85) !important; /* Darker green on hover */
+    transform: scale(1.05) !important; /* Hover scale effect */
 }
 
-.p-button-danger {
-    background-color: #f44336; /* Red for cancel */
-    border: none;
+.fair-cancel-button {
+    background-color: rgb(220, 53, 69) !important;
+    border: none !important;
+    color: white !important;
+    border-radius: 6px !important;
+    font-weight: bold !important;
+    padding: 10px 20px !important;
+    width: 100px !important;
+    text-align: center !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+    transition: background-color 0.3s ease, transform 0.2s ease !important;
 }
 
-.p-button-danger:hover {
-    background-color: #d32f2f; /* Darker red on hover */
+.fair-cancel-button:hover {
+    background-color: rgb(200, 35, 51) !important; /* Darker red on hover */
+    transform: scale(1.05) !important; /* Hover scale effect */
+}
+
+/* Disabled buttons */
+.fair-cancel-button:disabled,
+.fair-approve-button:disabled {
+    background-color: #ccc !important;
+    color: #666 !important;
+    cursor: not-allowed !important;
+    box-shadow: none !important;
+    transform: none !important;
 }
 
 /* Dropdown in the table */
 .p-dropdown {
     width: 100%; /* Full width for dropdowns */
 }
+
 
 /* Adjusting for responsive layouts */
 @media screen and (max-width: 768px) {

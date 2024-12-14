@@ -32,7 +32,7 @@ const RealtimeStatus = () => {
     latitude: 39.868201,
     longitude: 32.749127,
   };
-
+  const token = localStorage.getItem("token") || localStorage.getItem("tempToken");
   const [userLocation, setUserLocation] = useState(MOCK_USER_LOCATION);
   const [locations, setLocations] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState(null);
@@ -125,26 +125,42 @@ const RealtimeStatus = () => {
 
   // Add new function to fetch locations
   const fetchLocations = async () => {
-    try {
-      const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}/tour-locations/`
-      );
 
-      if (!response.ok) {
-        const errorData = await response.text();
-        throw new Error(
-          `Failed to fetch locations: ${response.status} ${response.statusText}`
-        );
-      }
-
-      const data = await response.json();
-      setLocations(data);
-      return data;
-    } catch (error) {
-      console.error("Error fetching locations:", error);
-      setError(`Failed to fetch locations: ${error.message}`);
-      throw error;
+    // Optional: Check if the token exists before making the request
+    if (!token) {
+        console.error('No authentication token found. Please log in.');
+        setError('No authentication token found. Please log in.');
+        return;
     }
+
+    try {
+          const response = await fetch(
+              `${process.env.REACT_APP_BACKEND_URL}/tour-locations/`,
+              {
+                  method: 'GET',
+                  headers: {
+                      'Content-Type': 'application/json',
+                      'Authorization': `Bearer ${token}`, // Include the token here
+                  },
+              }
+          );
+
+          if (!response.ok) {
+              // Optionally, parse error details from the response
+              const errorData = await response.json();
+              throw new Error(
+                  `Failed to fetch locations: ${response.status} ${response.statusText} - ${errorData.message || ''}`
+              );
+          }
+
+          const data = await response.json();
+          setLocations(data);
+          return data;
+      } catch (error) {
+          console.error("Error fetching locations:", error);
+          setError(`Failed to fetch locations: ${error.message}`);
+          throw error;
+      }
   };
 
   // Update handleStatusChange function
@@ -164,6 +180,7 @@ const RealtimeStatus = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
           },
           body: JSON.stringify({
             userId: localStorage.getItem("userId"),
@@ -338,6 +355,7 @@ const RealtimeStatus = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
           },
         }
       );
@@ -365,7 +383,7 @@ const RealtimeStatus = () => {
   };
 
   if (!isAuthorized) {
-    return <Unauthorized />;
+    return <Unauthorized/>;
   }
 
   return (

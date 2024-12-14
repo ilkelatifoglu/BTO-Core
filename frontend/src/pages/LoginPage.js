@@ -5,7 +5,7 @@ import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import BilkentLogo from "../assets/BilkentÜniversitesi-logo.png";
 import LibraryPhoto from "../assets/bilkent-university.jpg";
-import HomeIcon from '@mui/icons-material/Home';
+import HomeIcon from "@mui/icons-material/Home";
 
 const LoginPage = () => {
   const { login } = useAuth();
@@ -48,10 +48,10 @@ const LoginPage = () => {
 
   return (
     <div className="container">
-        <div className="left-side">
-       <button className="go-home-button" onClick={handleGoHome}>
-       <HomeIcon />
-      </button>
+      <div className="left-side">
+        <button className="go-home-button" onClick={handleGoHome}>
+          <HomeIcon />
+        </button>
         <img
           src={BilkentLogo}
           alt="Bilkent University Logo"

@@ -120,7 +120,7 @@ const IndividualTourLeftForm = ({
           onChange={(e) => setTourDate(e.target.value)}
           min={(() => {
             const today = new Date();
-            today.setDate(today.getDate() + 15); // Add 15 days to today
+            today.setDate(today.getDate()); 
             return today.toISOString().split('T')[0]; // Format as YYYY-MM-DD
           })()}
           required

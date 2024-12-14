@@ -7,8 +7,19 @@
     text-align: center;
     margin-top: 0px;
     font-family: 'Arial', sans-serif;
+    cursor: pointer; /* Makes the container appear clickable */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; 
   }
   
+  .homepage-footer:hover {
+    transform: scale(1.02); /* Slightly enlarges on hover */
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2); /* More prominent shadow on hover */
+}
+
+.homepage-footer:active {
+    transform: scale(0.98); /* Slightly shrinks when clicked */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); /* Subtle shadow during click */
+  }
   /* Follow Us Section */
   .footer-top {
     margin-bottom: 20px;

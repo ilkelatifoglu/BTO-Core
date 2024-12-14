@@ -3,6 +3,8 @@
 const cron = require('node-cron');
 const dayjs = require('dayjs');
 const { query } = require('../config/database');
+const { generateFeedbackToken } = require('../utils/jwt');
+const emailService = require('../services/EmailService'); 
 require('dotenv').config();
 
 /**
@@ -87,6 +89,68 @@ async function updateTourStatusToDone(tourTime) {
   }
 }
 
+async function sendFeedbackLinksForCompletedTours() {
+  try {
+    const currentDate = dayjs().format("YYYY-MM-DD");
+
+    const selectToursQuery = `
+      SELECT 
+        t.id, t.teacher_email AS school_email, s.school_name, t.date AS tour_date, t.time, 'tour' AS type
+      FROM tours t
+      JOIN schools s ON t.school_id = s.id
+      WHERE t.tour_status = 'DONE' AND t.feedback_sent = false
+    `;
+
+    const selectIndividualToursQuery = `
+      SELECT 
+        id, contact_email AS school_email, contact_name AS school_name, date AS tour_date, time, 'individual_tour' AS type
+      FROM individual_tours
+      WHERE tour_status = 'DONE' AND feedback_sent = false
+    `;
+
+    const [toursResult, individualToursResult] = await Promise.all([
+      query(selectToursQuery),
+      query(selectIndividualToursQuery),
+    ]);
+
+    const allTours = [...toursResult.rows, ...individualToursResult.rows];
+
+    if (allTours.length === 0) {
+      console.log("No tours or individual tours with feedback pending.");
+      return;
+    }
+
+    for (const tour of allTours) {
+      const { id, school_email, school_name, tour_date, time, type } = tour;
+
+      console.log(`Processing feedback for ID: ${id}, Type: ${type}`);
+
+      const updateQuery = `
+        UPDATE ${type === "tour" ? "tours" : "individual_tours"}
+        SET feedback_sent = true
+        WHERE id = $1
+      `;
+      await query(updateQuery, [id]);
+
+      const feedbackToken = generateFeedbackToken(id, tour_date, type);
+
+      const FRONTEND_URL = process.env.FRONTEND_URL;
+      const feedbackLink = `${FRONTEND_URL}/school-feedback?token=${feedbackToken}`;
+
+      await emailService.sendFeedbackRequestEmail(school_email, {
+        name: school_name,
+        tour_date,
+        time,
+        feedback_link: feedbackLink,
+      });
+
+      console.log(`Feedback link sent to ${school_email} for ${type} ID ${id}.`);
+    }
+  } catch (error) {
+    console.error("Error sending feedback links:", error.message || error);
+  }
+}
+
 /**
  * Schedule the job to run daily at 00:05 AM.
  * Cron format: minute, hour, dayOfMonth, month, dayOfWeek
@@ -101,6 +165,17 @@ function scheduleSetToursReady() {
   });
 
   console.log("Tour status scheduler initialized. It will run daily at 00:05 AM.");
+}
+
+function scheduleSendFeedbackLinks() {
+  cron.schedule('52 2 * * *', async () => {
+    console.log("Running daily feedback link job at 8:00 AM...");
+    await sendFeedbackLinksForCompletedTours();
+  }, {
+    timezone: 'Europe/Istanbul',
+  });
+
+  console.log("Feedback link scheduler initialized. It will run daily at 8:00 AM.");
 }
 
 /**
@@ -133,6 +208,8 @@ function scheduleSetToursDone() {
 module.exports = {
   scheduleSetToursReady,
   scheduleSetToursDone,
+  scheduleSendFeedbackLinks,
   checkAndSetToursReady, // Exported for manual invocation if needed
   updateTourStatusToDone, // Exported for manual invocation if needed
+  sendFeedbackLinksForCompletedTours, 
 };

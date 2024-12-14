@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef} from "react";
 import axios from "axios";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
@@ -6,10 +6,15 @@ import "./AdvisorPage.css"; // CSS for the page
 import Sidebar from "../components/common/Sidebar";
 import { Toast } from "primereact/toast";
 import '../components/common/CommonComp.css';
+import Unauthorized from './Unauthorized'; // Import the Unauthorized component
+import useProtectRoute from '../hooks/useProtectRoute';
 
 const daysOptions = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Weekend"];
+const token = localStorage.getItem("token") || localStorage.getItem("tempToken");
+const API_BASE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:3001";
 
 const AdvisorPage = () => {
+    const isAuthorized = useProtectRoute([2,3,4]); // Check authorization
     const [advisors, setAdvisors] = useState([]);
     const [groupedAdvisors, setGroupedAdvisors] = useState(
         daysOptions.reduce((acc, day) => ({ ...acc, [day]: [] }), {}) // Initialize grouped advisors
@@ -20,10 +25,13 @@ const AdvisorPage = () => {
     useEffect(() => {
         const fetchAdvisors = async () => {
             try {
-                const response = await axios.get("http://localhost:3001/advisors");
+                const response = await axios.get(`${API_BASE_URL}/advisors`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
                 const advisorsData = response.data;
 
-                // Group advisors by their assigned days
                 const grouped = daysOptions.reduce((acc, day) => ({ ...acc, [day]: [] }), {});
                 advisorsData.forEach((advisor) => {
                     advisor.days.forEach((day) => {
@@ -65,46 +73,58 @@ const AdvisorPage = () => {
             advisorRefs.current[id].scrollIntoView({ behavior: "smooth" });
         }
     };
-
     const renderDayColumn = (day) => {
         return (
-            <div style={{ display: "flex", flexDirection: "column" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                 {groupedAdvisors[day]?.map((advisor) => (
                     <div
                         key={advisor.advisor_id}
-                        className="advisor-button"
+                        className="advisor-name-container"
                         onClick={() => scrollToAdvisor(advisor.advisor_id)}
-                        style={{
-                            margin: "5px 0",
-                            cursor: "pointer",
-                            textDecoration: "underline",
-                            color: "blue",
-                        }}
                     >
-                        {advisor.advisor_name}
+                        <span className="advisor-name">{advisor.advisor_name}</span>
+                        <button
+                            className="hover-button"
+                            onClick={(e) => {
+                                e.stopPropagation(); // Prevent triggering parent click
+                                scrollToAdvisor(advisor.advisor_id);
+                            }}
+                        >
+                            Go to Details
+                        </button>
                     </div>
                 ))}
             </div>
         );
     };
+    
+
+    if (!isAuthorized) {
+        return <Unauthorized />; 
+      }
 
     return (
-        <div>
+        <div className="advisor-page">
             <Sidebar />
-            {/* Toast component placed here */}
             <Toast ref={toast} />
             <div className="page-container">
             <div className="page-content">
                 <h1>Advisor Schedule</h1>
                 <DataTable
                     value={[{ key: "schedule" }]}
-                    className="p-datatable-striped"
-                    style={{ width: "80%", margin: "auto" }}
+                    className="advisor-datatable"
+                    style={{ width: "100%", margin: "auto" }}
                 >
                     {daysOptions.map((day, index) => (
-                        <Column key={index} field={day} header={day} body={() => renderDayColumn(day)} />
+                        <Column
+                            key={index}
+                            field={day}
+                            header={<div className="advisor-datatable-header">{day}</div>}
+                            body={() => renderDayColumn(day)}
+                        />
                     ))}
                 </DataTable>
+
                 <div className="advisor-details-section">
                     {advisors.map((advisor) => (
                         <div

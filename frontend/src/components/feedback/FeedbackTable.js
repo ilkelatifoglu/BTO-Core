@@ -1,138 +1,111 @@
-// FeedbackTable.jsx
 import React, { useState, useEffect, useRef } from "react";
 import FeedbackService from "../../services/FeedbackService";
+import FeedbackForm from "./FeedbackForm";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
-import { FileUpload } from "primereact/fileupload";
-import { Toast } from "primereact/toast"; // (2) Importing Toast
-import '../common/CommonComp.css';
+import { Toast } from "primereact/toast";
+import "../common/CommonComp.css";
 
 const FeedbackTable = () => {
   const [feedback, setFeedback] = useState([]);
-  const [totalRecords, setTotalRecords] = useState(0);
-  const [currentPage, setCurrentPage] = useState(1);
   const [popupVisible, setPopupVisible] = useState(false);
   const [popupContent, setPopupContent] = useState("");
-  const rowsPerPage = 50;
-  const toast = useRef(null); // (3) Toast ref
+  const [formVisible, setFormVisible] = useState(false);
+  const [editData, setEditData] = useState(null);
+  const toast = useRef(null);
+
+  // Get logged-in user ID
+  const loggedInUserId = parseInt(localStorage.getItem("userId"), 10);
 
   useEffect(() => {
-    fetchFeedback(currentPage);
-  }, [currentPage]);
+    fetchFeedback();
+  }, []);
 
-  const fetchFeedback = async (page) => {
+  const fetchFeedback = async () => {
+    const userId = localStorage.getItem("userId");
+    const userType = localStorage.getItem("userType");
     try {
-      const data = await FeedbackService.getPaginatedFeedback(page, rowsPerPage);
-      const feedbackArray = data.data.rows || [];
-      setFeedback(feedbackArray);
-      setTotalRecords(data.totalRecords || 500);
+      const data = await FeedbackService.getFeedbackByRole(userId, userType);
+      setFeedback(data);
     } catch (error) {
       console.error("Error fetching feedback:", error);
-      toast.current.clear(); // (4) Clear before showing new toast
       toast.current.show({
         severity: "error",
         summary: "Error",
-        detail: `Failed to load feedback: ${error.message}`,
+        detail: "Failed to load feedback.",
         life: 3000,
       });
     }
   };
 
-  const handlePopupOpen = (content) => {
-    setPopupContent(content);
+  const handleViewFeedback = (rowData) => {
+    setPopupContent(rowData.text_feedback);
     setPopupVisible(true);
   };
 
-  const handleUpload = async (tourId, file) => {
-    try {
-      await FeedbackService.uploadFeedback(tourId, file);
-      toast.current.clear();
-      toast.current.show({
-        severity: "success",
-        summary: "Success",
-        detail: "Feedback uploaded successfully.",
-        life: 3000,
-      });
-    } catch (error) {
-      console.error("Error uploading feedback:", error);
-      toast.current.clear();
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: `Failed to upload feedback: ${error.message}`,
-        life: 3000,
-      });
-    } finally {
-      fetchFeedback(currentPage);
-    }
+  const handleEditFeedback = (rowData) => {
+    setEditData(rowData);
+    setFormVisible(true);
   };
 
-  const handleDelete = async (feedbackId) => {
+  const handleDeleteFeedback = async (feedbackId) => {
     try {
       await FeedbackService.deleteFeedback(feedbackId);
-      toast.current.clear();
       toast.current.show({
         severity: "success",
         summary: "Success",
         detail: "Feedback deleted successfully.",
         life: 3000,
       });
+      fetchFeedback();
     } catch (error) {
       console.error("Error deleting feedback:", error);
-      toast.current.clear();
       toast.current.show({
         severity: "error",
         summary: "Error",
-        detail: `Failed to delete feedback: ${error.message}`,
+        detail: "Failed to delete feedback.",
         life: 3000,
       });
-    } finally {
-      fetchFeedback(currentPage);
     }
   };
 
-  const handleDownload = async (feedbackId) => {
+  const handleFormSubmit = async (feedbackData) => {
     try {
-      const response = await FeedbackService.getDownloadLink(feedbackId);
-      if (response.url) {
-        window.open(response.url, "_blank");
-        toast.current.clear();
+      if (feedbackData.feedback_id) {
+        // Update feedback
+        await FeedbackService.updateFeedback(feedbackData);
         toast.current.show({
           severity: "success",
           summary: "Success",
-          detail: "Download link generated successfully.",
-          life: 3000,
+          detail: "Feedback updated successfully.",
         });
       } else {
-        throw new Error("No download URL provided.");
+        // Create feedback
+        await FeedbackService.createFeedback(feedbackData);
+        toast.current.show({
+          severity: "success",
+          summary: "Success",
+          detail: "Feedback created successfully.",
+        });
       }
+      fetchFeedback();
+      setFormVisible(false);
     } catch (error) {
-      console.error("Error generating download link:", error);
-      toast.current.clear();
       toast.current.show({
         severity: "error",
         summary: "Error",
-        detail: `Failed to generate download link: ${error.message}`,
-        life: 3000,
+        detail: "Failed to save feedback.",
       });
-    } finally {
-      fetchFeedback(currentPage);
     }
   };
 
   return (
     <div>
-      <Toast ref={toast} /> {/* (5) Adding Toast to JSX */}
-     
-      <DataTable
-        value={feedback}
-        paginator
-        rows={rowsPerPage}
-        totalRecords={totalRecords}
-        onPage={(e) => setCurrentPage(e.page + 1)}
-      >
+      <Toast ref={toast} />
+
+      <DataTable value={feedback} responsiveLayout="scroll">
         <Column
           field="tour_date"
           header="Date"
@@ -143,82 +116,86 @@ const FeedbackTable = () => {
               .padStart(2, "0")}/${date.getFullYear()}`;
           }}
         />
-        <Column field="school_name" header="School" />
+        <Column field="school_name" header="School/Individual" />
         <Column field="city" header="City" />
+        <Column field="tour_size" header="Tour Size" />
         <Column
-          field="user_names"
-          header="User"
-          body={(rowData) => (
-            <div>
-              {rowData.user_names?.length
-                ? rowData.user_names.map((name, index) => <div key={index}>{name}</div>)
-                : "No Users"}
-            </div>
-          )}
-        />
-        <Column
-          field="user_roles"
-          header="Roles"
-          body={(rowData) => (
-            <div>
-              {rowData.user_roles?.length
-                ? rowData.user_roles.map((role, index) => <div key={index}>{role}</div>)
-                : "No Roles"}
-            </div>
-          )}
-        />
-        <Column field="sender_name" header="Sender" />
-        <Column
-          field="text_feedback"
-          header="Text Feedback"
+          field="tagged_guides"
+          header="Tagged Guides"
           body={(rowData) =>
-            rowData.text_feedback ? (
-              <Button
-                label="View Feedback"
-                className="p-button-info"
-                onClick={() => handlePopupOpen(rowData.text_feedback)}
-              />
-            ) : (
-              <span>No Feedback Provided</span>
-            )
+            Array.isArray(rowData.tagged_guides) && rowData.tagged_guides.length > 0
+              ? rowData.tagged_guides.map((name, index) => <div key={index}>{name}</div>)
+              : "No Guides"
           }
         />
         <Column
-          header="Actions"
+          field="tagged_candidates"
+          header="Tagged Candidates"
+          body={(rowData) =>
+            Array.isArray(rowData.tagged_candidates) && rowData.tagged_candidates.length > 0
+              ? rowData.tagged_candidates.map((candidate, index) => (
+                  <div key={index}>{candidate}</div>
+                ))
+              : "No Candidates"
+          }
+        />
+        <Column field="sender_name" header="Sender" />
+        <Column
+          header="Feedback"
           body={(rowData) => (
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <div style={{ display: "flex", gap: "0.5rem" }}>
               <Button
-                label="Delete"
-                className="p-button-danger"
-                onClick={() => handleDelete(rowData.feedback_id)}
+                icon="pi pi-eye" // Eye icon for view
+                className="p-button-rounded p-button-info"
+                tooltip="View"
+                tooltipOptions={{ position: "top" }}
+                style={{ backgroundColor: "rgb(0, 74, 119)", border: "none", color: "#fff" }}
+                onClick={() => handleViewFeedback(rowData)}
               />
-              <FileUpload
-                mode="basic"
-                name="file"
-                accept="application/pdf"
-                customUpload
-                uploadHandler={(e) => handleUpload(rowData.tour_id, e.files[0])}
-                chooseLabel="Upload"
-                className="p-button-success"
-              />
-              <Button
-                label="Download"
-                className="p-button-primary"
-                onClick={() => handleDownload(rowData.feedback_id)}
-              />
+              {rowData.sender_id === loggedInUserId && (
+                <>
+                  <Button
+                    icon="pi pi-pencil" // Pencil icon for edit
+                    className="p-button-rounded p-button-warning"
+                    tooltip="Edit"
+                    tooltipOptions={{ position: "top" }}
+                    style={{ backgroundColor: "rgb(243, 200, 29)", border: "none", color: "#fff" }}
+                    onClick={() => handleEditFeedback(rowData)}
+                  />
+                  <Button
+                    icon="pi pi-trash" // Trash icon for delete
+                    className="p-button-rounded p-button-danger"
+                    tooltip="Delete"
+                    tooltipOptions={{ position: "top" }}
+                    style={{ backgroundColor: "rgb(233, 10, 10)", border: "none", color: "#fff" }}
+                    onClick={() => handleDeleteFeedback(rowData.feedback_id)}
+                  />
+                </>
+              )}
             </div>
           )}
         />
       </DataTable>
 
+      {/* View Feedback Dialog */}
       <Dialog
         header="Feedback Details"
         visible={popupVisible}
         style={{ width: "50vw" }}
         onHide={() => setPopupVisible(false)}
       >
-        <p>{popupContent}</p>
+        <p>{popupContent || "No feedback provided."}</p>
       </Dialog>
+
+      {/* Feedback Form */}
+      {formVisible && (
+        <FeedbackForm
+          visible={formVisible}
+          onClose={() => setFormVisible(false)}
+          initialData={editData}
+          onSubmit={handleFormSubmit}
+        />
+      )}
     </div>
   );
 };

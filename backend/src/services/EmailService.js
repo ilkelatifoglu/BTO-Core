@@ -32,6 +32,15 @@ class EmailService {
       html: this._getIndividualTourConfirmationTemplate(name, tour_date, time),
     });
   }
+
+  async sendFeedbackRequestEmail(email, { name, tour_date, time, feedback_link }) {
+    return await sendEmail({
+      to: email,
+      subject: "We Value Your Feedback",
+      html: this._getFeedbackRequestTemplate(name, tour_date, time, feedback_link),
+    });
+  }
+
   // Private template methods
   _getRegistrationTemplate(email, password) {
     return `
@@ -69,6 +78,18 @@ class EmailService {
       <p>Thank you for submitting a tour application to <strong>Bilkent University</strong> through our platform.</p>
       <p>We have received your request for a tour on <strong>${new Date(tour_date).toLocaleDateString('tr-TR')}</strong> at <strong>${time}</strong>.</p>
       <p>We sincerely appreciate your interest and will carefully review your application. Rest assured, we will promptly initiate the necessary processes to accommodate your request and provide you with further details as soon as possible.</p>
+      <p>Best regards,<br/><strong>Bilkent Information Office Team</strong></p>
+    `;
+  }
+
+  _getFeedbackRequestTemplate(name, tour_date, time, feedback_link) {
+    return `
+      <p>Dear ${name},</p>
+      <p>We hope you enjoyed your tour with us on <strong>${new Date(tour_date).toLocaleDateString('tr-TR')}</strong> at <strong>${time}</strong>.</p>
+      <p>We would greatly appreciate it if you could take a moment to provide us with your valuable feedback. Your feedback helps us improve and deliver the best experience possible.</p>
+      <p>Click the link below to submit your feedback:</p>
+      <a href="${feedback_link}">Submit Your Feedback</a>
+      <p>The link will expire 1 week after your tour date.</p>
       <p>Best regards,<br/><strong>Bilkent Information Office Team</strong></p>
     `;
   }

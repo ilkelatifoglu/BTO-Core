@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+const API_BASE_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3001';
+
 /**
  * Fetch user profile data.
  *
@@ -8,8 +10,8 @@ import axios from 'axios';
  */
 export const fetchProfileData = async (token) => {
     try {
-        const response = await axios.get('http://localhost:3001/profile/getProfile', {
-            headers: { Authorization: `Bearer ${token}` },
+        const response = await axios.get(`${API_BASE_URL}/profile/getProfile`, {
+            headers: { 'Authorization': `Bearer ${token}` },
         });
         return response.data;
     } catch (error) {
@@ -27,11 +29,10 @@ export const fetchProfileData = async (token) => {
  */
 export const updateProfileData = async (token, updatedData) => {
     try {
-        await axios.put(
-            'http://localhost:3001/profile/updateProfile',
+        await axios.put(`${API_BASE_URL}/profile/updateProfile`,
             updatedData,
             {
-                headers: { Authorization: `Bearer ${token}` },
+                headers: { 'Authorization': `Bearer ${token}` },
             }
         );
     } catch (error) {
@@ -52,9 +53,9 @@ export const uploadProfilePhoto = async (token, photo) => {
         const formData = new FormData();
         formData.append('photo', photo);
 
-        const response = await axios.post('http://localhost:3001/profile/upload-photo', formData, {
+        const response = await axios.post(`${API_BASE_URL}/profile/upload-photo`, formData, {
             headers: {
-                Authorization: `Bearer ${token}`,
+                'Authorization': `Bearer ${token}`,
                 'Content-Type': 'multipart/form-data',
             },
         });

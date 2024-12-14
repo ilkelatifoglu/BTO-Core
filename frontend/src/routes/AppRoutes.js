@@ -22,6 +22,8 @@ import FairApprovalPage from "../pages/FairApprovalPage";
 import FairAssignmentPage from "../pages/FairAssignmentPage";
 import IndividualTourPage from "../pages/IndividualTourPage";
 import CancellationPage from "../pages/CancellationPage";
+import SchoolFeedbackPage from "../pages/SchoolFeedbackPage";
+
 
 const AppRoutes = () => {
   return (
@@ -44,6 +46,7 @@ const AppRoutes = () => {
       <Route path="/data-insight" element={<DataInsightPage />} />
       <Route path="/approve-tour" element={<TourApprovalPage />} />
       <Route path="/feedback" element={<FeedbackPage />} />
+      <Route path="/school-feedback" element={<SchoolFeedbackPage />} />
       <Route path="/realtime-status" element={<RealtimeStatus />} />
       <Route path="/my-tours" element={<MyTours />} />
       <Route path="/approve-fair" element={<FairApprovalPage />} />

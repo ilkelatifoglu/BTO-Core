@@ -72,6 +72,11 @@ const FairLeftForm = ({ organizationName, setOrganizationName, city, setCity, da
           className="form-control"
           value={date}
           onChange={(e) => setDate(e.target.value)}
+          min={(() => {
+            const today = new Date();
+            today.setDate(today.getDate()); 
+            return today.toISOString().split('T')[0]; 
+          })()}
           required
         />
       </div>

@@ -7,11 +7,14 @@ import ChangePassword from '../components/settings/ChangePassword';
 import About from '../components/settings/About';
 import HelpSupport from '../components/settings/HelpSupport';
 import Uploads from '../components/settings/Uploads'; // Import the Uploads component
+import useProtectRoute from "../hooks/useProtectRoute";
+import Unauthorized from "./Unauthorized";
 
 import { AuthContext } from '../context/AuthContext';
 import './SettingsPage.css';
 
 const SettingsPage = () => {
+    const isAuthorized = useProtectRoute([1,2,3,4]); // Check authorization
     const [activeTab, setActiveTab] = useState('account'); // Default to account view
     const { user } = useContext(AuthContext);
 
@@ -43,6 +46,9 @@ const SettingsPage = () => {
         );
     };
 
+    if (!isAuthorized) {
+        return <Unauthorized />;
+    }
     return (
         <div style={{ display: 'flex', height: '100vh' }}>
             <Sidebar setCurrentPage={() => {}} />

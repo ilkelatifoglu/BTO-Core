@@ -38,8 +38,9 @@ const departments = [
     { label: "Urban Design", value: "Urban Design" },
 ];
 
+const token = localStorage.getItem('token') || localStorage.getItem('tempToken');
+
 const ProfileSettings = () => {
-    const token = localStorage.getItem('tempToken');
     const toast = useRef(null);
 
     const [userData, setUserData] = useState({

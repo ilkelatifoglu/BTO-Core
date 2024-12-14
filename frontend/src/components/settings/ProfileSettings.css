@@ -6,6 +6,7 @@
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Apply shadow to the container */
     margin: 0; /* Remove margins */
+    font-family: 'Lato', sans-serif;
 }
 
 /* Header */
@@ -59,37 +60,29 @@
     gap: 10px;
     margin-top: 20px;
 }
-
-.save-button,
-.cancel-button {
-    padding: 10px 20px;
-    font-size: 1rem;
-    border-radius: 5px;
-    cursor: pointer;
+.profile-settings-container .save-button,
+.profile-settings-container .cancel-button {
+    background-color: rgb(0, 74, 119) !important; /* Override with higher specificity */
+    color: white !important;
     border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: normal;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: none;
+    width: 200px;
 }
 
-.save-button {
-    background-color: #007bff;
-    color: #fff;
+.profile-settings-container .save-button:hover,
+.profile-settings-container .cancel-button:hover {
+    background-color: rgb(0, 104, 159) !important;
+    transform: scale(1.02);
 }
 
-.save-button:hover {
-    background-color: #0056b3;
-}
-
-.cancel-button {
-    background-color: #6c757d;
-    color: #fff;
-}
-
-.cancel-button:hover {
-    background-color: #5a6268;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .profile-settings-container {
-        padding: 15px;
-    }
+.profile-settings-container .save-button:active,
+.profile-settings-container .cancel-button:active {
+    transform: scale(0.98);
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
 }

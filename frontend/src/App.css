@@ -1,8 +1,7 @@
 /* index.css or App.css */
 body {
-    font-family: "Tiempos Text Regular"; /* Replace with your desired font */
+    font-family: 'Lato', sans-serif;/* Replace with your desired font */
     color: #333; /* Default text color */
-
   }
   
   * {

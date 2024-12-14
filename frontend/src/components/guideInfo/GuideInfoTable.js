@@ -101,7 +101,7 @@ const GuideInfoTable = ({ guides, loading }) => {
                 rows={5}
                 loading={loading}
                 responsiveLayout="scroll"
-                className="p-datatable-striped"
+                className="guide-info-datatable guide-info-striped"
                 tableStyle={{ width: "100%" }}
             >
                 <Column

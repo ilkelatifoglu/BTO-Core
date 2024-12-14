@@ -7,7 +7,9 @@
     margin-bottom: 20px;
     text-align: left;
     overflow: hidden; 
+    text-align: left;
   }
+
   /* chart.css */
   .navigation-buttons {
     display: flex;

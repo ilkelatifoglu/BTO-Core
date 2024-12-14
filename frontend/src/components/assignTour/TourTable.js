@@ -10,9 +10,9 @@ import io from "socket.io-client";
 import FilterBar from "./FilterBar"; // Import the FilterBar component
 import { Toast } from "primereact/toast"; // Import Toast
 import "../common/CommonComp.css";
-
 const userType = parseInt(localStorage.getItem("userType"), 10);
-const socket = io("http://localhost:3001");
+const backend = `${process.env.REACT_APP_BACKEND_URL}` || "http://localhost:3001";
+const socket = io(backend);
 
 export default function ReadyToursTable() {
   const [tours, setTours] = useState([]);
@@ -27,8 +27,21 @@ export default function ReadyToursTable() {
     const fetchTours = async () => {
       try {
         const data = await AssignTourService.getReadyTours();
-        setTours(data);
-        setFilteredTours(data); 
+        if (localStorage.getItem("userType") === '1') {
+          // Filter tours with available candidate capacity
+          const availableTours = data.filter(
+            (tour) =>
+              tour.assigned_candidates < tour.guide_count &&
+              tour.tour_status === "READY"
+          );
+          setTours(availableTours);
+          setFilteredTours(availableTours); // Set initial filtered data
+        } else {
+          // For other user types, show all tours
+          setTours(data);
+          setFilteredTours(data);
+        }
+  
       } catch (error) {
         console.error("Error fetching tours:", error);
         toast.current.clear();
@@ -330,21 +343,22 @@ export default function ReadyToursTable() {
           expandedRows={expandedRows}
           onRowToggle={(e) => setExpandedRows(e.data)}
           rowExpansionTemplate={rowExpansionTemplate}
+          headerStyle={{ textAlign: "left" }}
         >
           <Column
             field="date"
             header="Date"
             body={(rowData) => formatDate(rowData.date)}
-            style={{ width: "10%" }}
+            style={{ width: "10%", textAlign: "left" }}
           ></Column>
 
-          <Column field="day" header="Day" style={{ width: "10%" }}></Column>
+          <Column field="day" header="Day" style={{ width: "10%", textAlign: "left" }}></Column>
 
           <Column
             field="time"
             header="Time"
             body={(rowData) => formatTime(rowData.time)}
-            style={{ width: "10%" }}
+            style={{ width: "10%", textAlign: "left" }}
           ></Column>
           {localStorage.getItem("userType") === "1" && (
               <Column
@@ -362,25 +376,25 @@ export default function ReadyToursTable() {
                   }
                   return null;
                 }}
-                style={{ width: "15%" }}
+                style={{ width: "13%", textAlign: "center" }}
               />
             )}
      {(localStorage.getItem("userType") === '3' || localStorage.getItem("userType") === '4' || localStorage.getItem("userType") === '2') && (
-  <Column field="school_name" header="School" style={{ width: "20%" }}></Column>
+  <Column field="school_name" header="School" style={{ width: "10%", Align: "left"  }}></Column>
     )}  
 
    {(localStorage.getItem("userType") === '3' || localStorage.getItem("userType") === '4' || localStorage.getItem("userType") === '2') && (
-  <Column field="city" header="City" style={{ width: "10%" }}></Column>
+  <Column field="city" header="City" style={{ width: "10%", textAlign: "left"  }}></Column>
    )}
     {(localStorage.getItem("userType") === '3' || localStorage.getItem("userType") === '4' || localStorage.getItem("userType") === '2') && (
 
-  <Column field="tour_size" header="Tour Size" style={{ width: "10%" }}></Column> )}
+  <Column field="tour_size" header="Tour Size" style={{ width: "10%", textAlign: "left"  }}></Column> )}
   
 
   <Column
     field="classroom"
     header="Classroom"
-    style={{ width: "10%" }}
+    style={{ width: "10%", textAlign: "left" }}
     body={(rowData) => {
       if (
         rowData.classroom === null &&
@@ -395,6 +409,7 @@ export default function ReadyToursTable() {
           <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "10px" }}>
             <input
               type="text"
+              className="input-classroom"
               value={classroomInputs[rowData.id] || ""} // Get value for the specific row
               onChange={(e) => handleInputChange(rowData.id, e.target.value)} // Update the value for the specific row
               placeholder="Enter Classroom"

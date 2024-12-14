@@ -2,14 +2,23 @@ import React, { useState, useEffect, useRef } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import AssignTourService from "../../services/AssignTourService";
+import {
+    getMyIndividualTours,
+    withdrawFromIndividualTour,
+    approveTour,
+    rejectTour,
+} from "../../services/IndividualTourService"; // Destructured imports
 import { fetchFairs, unassignGuide } from "../../services/fairService";
 import { Toast } from "primereact/toast";
 import { Dialog } from "primereact/dialog"; // Import Dialog from PrimeReact
 import "./MyTours.css";
 import Sidebar from '../../components/common/Sidebar';
 import '../common/CommonComp.css';
+import Unauthorized from '../../pages/Unauthorized'; // Import the Unauthorized component
+import useProtectRoute from '../../hooks/useProtectRoute';
 
 export default function MyTours() {
+    const isAuthorized = useProtectRoute([1,2,3,4]); // Check authorization
     const [items, setItems] = useState([]);
     const [confirmVisible, setConfirmVisible] = useState(false); // Manage dialog visibility
     const [pendingItem, setPendingItem] = useState(null); // Item to withdraw from
@@ -20,6 +29,7 @@ export default function MyTours() {
             try {
                 const tours = await AssignTourService.getMyTours();
                 const fairs = await fetchFairs();
+                const individualTours = await getMyIndividualTours();
 
                 const combinedData = [
                     ...tours.map((tour) => ({
@@ -36,6 +46,11 @@ export default function MyTours() {
                             ...fair,
                             type: "fair",
                             event: fair.organization_name,
+                        })),
+                        ...individualTours.map((indTour) => ({
+                            ...indTour,
+                            type: "individual",
+                            event: indTour.name,
                         })),
                 ];
 
@@ -85,51 +100,52 @@ export default function MyTours() {
     const confirmWithdraw = async () => {
         if (!pendingItem) return;
         const item = pendingItem;
-        const isFair = item.type === "fair";
-
+        const isIndividual = item.type === "individual";
+    
         hideConfirmDialog();
         toast.current.clear();
         try {
-            if (isFair) {
-                const userId = parseInt(localStorage.getItem("userId"), 10);
-                const column =
-                    item.guide_1_id === userId
-                        ? "guide_1_id"
-                        : item.guide_2_id === userId
-                        ? "guide_2_id"
-                        : "guide_3_id";
-
-                await unassignGuide(item.id, column);
+            if (isIndividual) {
+                // Handle individual tour withdrawal
+                await withdrawFromIndividualTour(item.id, localStorage.getItem("userId"));
             } else {
+                // Handle general tour withdrawal
                 await AssignTourService.withdrawFromTour(item.id);
             }
-
+    
+            // Update the UI
             setItems((prevItems) => prevItems.filter((i) => i.id !== item.id));
-
+    
             toast.current.show({
                 severity: "success",
                 summary: "Success",
-                detail: `${isFair ? "Fair" : "Tour"} withdrawn successfully.`,
+                detail: `${isIndividual ? "Individual Tour" : "Tour"} withdrawn successfully.`,
                 life: 3000,
             });
         } catch (error) {
             toast.current.show({
                 severity: "error",
                 summary: "Error",
-                detail: error.message || `Failed to withdraw from ${isFair ? "fair" : "tour"}`,
+                detail: error.message || `Failed to withdraw from ${isIndividual ? "individual tour" : "tour"}.`,
                 life: 3000,
             });
         }
     };
+    
 
-    const actionTemplate = (rowData) => (
-        <button
-            className="withdraw-button"
-            onClick={() => showConfirmDialog(rowData)}
-        >
-            Withdraw
-        </button>
-    );
+    const actionTemplate = (rowData) => {
+        if (rowData.type === "tour" || rowData.type === "individual") {
+            return (
+                <button
+                    className="withdraw-button"
+                    onClick={() => showConfirmDialog(rowData)}
+                >
+                    Withdraw
+                </button>
+            );
+        }
+        return null; // Do not render anything for fairs
+    };
 
     const confirmDialogFooter = (
         <div>
@@ -147,19 +163,50 @@ export default function MyTours() {
             </button>
         </div>
     );
-
+    if (!isAuthorized) {
+        return <Unauthorized />;
+      }
     return (
         <div className="page-container">
             <Sidebar />
             <Toast ref={toast} />
             <div className="page-content">
                 <h1>My Tours</h1>
-                <DataTable value={items} paginator rows={10}>
-                    <Column field="date" header="Date" body={dateTemplate}></Column>
-                    <Column field="date" header="Day" body={dayTemplate}></Column>
-                    <Column field="event" header="Event"></Column>
-                    <Column field="time" header="Time" body={timeTemplate}></Column>
-                    <Column body={actionTemplate} header="Actions"></Column>
+                <DataTable
+                    value={items}
+                    paginator
+                    rows={10}
+                    className="my-tours-table"
+                    tableStyle={{ tableLayout: "fixed" }}
+                >
+                    <Column
+                        field="date"
+                        header="Date"
+                        body={dateTemplate}
+                        style={{ width: "20%" }}
+                    ></Column>
+                    <Column
+                        field="day"
+                        header="Day"
+                        body={dayTemplate}
+                        style={{ width: "20%" }}
+                    ></Column>
+                    <Column
+                        field="event"
+                        header="Event"
+                        style={{ width: "40%" }}
+                    ></Column>
+                    <Column
+                        field="time"
+                        header="Time"
+                        body={timeTemplate}
+                        style={{ width: "10%" }}
+                    ></Column>
+                    <Column
+                        body={actionTemplate}
+                        header="Actions"
+                        style={{ width: "10%" }}
+                    ></Column>
                 </DataTable>
             </div>
 
@@ -172,7 +219,10 @@ export default function MyTours() {
                 modal
                 closable={false}
             >
-                <p>Are you sure you want to withdraw from this {pendingItem?.type === "fair" ? "fair" : "tour"}?</p>
+                <p>
+                    Are you sure you want to withdraw from this{" "}
+                    {pendingItem?.type === "fair" ? "fair" : "tour"}?
+                </p>
             </Dialog>
         </div>
     );

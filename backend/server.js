@@ -25,9 +25,11 @@ const initializeSchedulers = require('./src/jobs/scheduler');
 
 const app = express();
 const server = http.createServer(app);
+const FRONTEND_URL = process.env.FRONTEND_URL;
+
 const io = socketIo(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: FRONTEND_URL || "http://localhost:3000",
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   },

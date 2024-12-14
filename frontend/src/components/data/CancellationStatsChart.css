@@ -5,9 +5,9 @@
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
-    text-align: center;
+    text-align: left;
   }
-  
+
   .chart-title {
     margin-bottom: 15px;
     font-size: 20px;
@@ -29,6 +29,14 @@
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    
+  }
+
+  .pie-chart:hover{
+    transform: scale(1.09); /* Slightly enlarge the chart */
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+
   }
   
   .pie-segment {
@@ -54,7 +62,7 @@
     color: #fff;
     padding: 5px 10px;
     border-radius: 4px;
-    font: "Tiempos Text Regular";
+    font: 'Lato', sans-serif;
     font-size: 12px;
     white-space: nowrap;
   }
@@ -68,6 +76,6 @@
 .navigation-buttons button {
   margin: 0 5px;
   padding: 5px 10px;
-  font-family: "Tiempos Text Regular";
+  font-family:'Lato', sans-serif;
   font-size: 14px;
 }

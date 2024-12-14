@@ -1,61 +1,82 @@
-/* components/guideInfo/GuideInfoTable.css */
 .guide-info-table {
     display: flex;
-    justify-content: center;
-    align-items: flex-start; /* Align table to the top */
+    justify-content: left;
+    align-items: flex-start;
     width: 100%;
     margin: 0 auto;
     padding: 10px;
     overflow-x: auto; /* Enable horizontal scrolling if needed */
 }
 
-.p-datatable {
-    width: 100%; /* Full width */
+.guide-info-datatable {
+    width: 100%;
     border-collapse: collapse;
-    table-layout: auto; /* Adjust columns dynamically */
+    table-layout: fixed; /* Ensures consistent column widths */
 }
 
-.p-datatable-thead > tr > th,
-.p-datatable-tbody > tr > td {
+
+.guide-info-datatable thead > tr > th,
+.guide-info-datatable tbody > tr > td {
     text-align: left; /* Align text to the left */
-    vertical-align: middle; /* Align content vertically */
-    padding: 12px; /* Consistent padding */
-    font-size: 14px; /* Ensure consistent font size */
-    word-wrap: break-word; /* Handle long content gracefully */
-    white-space: normal; /* Allow wrapping */
+    vertical-align: left; /* Center content vertically */
+    padding: 12px;
+    font-size: 14px;
+    word-wrap: break-word;
+    white-space: nowrap; /* Prevent text from wrapping */
+    box-sizing: border-box; /* Consistent sizing */
 }
 
-.p-datatable-thead > tr > th {
-    font-weight: bold; /* Highlight headers */
-    background-color: #f7f7f7; /* Subtle background for headers */
-    border-bottom: 2px solid #e0e0e0; /* Distinguish header */
+.guide-info-datatable thead > tr > th {
+    font-weight: bold; /* Bold headers */
+    background-color: #f7f7f7;
+    border-bottom: 2px solid #e0e0e0;
+    height: 48px; /* Consistent header height */
+    text-align: left;
+    line-height: 1.5;
 }
 
-.p-datatable-tbody > tr > td {
-    border-bottom: 1px solid #e0e0e0; /* Add border between rows */
+.guide-info-datatable tbody > tr > td {
+    border-bottom: 1px solid #e0e0e0; /* Row separator */
+    height: 48px; /* Consistent row height */
+    line-height: 1.5; /* Text readability */
+    white-space: nowrap; /* Prevent text wrapping in rows */
 }
 
-.p-datatable-tbody > tr:hover {
-    background-color: #f9f9f9; /* Highlight row on hover */
+.guide-info-datatable tbody > tr:hover {
+    background-color: #f9f9f9; /* Row hover effect */
 }
 
-.p-datatable-tbody > tr > td:nth-child(n),
-.p-datatable-thead > tr > th:nth-child(n) {
-    width: auto; /* Allow columns to adjust automatically */
+.guide-info-datatable tbody > tr > td:nth-child(n),
+.guide-info-datatable thead > tr > th:nth-child(n) {
+    width: auto;
 }
 
-/* Styles for the download button */
+.guide-info-datatable tbody > tr > td {
+    overflow: hidden; /* Prevent text overflow */
+    text-overflow: ellipsis; /* Add ellipsis for long text */
+}
+
+/* Adjust download button styles */
 .guide-info-table .p-button {
     padding: 0.5rem 1rem;
     font-size: 0.9rem;
-    color: #007bff;
+    color: rgb(0, 74, 119); /* Default text color */
     background-color: transparent;
     border: none;
     cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
 }
 
 .guide-info-table .p-button:hover {
-    text-decoration: underline;
+    text-decoration: none;
+    background-color: rgb(0, 104, 159);
+    color: white;
+    transform: scale(1.05); /* Slight hover effect */
+}
+
+.guide-info-table .p-button:active {
+    color: white;
+    transform: scale(0.98); /* Slight press effect */
 }
 
 .guide-info-table .p-button:disabled {
@@ -63,7 +84,9 @@
     cursor: not-allowed;
 }
 
-.guide-info-table .p-button:active {
-    color: #0056b3;
+/* Align IBAN column text to the right */
+.iban-column {
+    text-align: right; /* Align text to the right */
+    padding-right: 10px; /* Add padding for spacing */
 }
 

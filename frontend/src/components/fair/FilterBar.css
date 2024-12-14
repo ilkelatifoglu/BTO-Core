@@ -1,0 +1,24 @@
+.filter-bar {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    align-items: center;
+}
+
+.filter-input {
+    flex: 1;
+    min-width: 150px;
+    text-align: left;
+}
+
+.clear-filters-button {
+    margin-left: auto;
+    background-color: rgb(119, 0, 56); /* Custom color */
+    color: white; /* Text color */
+    border: none; /* No border */
+    padding: 10px 20px; /* Padding for better sizing */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s ease; /* Smooth color transition */
+}
+

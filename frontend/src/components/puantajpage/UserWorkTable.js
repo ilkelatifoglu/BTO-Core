@@ -262,20 +262,20 @@ export default function UserWorkTable() {
             return <span style={{ color: "#aaa" }}>Not Editable</span>;
         }
         return (
-            <>
-                <Button
-                    label="Edit"
-                    icon="pi pi-pencil"
-                    className="p-button-warning p-button-sm"
+            <div style={{ display: "flex", gap: "0.5rem" }}> {/* Flexbox for spacing */}
+                <button
+                    className="actions-button edit"
                     onClick={() => handleEdit(rowData)}
-                />
-                <Button
-                    label="Delete"
-                    icon="pi pi-trash"
-                    className="p-button-danger p-button-sm"
+                >
+                    <i className="pi pi-pencil" style={{ marginRight: "5px" }}></i> Edit
+                </button>
+                <button
+                    className="actions-button delete"
                     onClick={() => handleDelete(rowData)}
-                />
-            </>
+                >
+                    <i className="pi pi-trash" style={{ marginRight: "5px" }}></i> Delete
+                </button>
+            </div>
         );
     };
 

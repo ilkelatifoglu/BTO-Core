@@ -3,6 +3,8 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "./OtpVerification.css";
 
+const API_BASE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:3001";
+
 export default function OtpVerification() {
   const [otp, setOtp] = useState("");
   const [error, setError] = useState("");
@@ -33,7 +35,7 @@ export default function OtpVerification() {
 
     try {
       const response = await axios.post(
-        `http://localhost:3001/auth/verify-otp`,
+        `${API_BASE_URL}/auth/verify-otp`,
         { otp },
         {
           headers: {
@@ -65,7 +67,7 @@ export default function OtpVerification() {
       const password = localStorage.getItem("password");
       const credentials = { email, password };
       const response = await axios.post(
-        `http://localhost:3001/auth/login`,
+        `${API_BASE_URL}/auth/login`,
         credentials
       );
 

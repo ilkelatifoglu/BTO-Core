@@ -89,24 +89,59 @@
     background-color: #ffffff; /* Match table background */
 }
 
-/* Button container styling */
-.advisor-name-container {
+/* Scoped Advisor Page CSS */
+.advisor-page .advisor-name-container {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 8px 12px;
-    background-color: #ffffff; /* Ensure clean white background */
-    border: 1px solid #e0e0e0;
+    justify-content: space-between;
+    border: 1px solid rgb(0, 74, 119);
     border-radius: 4px;
+    padding: 8px 12px;
+    background-color: #fff;
+    position: relative; /* To position the hover button */
+    box-shadow: none; /* Ensure no hover effects spill over */
 }
 
-/* Advisor name styling */
-.advisor-name {
+.advisor-page .advisor-name {
     font-size: 14px;
     font-weight: bold;
-    color: #333; /* Standard text color */
-    margin-right: auto;
+    color: #333;
+    flex: 1;
+    margin-right: 60px;
+    margin-left: -40px;
 }
+
+/* Button visibility on hover */
+.advisor-page .advisor-name-container:hover .hover-button {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Button styles */
+.advisor-page .hover-button {
+    position: absolute;
+    right: 10px;
+    background-color: rgb(0, 74, 119);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    opacity: 0; /* Hidden by default */
+    pointer-events: none;
+}
+
+/* Hover button effect */
+.advisor-page .hover-button:hover {
+    background-color: rgb(0, 104, 159);
+}
+
+/* Remove external hover effects */
+.advisor-page .advisor-card:hover {
+    box-shadow: none; /* Disable hover shadow */
+}
+
 
 /* Responsive adjustments */
 @media (max-width: 768px) {

@@ -1,6 +1,6 @@
 .guide-info-table {
     display: flex;
-    justify-content: center;
+    justify-content: left;
     align-items: flex-start;
     width: 100%;
     margin: 0 auto;
@@ -14,10 +14,11 @@
     table-layout: fixed; /* Ensures consistent column widths */
 }
 
+
 .guide-info-datatable thead > tr > th,
 .guide-info-datatable tbody > tr > td {
     text-align: left; /* Align text to the left */
-    vertical-align: middle; /* Center content vertically */
+    vertical-align: left; /* Center content vertically */
     padding: 12px;
     font-size: 14px;
     word-wrap: break-word;
@@ -82,3 +83,10 @@
     color: #ccc;
     cursor: not-allowed;
 }
+
+/* Align IBAN column text to the right */
+.iban-column {
+    text-align: right; /* Align text to the right */
+    padding-right: 10px; /* Add padding for spacing */
+}
+

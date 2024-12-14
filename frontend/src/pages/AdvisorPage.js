@@ -104,7 +104,7 @@ const AdvisorPage = () => {
       }
 
     return (
-        <div>
+        <div className="advisor-page">
             <Sidebar />
             <Toast ref={toast} />
             <div className="page-container">

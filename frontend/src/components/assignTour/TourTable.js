@@ -10,7 +10,6 @@ import io from "socket.io-client";
 import FilterBar from "./FilterBar"; // Import the FilterBar component
 import { Toast } from "primereact/toast"; // Import Toast
 import "../common/CommonComp.css";
-
 const userType = parseInt(localStorage.getItem("userType"), 10);
 const socket = io("http://localhost:3001");
 
@@ -27,8 +26,21 @@ export default function ReadyToursTable() {
     const fetchTours = async () => {
       try {
         const data = await AssignTourService.getReadyTours();
-        setTours(data);
-        setFilteredTours(data); 
+        if (localStorage.getItem("userType") === '1') {
+          // Filter tours with available candidate capacity
+          const availableTours = data.filter(
+            (tour) =>
+              tour.assigned_candidates < tour.guide_count &&
+              tour.tour_status === "READY"
+          );
+          setTours(availableTours);
+          setFilteredTours(availableTours); // Set initial filtered data
+        } else {
+          // For other user types, show all tours
+          setTours(data);
+          setFilteredTours(data);
+        }
+  
       } catch (error) {
         console.error("Error fetching tours:", error);
         toast.current.clear();

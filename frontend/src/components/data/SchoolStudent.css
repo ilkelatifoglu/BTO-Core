@@ -9,14 +9,7 @@
   border-radius: 10px; 
   padding: 20px; 
   text-align: center;
-  transition: transform 0.3s ease, box-shadow 0.3s ease; 
 }
-
-.chart-container:hover {
-  transform: scale(1.03); /* Slightly enlarge the chart */
-  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15); /* Enhance shadow on hover */
-}
-
 .year-selector-modern {
   display: flex;
   align-items: center;

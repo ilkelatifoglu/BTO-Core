@@ -1,25 +1,30 @@
 .filter-bar-container {
-    display: flex;
-    gap: 1rem;
-    padding: 1rem;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    background-color: #ffffff;
-    border: 1px solid #ffffff;
-    border-radius: 5px;
-    margin-bottom: 1rem;
-  }
-  
-  .filter-input {
-    width: 90%;
-    height: 40px;
-  }
-  
-  .filter-row {
-    display: flex;
-    gap: 20px;
-    justify-content: space-between;
-  }
+  display: flex;
+  gap: 1rem; /* Adds spacing between filter bars */
+  padding: 1rem;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  background-color: #ffffff;
+  border: 1px solid #ffffff;
+  border-radius: 5px;
+  margin-bottom: 1rem;
+}
 
-  
+.filter-input {
+  width: 130px;
+  height: 40px;
+  margin-left: 0; /* Adjusted to avoid overlap */
+}
+
+/* Ensures even spacing between filter-row elements */
+.filter-row {
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+}
+
+/* Increases the width of the last filter bar */
+.filter-bar-container .filter-input:last-child {
+  width: 200px; /* Adjust this value to your needs */
+}

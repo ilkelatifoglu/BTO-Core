@@ -6,18 +6,7 @@
     border-radius: 12px; /* Slightly rounded corners */
     padding: 40px 20px; /* Padding from top and bottom */
     margin: 20px auto; /* Center horizontally with vertical spacing */
-    cursor: pointer; /* Makes the container appear clickable */
-    transition: transform 0.3s ease, box-shadow 0.3s ease; 
-}
 
-.tour-form-container:hover {
-  transform: scale(1.02); /* Slightly enlarges on hover */
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2); /* More prominent shadow on hover */
-}
-
-.tour-form-container:active {
-  transform: scale(0.98); /* Slightly shrinks when clicked */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); /* Subtle shadow during click */
 }
 
 /* Inner Container */

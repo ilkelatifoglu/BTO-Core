@@ -8,14 +8,8 @@
     text-align: left;
     overflow: hidden; 
     text-align: center;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
 
-  .chart:hover {
-    transform: scale(1.03); /* Slightly enlarge the chart */
-    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15); /* Enhance shadow on hover */
-  
-  }
   /* chart.css */
   .navigation-buttons {
     display: flex;

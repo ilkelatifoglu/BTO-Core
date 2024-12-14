@@ -8,6 +8,7 @@
 .filter-input {
     flex: 1;
     min-width: 150px;
+    text-align: left;
 }
 
 .clear-filters-button {

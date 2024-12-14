@@ -104,7 +104,7 @@ const AdvisorPage = () => {
       }
 
     return (
-        <div>
+        <div className="advisor-page">
             <Sidebar />
             <Toast ref={toast} />
             <div className="page-container">
@@ -112,13 +112,19 @@ const AdvisorPage = () => {
                 <h1>Advisor Schedule</h1>
                 <DataTable
                     value={[{ key: "schedule" }]}
-                    className="p-datatable-striped"
-                    style={{ width: "80%", margin: "auto" }}
+                    className="advisor-datatable"
+                    style={{ width: "100%", margin: "auto" }}
                 >
                     {daysOptions.map((day, index) => (
-                        <Column key={index} field={day} header={day} body={() => renderDayColumn(day)} />
+                        <Column
+                            key={index}
+                            field={day}
+                            header={<div className="advisor-datatable-header">{day}</div>}
+                            body={() => renderDayColumn(day)}
+                        />
                     ))}
                 </DataTable>
+
                 <div className="advisor-details-section">
                     {advisors.map((advisor) => (
                         <div

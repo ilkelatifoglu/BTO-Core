@@ -1,19 +1,33 @@
-/* src/components/SortByDate.css */
-
-/* Styles specific to the SortByDate component */
-
 .sort-by-date {
     display: flex;
     align-items: center;
+    gap: 8px; /* Add spacing between label and dropdown */
+    margin-bottom: 10px; /* Add space between the filter and other components */
+    margin-top: 10px;
 }
 
 .sort-label {
-    margin-right: 10px;
-    font-weight: bold;
-    color: #555;
+    font-size: 16px; /* Increase font size for better readability */
+    font-weight: bold; /* Make the label bold */
+    color: #333; /* Add a darker color for better contrast */
+    white-space: nowrap; /* Prevent label text from wrapping */
 }
 
 .p-dropdown {
-    /* Optional: Customize the dropdown appearance */
-    min-width: 200px;
+    min-width: 200px; /* Keep dropdown width consistent */
+    font-size: 14px; /* Match font size of dropdown with label */
+    height: 40px; /* Set consistent height for dropdown */
+    border-radius: 5px; /* Add slight rounding for dropdown */
+}
+
+.p-dropdown .p-dropdown-trigger {
+    height: 40px; /* Match height of dropdown button */
+}
+
+.filter-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap; /* Ensure filters adjust on smaller screens */
+    gap: 20px; /* Add spacing between filters */
 }

@@ -73,6 +73,7 @@ export const deleteWorkEntry = async (id) => {
     }
 };
 export const editWorkEntry = async (id, updatedWork) => {
+    console.log(updatedWork);
     try {
         const response = await axios.put(`${API_URL}/work/edit/${id}`, updatedWork, {
             headers: {
@@ -85,11 +86,12 @@ export const editWorkEntry = async (id, updatedWork) => {
         throw error;
     }
 };
-export const updateWorkEntry = async (id, isApproved, workType) => {
+export const updateWorkEntry = async (id, isApproved, workType, userId) => {
     try {
         const response = await axios.put(`${API_URL}/work/update/${id}`, {
             is_approved: isApproved,
             work_type: workType, // Include work_type in the payload
+            user_id: userId, // Add user_id to the payload
         });
         return response.data;
     } catch (error) {
@@ -98,10 +100,11 @@ export const updateWorkEntry = async (id, isApproved, workType) => {
     }
 };
 
-export const saveWorkload = async (workId, workload) => {
 
+export const saveWorkload = async (workId, workType, workload) => {
+    //console.log(workId, workType, workload);
     try {
-        const response = await axios.put(`${API_URL}/work/${workId}/workload`, { workload });
+        const response = await axios.put(`${API_URL}/work/${workType}/${workId}/workload`, { workload });
         return response.data;
     } catch (error) {
         console.error("Error saving workload:", error);

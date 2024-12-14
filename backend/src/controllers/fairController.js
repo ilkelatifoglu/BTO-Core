@@ -158,7 +158,7 @@ exports.assignGuide = async (req, res) => {
                 <p>Dear ${guide.first_name} ${guide.last_name},</p>
                 ${htmlContent}
             `;
-            
+
             try {
                 await sendEmail({
                     to: guide.email,
@@ -341,6 +341,28 @@ exports.getAvailableFairsForUser = async (req, res) => {
     } catch (error) {
         console.error("Error fetching available fairs:", error);
         res.status(500).send({ message: "Error fetching available fairs" });
+    }
+};
+exports.addFairGuide = async (req, res) => {
+    const { fair_id, guide_id } = req.body;
+
+    // Validate request body
+    if (!fair_id || !guide_id) {
+        return res.status(400).json({ error: "fair_id and guide_id are required." });
+    }
+
+    const query = `
+        INSERT INTO fair_guide (fair_id, guide_id)
+        VALUES ($1, $2)
+        RETURNING fair_id, guide_id, is_approved
+    `;
+
+    try {
+        const result = await db.query(query, [fair_id, guide_id]);
+        res.status(201).json({ success: true, data: result.rows[0] });
+    } catch (error) {
+        console.error("Error adding fair-guide:", error);
+        res.status(500).json({ error: "Failed to add fair-guide assignment." });
     }
 };
 

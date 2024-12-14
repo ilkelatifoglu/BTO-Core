@@ -1,7 +1,7 @@
 const express = require('express');
 const {
     getFairs, createFair, createFairRequest,
-    assignGuide, getAvailableGuides, approveFair, cancelFair, unassignGuide, getAvailableFairsForUser
+    assignGuide, getAvailableGuides, approveFair, cancelFair, unassignGuide, getAvailableFairsForUser, addFairGuide
 } = require('../controllers/fairController');
 const authenticateToken = require('../middleware/auth'); // Middleware for authentication
 const router = express.Router();
@@ -15,7 +15,7 @@ router.put('/:id/approve', approveFair);
 router.put('/:id/cancel', cancelFair);
 router.put("/:id/unassign", unassignGuide);
 router.get("/available-fairs", authenticateToken, getAvailableFairsForUser);
-
+router.post('/fair-guide', addFairGuide);
 
 
 module.exports = router;

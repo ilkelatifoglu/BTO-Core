@@ -4,7 +4,7 @@ import { Column } from "primereact/column";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog"; // Use Dialog instead of window.confirm
 import { Toast } from "primereact/toast"; // (2) Importing Toast
-import { fetchFairs, fetchAvailableGuides, assignGuide, approveFair, cancelFair, unassignGuide } from "../services/fairService";
+import { fetchFairs, fetchAvailableGuides, assignGuide, approveFair, cancelFair, unassignGuide, addFairGuide } from "../services/fairService";
 import DropdownOrText from '../components/fair/DropdownOrText';
 import Sidebar from '../components/common/Sidebar';
 import "./FairApproval.css";
@@ -47,8 +47,8 @@ export default function FairApprovalPage() {
         const date = new Date(dateString);
         return `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`;
     };
-    
-    
+
+
 
     const rowClassName = (rowData) => {
         return rowData.status === "CANCELLED" ? "cancelled-row" : "";
@@ -95,17 +95,17 @@ export default function FairApprovalPage() {
         }
         try {
             await assignGuide(fairId, column, guideId);
-
+            await addFairGuide(fairId, guideId);
             const assignedGuide = guides[fairId]?.find((guide) => guide.id === guideId);
             if (assignedGuide) {
                 setFairs((prevFairs) =>
                     prevFairs.map((fair) =>
                         fair.id === fairId
                             ? {
-                                  ...fair,
-                                  [column]: guideId,
-                                  [`${column.replace("_id", "_name")}`]: assignedGuide.full_name,
-                              }
+                                ...fair,
+                                [column]: guideId,
+                                [`${column.replace("_id", "_name")}`]: assignedGuide.full_name,
+                            }
                             : fair
                     )
                 );
@@ -242,10 +242,10 @@ export default function FairApprovalPage() {
                     prevFairs.map((fair) =>
                         fair.id === fairId
                             ? {
-                                  ...fair,
-                                  [column]: null,
-                                  [`${column.replace("_id", "_name")}`]: null,
-                              }
+                                ...fair,
+                                [column]: null,
+                                [`${column.replace("_id", "_name")}`]: null,
+                            }
                             : fair
                     )
                 );
@@ -299,7 +299,7 @@ export default function FairApprovalPage() {
                         field="date"
                         header="Date"
                         body={(rowData) => formatDate(rowData.date)}
-                    />                    
+                    />
                     <Column field="organization_name" header="Organization" />
                     <Column field="city" header="City" />
                     {["guide_1_id", "guide_2_id", "guide_3_id"].map((column, index) => (

@@ -212,7 +212,7 @@ const LeftForm = ({
             if (!input) return true;
             const candidateLabel = candidate.label.toLocaleLowerCase("tr");
             const inputValue = input.toLocaleLowerCase("tr");
-            return candidateLabel.includes(inputValue);
+            return candidateLabel.startsWith(inputValue);
           }}
         />
       </div>
@@ -237,9 +237,10 @@ const LeftForm = ({
             isSearchable
             required
             filterOption={(candidate, input) => {
+              if (!input) return true;
               const candidateLabel = candidate.label.toLocaleLowerCase("tr");
               const inputValue = input.toLocaleLowerCase("tr");
-              return candidateLabel.includes(inputValue);
+              return candidateLabel.startsWith(inputValue);
             }}
           />
         )}

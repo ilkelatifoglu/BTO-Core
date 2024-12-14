@@ -7,9 +7,12 @@ import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { Toast } from "primereact/toast";
 import "../common/CommonComp.css";
+import FilterBar from "./FilterBar"; // <-- Import the new FilterBar component
+
 
 const FeedbackTable = () => {
   const [feedback, setFeedback] = useState([]);
+  const [filteredFeedback, setFilteredFeedback] = useState([]); 
   const [popupVisible, setPopupVisible] = useState(false);
   const [popupContent, setPopupContent] = useState("");
   const [formVisible, setFormVisible] = useState(false);
@@ -29,6 +32,7 @@ const FeedbackTable = () => {
     try {
       const data = await FeedbackService.getFeedbackByRole(userId, userType);
       setFeedback(data);
+      setFilteredFeedback(data); // initially show all
     } catch (error) {
       console.error("Error fetching feedback:", error);
       toast.current.show({
@@ -101,11 +105,66 @@ const FeedbackTable = () => {
     }
   };
 
+  const handleFilterChange = (filters) => {
+    const { date, schoolOrIndividual, name, sender } = filters;
+
+    const filtered = feedback.filter((entry) => {
+      // Match date
+      let matchDate = true;
+      if (date) {
+        const entryDate = new Date(entry.tour_date).toDateString();
+        const selectedDate = new Date(date).toDateString();
+        matchDate = entryDate === selectedDate;
+      }
+
+      // Match school/individual
+      // (Checking if school_name includes the search text)
+      let matchSchoolOrIndividual = true;
+      if (schoolOrIndividual) {
+        matchSchoolOrIndividual = entry.school_name
+          ?.toLowerCase()
+          .includes(schoolOrIndividual.toLowerCase());
+      }
+
+      // Match sender
+      let matchSender = true;
+      if (sender) {
+        matchSender = entry.sender_name
+          ?.toLowerCase()
+          .includes(sender.toLowerCase());
+      }
+
+      // Match name (tagged guides or candidates)
+      let matchName = true;
+      if (name) {
+        const searchTerm = name.toLowerCase();
+        const guidesMatched =
+          Array.isArray(entry.tagged_guides) &&
+          entry.tagged_guides.some((g) => g.toLowerCase().includes(searchTerm));
+        const candidatesMatched =
+          Array.isArray(entry.tagged_candidates) &&
+          entry.tagged_candidates.some((c) =>
+            c.toLowerCase().includes(searchTerm)
+          );
+
+        // If none of them match and name filter is provided, fail the match
+        if (!guidesMatched && !candidatesMatched) {
+          matchName = false;
+        }
+      }
+
+      return matchDate && matchSchoolOrIndividual && matchSender && matchName;
+    });
+
+    setFilteredFeedback(filtered);
+  };
+
   return (
     <div>
       <Toast ref={toast} />
+      <FilterBar onFilterChange={handleFilterChange} />
 
-      <DataTable value={feedback} responsiveLayout="scroll">
+      <DataTable value={filteredFeedback} responsiveLayout="scroll">
         <Column
           field="tour_date"
           header="Date"

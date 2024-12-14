@@ -2,6 +2,12 @@ import React, { useState, useEffect, useRef } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import AssignTourService from "../../services/AssignTourService";
+import {
+    getMyIndividualTours,
+    withdrawFromIndividualTour,
+    approveTour,
+    rejectTour,
+} from "../../services/IndividualTourService"; // Destructured imports
 import { fetchFairs, unassignGuide } from "../../services/fairService";
 import { Toast } from "primereact/toast";
 import { Dialog } from "primereact/dialog"; // Import Dialog from PrimeReact
@@ -23,6 +29,7 @@ export default function MyTours() {
             try {
                 const tours = await AssignTourService.getMyTours();
                 const fairs = await fetchFairs();
+                const individualTours = await getMyIndividualTours();
 
                 const combinedData = [
                     ...tours.map((tour) => ({
@@ -39,6 +46,11 @@ export default function MyTours() {
                             ...fair,
                             type: "fair",
                             event: fair.organization_name,
+                        })),
+                        ...individualTours.map((indTour) => ({
+                            ...indTour,
+                            type: "individual",
+                            event: indTour.name,
                         })),
                 ];
 
@@ -88,51 +100,52 @@ export default function MyTours() {
     const confirmWithdraw = async () => {
         if (!pendingItem) return;
         const item = pendingItem;
-        const isFair = item.type === "fair";
-
+        const isIndividual = item.type === "individual";
+    
         hideConfirmDialog();
         toast.current.clear();
         try {
-            if (isFair) {
-                const userId = parseInt(localStorage.getItem("userId"), 10);
-                const column =
-                    item.guide_1_id === userId
-                        ? "guide_1_id"
-                        : item.guide_2_id === userId
-                        ? "guide_2_id"
-                        : "guide_3_id";
-
-                await unassignGuide(item.id, column);
+            if (isIndividual) {
+                // Handle individual tour withdrawal
+                await withdrawFromIndividualTour(item.id, localStorage.getItem("userId"));
             } else {
+                // Handle general tour withdrawal
                 await AssignTourService.withdrawFromTour(item.id);
             }
-
+    
+            // Update the UI
             setItems((prevItems) => prevItems.filter((i) => i.id !== item.id));
-
+    
             toast.current.show({
                 severity: "success",
                 summary: "Success",
-                detail: `${isFair ? "Fair" : "Tour"} withdrawn successfully.`,
+                detail: `${isIndividual ? "Individual Tour" : "Tour"} withdrawn successfully.`,
                 life: 3000,
             });
         } catch (error) {
             toast.current.show({
                 severity: "error",
                 summary: "Error",
-                detail: error.message || `Failed to withdraw from ${isFair ? "fair" : "tour"}`,
+                detail: error.message || `Failed to withdraw from ${isIndividual ? "individual tour" : "tour"}.`,
                 life: 3000,
             });
         }
     };
+    
 
-    const actionTemplate = (rowData) => (
-        <button
-            className="withdraw-button"
-            onClick={() => showConfirmDialog(rowData)}
-        >
-            Withdraw
-        </button>
-    );
+    const actionTemplate = (rowData) => {
+        if (rowData.type === "tour" || rowData.type === "individual") {
+            return (
+                <button
+                    className="withdraw-button"
+                    onClick={() => showConfirmDialog(rowData)}
+                >
+                    Withdraw
+                </button>
+            );
+        }
+        return null; // Do not render anything for fairs
+    };
 
     const confirmDialogFooter = (
         <div>

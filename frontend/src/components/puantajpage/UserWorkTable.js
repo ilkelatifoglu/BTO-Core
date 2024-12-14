@@ -7,6 +7,7 @@ import AddWork from "./AddWork";
 import { Button } from "primereact/button";
 import { Toast } from "primereact/toast"; // (2) Importing Toast
 import { Dialog } from "primereact/dialog"; // Use Dialog instead of window.confirm
+import { InputNumber } from "primereact/inputnumber"; // InputNumber
 import "./PuantajComponents.css";
 import '../common/CommonComp.css';
 
@@ -108,19 +109,56 @@ export default function UserWorkTable() {
     };
 
     const handleSaveWorkload = (rowData) => {
+        // Map frontend work_type to database table names
+        const workTypeMapping = {
+            "Individual Tour": "individual_tours",
+            "Tour": "tours",
+            "Fair": "fairs",
+        };
+
+        const workType = workTypeMapping[rowData.work_type]; // Map work_type to the backend table name
+
+        if (!workType) {
+            toast.current.show({
+                severity: "error",
+                summary: "Error",
+                detail: `Invalid work type: ${rowData.work_type}`,
+                life: 3000,
+            });
+            return;
+        }
+
+        const workload = workloadInputs[rowData.work_id]?.workload || 0; // Retrieve workload directly
+
+        // Ensure workload is greater than 0
+        if (workload <= 0) {
+            toast.current.show({
+                severity: "error",
+                summary: "Error",
+                detail: "Workload must be greater than 0.",
+                life: 3000,
+            });
+            return;
+        }
+
         showConfirmDialog(
             "Are you sure you want to save this workload?",
             async () => {
-                const { hours, minutes } = workloadInputs[rowData.work_id] || {};
-                const totalWorkload = (parseInt(hours, 10) || 0) * 60 + (parseInt(minutes, 10) || 0);
+                const totalWorkload = workload * 60; // Convert hours to minutes
 
                 try {
-                    await saveWorkload(rowData.work_id, totalWorkload);
+                    // Pass the mapped workType along with workId and workload
+                    await saveWorkload(rowData.work_id, workType, totalWorkload);
+
+                    // Update the state to reflect the saved workload
                     setWorkEntries((prevEntries) =>
                         prevEntries.map((entry) =>
-                            entry.work_id === rowData.work_id ? { ...entry, workload: totalWorkload } : entry
+                            entry.work_id === rowData.work_id
+                                ? { ...entry, workload: totalWorkload }
+                                : entry
                         )
                     );
+
                     toast.current.clear();
                     toast.current.show({
                         severity: "success",
@@ -141,6 +179,7 @@ export default function UserWorkTable() {
             }
         );
     };
+
 
     const handleInputChange = (workId, field, value) => {
         setWorkloadInputs((prevInputs) => ({
@@ -174,26 +213,32 @@ export default function UserWorkTable() {
     };
 
     const renderWorkload = (rowData) => {
-        if (rowData.work_type === "Tour" && rowData.workload === null) {
-            const { hours = "", minutes = "" } = workloadInputs[rowData.work_id] || {};
+        if ((rowData.work_type === "Tour" || rowData.work_type === "Individual Tour" || rowData.work_type === "Fair") && rowData.workload === null) {
+            const workload = workloadInputs[rowData.work_id]?.workload || 0; // Default to 0 if not set
             return (
-                <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-                    <input
-                        type="number"
-                        value={hours}
-                        onChange={(e) => handleInputChange(rowData.work_id, "hours", e.target.value)}
-                        placeholder="Hours"
-                        style={{ width: "3rem" }}
-                    />
-                    :
-                    <input
-                        type="number"
-                        value={minutes}
-                        onChange={(e) => handleInputChange(rowData.work_id, "minutes", e.target.value)}
-                        placeholder="Minutes"
-                        style={{ width: "3rem" }}
-                    />
-                </div>
+                <InputNumber
+                    value={workload}
+                    onValueChange={(e) => handleInputChange(rowData.work_id, "workload", e.value)}
+                    showButtons
+                    buttonLayout="horizontal"
+                    step={0.5} // Step by 0.5 hours (30 minutes)
+                    min={0} // Minimum value
+                    max={10} // Maximum value
+                    decrementButtonClassName="p-button-danger"
+                    incrementButtonClassName="p-button-success"
+                    incrementButtonIcon="pi pi-plus"
+                    decrementButtonIcon="pi pi-minus"
+                    suffix=" hours" // Display 'hours' suffix
+                    style={{
+                        height: "3rem",
+                        fontSize: "1rem",
+                        borderRadius: "5px",
+                        flexShrink: 0,
+                        width: "12rem",
+                    }}
+                    inputStyle={{ pointerEvents: "none" }} // Prevent manual typing
+                    inputRef={(ref) => ref && (ref.readOnly = true)} // Programmatically make input read-only
+                />
             );
         }
         const hours = Math.floor(rowData.workload / 60);
@@ -201,8 +246,9 @@ export default function UserWorkTable() {
         return `${hours} hour(s) ${mins} minute(s)`;
     };
 
+
     const renderActions = (rowData) => {
-        if (rowData.work_type === "Tour" && rowData.workload === null) {
+        if ((rowData.work_type === "Tour" || rowData.work_type === "Individual Tour" || rowData.work_type === "Fair") && rowData.workload === null) {
             return (
                 <Button
                     label="Save"
@@ -212,7 +258,7 @@ export default function UserWorkTable() {
                 />
             );
         }
-        if (rowData.work_type === "Tour" || rowData.is_approved) {
+        if (rowData.work_type === "Tour" || rowData.work_type === "Individual Tour" || rowData.work_type === "Fair" || rowData.is_approved) {
             return <span style={{ color: "#aaa" }}>Not Editable</span>;
         }
         return (
@@ -258,14 +304,14 @@ export default function UserWorkTable() {
 
     return (
         <div className="page-container">
-          <Toast ref={toast} /> {/* Toast for UserWorkTable */}
-          <div className="page-content">
-            <h1>All Work Entries</h1>
+            <Toast ref={toast} /> {/* Toast for UserWorkTable */}
+            <div className="page-content">
+                <h1>All Work Entries</h1>
                 <DataTable
                     value={workEntries}
                     dataKey="work_id"
                     paginator
-                    rows={5}
+                    rows={15}
                     tableStyle={{ minWidth: "50rem" }}
                     paginatorTemplate="FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
                     currentPageReportTemplate="{first} to {last} of {totalRecords}"
@@ -274,6 +320,17 @@ export default function UserWorkTable() {
                     <Column field="date" header="Date" body={(rowData) => formatDate(rowData.date)}></Column>
                     <Column field="day" header="Day"></Column>
                     <Column field="time" header="Time" body={(rowData) => formatTime(rowData.time)}></Column>
+                    <Column
+                        field="school_name"
+                        header="School/Fair Name"
+                        body={(rowData) => (rowData.school_name ? rowData.school_name : "-")}
+                    />
+                    <Column
+                        field="city"
+                        header="City"
+                        body={(rowData) => (rowData.city ? rowData.city : "-")}
+                    />
+
                     <Column
                         field="workload"
                         header="Workload"

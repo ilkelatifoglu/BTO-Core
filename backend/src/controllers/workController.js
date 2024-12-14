@@ -4,34 +4,84 @@ const getAllWorkEntries = async (req, res) => {
     try {
         const query = `
             SELECT 
+                u.id,
                 u.first_name,
                 u.last_name,
+                u.iban,
                 'Tour' AS work_type,
                 t.id AS work_id,
                 t.date,
                 t.day,
                 t.time,
                 t.workload,
-                tg.is_approved
+                tg.is_approved,
+                s.school_name,
+                s.city
             FROM tours t
             JOIN tour_guide tg ON t.id = tg.tour_id
             JOIN users u ON tg.guide_id = u.id
-            WHERE t.tour_status = 'DONE'
+            LEFT JOIN schools s ON t.school_id = s.id
+            WHERE t.tour_status = 'DONE' AND t.workload IS NOT NULL
 
             UNION ALL
 
             SELECT 
+                u.id,
                 u.first_name,
                 u.last_name,
+                u.iban,
                 ow.type AS work_type,
                 ow.id AS work_id,
                 ow.date,
                 ow.day,
                 ow.time,
                 ow.workload,
-                ow.is_approved
+                ow.is_approved,
+                NULL AS school_name,
+                NULL AS city
             FROM other_works ow
             JOIN users u ON ow.user_id = u.id
+
+            UNION ALL
+
+            SELECT
+                u.id,
+                u.first_name,
+                u.last_name,
+                u.iban,
+                'Individual Tour' AS work_type,
+                it.id AS work_id,
+                it.date,
+                it.day,
+                it.time,
+                it.workload,
+                it.is_approved,
+                NULL AS school_name,
+                NULL AS city
+            FROM individual_tours it
+            JOIN users u ON it.guide_id = u.id
+            WHERE it.tour_status = 'DONE' AND it.workload IS NOT NULL
+
+            UNION ALL
+
+            SELECT
+                u.id,
+                u.first_name,
+                u.last_name,
+                u.iban,
+                'Fair' AS work_type,
+                f.id AS work_id,
+                f.date,
+                TO_CHAR(f.date, 'Day') AS day,
+                '10:00' AS time,
+                f.workload,
+                fg.is_approved,
+                f.organization_name AS school_name,
+                f.city AS city
+            FROM fair_guide fg
+            JOIN fairs f ON fg.fair_id = f.id
+            JOIN users u ON fg.guide_id = u.id
+            WHERE f.status = 'DONE' AND f.workload IS NOT NULL
 
             ORDER BY date DESC, work_type;
         `;
@@ -42,6 +92,7 @@ const getAllWorkEntries = async (req, res) => {
         res.status(500).json({ error: "Internal Server Error" });
     }
 };
+
 const getUserWorkEntries = async (req, res) => {
     const user_id = req.query.user_id;
     try {
@@ -55,11 +106,14 @@ const getUserWorkEntries = async (req, res) => {
                 t.day,
                 t.time,
                 t.workload,
-                tg.is_approved
+                tg.is_approved,
+                s.school_name,
+                s.city
             FROM tours t
             JOIN tour_guide tg ON t.id = tg.tour_id
             JOIN users u ON tg.guide_id = u.id
-            WHERE tg.guide_id = $1 and t.tour_status = 'DONE'
+            LEFT JOIN schools s ON t.school_id = s.id
+            WHERE tg.guide_id = $1 AND t.tour_status = 'DONE'
 
             UNION ALL
 
@@ -72,10 +126,49 @@ const getUserWorkEntries = async (req, res) => {
                 ow.day,
                 ow.time,
                 ow.workload,
-                ow.is_approved
+                ow.is_approved,
+                NULL AS school_name,
+                NULL AS city
             FROM other_works ow
             JOIN users u ON ow.user_id = u.id
             WHERE ow.user_id = $1
+
+            UNION ALL
+
+            SELECT
+                u.first_name,
+                u.last_name,
+                'Individual Tour' AS work_type,
+                it.id AS work_id,
+                it.date,
+                it.day,
+                it.time,
+                it.workload,
+                it.is_approved,
+                NULL AS school_name,
+                NULL AS city
+            FROM individual_tours it
+            JOIN users u ON it.guide_id = u.id
+            WHERE it.guide_id = $1 AND it.tour_status = 'DONE'
+
+            UNION ALL
+
+            SELECT
+                u.first_name,
+                u.last_name,
+                'Fair' AS work_type,
+                f.id AS work_id,
+                f.date,
+                TO_CHAR(f.date, 'Day') AS day, -- Extracts the day name from the date
+                '10:00' AS time,
+                f.workload,
+                fg.is_approved,
+                f.organization_name AS school_name,
+                f.city AS city
+            FROM fair_guide fg
+            JOIN fairs f ON fg.fair_id = f.id
+            JOIN users u ON fg.guide_id = u.id
+            WHERE fg.guide_id = $1 AND f.status = 'DONE'
 
             ORDER BY date DESC, work_type;
         `;
@@ -189,10 +282,10 @@ const deleteWorkEntry = async (req, res) => {
 };
 const editWorkEntry = async (req, res) => {
     const { id } = req.params; // Get the work ID from the URL parameters
-    const { type, date, day, time, workload, is_approved } = req.body; // Get the updated fields from the request body
-
+    const { work_type, date, day, time, workload, is_approved } = req.body; // Get the updated fields from the request body
+    //console.log(work_type, id);
     // Validate input
-    if (!id || !type || !date || !day || !time || !workload) {
+    if (!id || !work_type || !date || !day || !time || !workload) {
         return res.status(400).json({ error: "All fields are required for editing the work entry." });
     }
 
@@ -204,7 +297,7 @@ const editWorkEntry = async (req, res) => {
             WHERE id = $7
             RETURNING *;
         `;
-        const values = [type, date, day, time, workload, is_approved, id];
+        const values = [work_type, date, day, time, workload, is_approved, id];
         const result = await db.query(query, values);
 
         if (result.rowCount === 0) {
@@ -223,48 +316,45 @@ const editWorkEntry = async (req, res) => {
 };
 const updateWork = async (req, res) => {
     const { id } = req.params;
-    const { is_approved, work_type } = req.body;
+    const { is_approved, work_type, user_id } = req.body;
 
     // Convert id to integer
     const workId = parseInt(id, 10);
 
-    if (isNaN(workId) || typeof is_approved === "undefined" || !work_type) {
-        console.error("Invalid input data:", { id, is_approved, work_type });
+    if (isNaN(workId) || typeof is_approved === "undefined" || !work_type || !user_id) {
+        console.error("Invalid input data:", { id, is_approved, work_type, user_id });
         return res.status(400).json({ success: false, message: "Invalid input data." });
     }
 
     try {
         if (work_type === "Tour") {
-            const result = await db.query(
-                'SELECT "tour_id", "guide_id" FROM "tour_guide" WHERE "tour_id" = $1',
-                [workId]
-            );
-
-            if (result.rows.length === 0) {
-                return res.status(404).json({ success: false, message: "Tour entry not found." });
-            }
-
-            const tour = result.rows[0];
-
             await db.query(
                 'UPDATE "tour_guide" SET "is_approved" = $1 WHERE "tour_id" = $2 AND "guide_id" = $3',
-                [is_approved, tour.tour_id, tour.guide_id]
+                [is_approved, workId, user_id]
             );
 
             return res.status(200).json({ success: true, message: "Tour entry updated successfully." });
-        } else {
-            const result = await db.query(
-                'SELECT "id" FROM "other_works" WHERE "id" = $1',
-                [workId]
+        }
+        else if (work_type === "Individual Tour") {
+            await db.query(
+                'UPDATE "individual_tours" SET "is_approved" = $1 WHERE "id" = $2 AND "guide_id" = $3',
+                [is_approved, workId, user_id]
             );
 
-            if (result.rows.length === 0) {
-                return res.status(404).json({ success: false, message: "Other work entry not found." });
-            }
-
+            return res.status(200).json({ success: true, message: "Individual Tour entry updated successfully." });
+        }
+        else if (work_type === "Fair") {
             await db.query(
-                'UPDATE "other_works" SET "is_approved" = $1 WHERE "id" = $2',
-                [is_approved, workId]
+                'UPDATE "fair_guide" SET "is_approved" = $1 WHERE "fair_id" = $2 AND "guide_id" = $3',
+                [is_approved, workId, user_id]
+            );
+
+            return res.status(200).json({ success: true, message: "Fair entry updated successfully." });
+        }
+        else {
+            await db.query(
+                'UPDATE "other_works" SET "is_approved" = $1 WHERE "id" = $2 AND "user_id" = $3',
+                [is_approved, workId, user_id]
             );
 
             return res.status(200).json({ success: true, message: "Other work entry updated successfully." });
@@ -276,19 +366,24 @@ const updateWork = async (req, res) => {
 };
 
 
-
-
 const saveWorkload = async (req, res) => {
-    const { workId } = req.params; // Extract work ID from route parameter
+    const { workId, workType } = req.params; // Extract work ID and type from route parameters
     const { workload } = req.body; // Extract workload from request body
-
-    if (workload == null || workload < 0) {
+    //console.log(workId, workType, workload);
+    // Validate workload
+    if (workload == null || workload <= 0) {
         return res.status(400).json({ success: false, message: "Invalid workload value." });
     }
 
+    // Validate work type
+    const validWorkTypes = ["tours", "fairs", "individual_tours"];
+    if (!validWorkTypes.includes(workType)) {
+        return res.status(400).json({ success: false, message: "Invalid work type." });
+    }
+
     try {
-        // Correct PostgreSQL query with $ placeholders
-        const query = 'UPDATE "tours" SET "workload" = $1 WHERE "id" = $2';
+        // Dynamically set the table name based on work type
+        const query = `UPDATE "${workType}" SET "workload" = $1 WHERE "id" = $2`;
         const values = [workload, workId];
 
         // Execute the query
@@ -299,12 +394,13 @@ const saveWorkload = async (req, res) => {
             return res.status(404).json({ success: false, message: "Work entry not found." });
         }
 
-        res.status(200).json({ success: true, message: "Workload updated successfully." });
+        res.status(200).json({ success: true, message: `Workload updated successfully for ${workType}.` });
     } catch (error) {
         console.error("Error updating workload:", error);
         res.status(500).json({ success: false, message: "Failed to update workload.", error: error.message });
     }
 };
+
 
 module.exports = {
     getAllWorkEntries,

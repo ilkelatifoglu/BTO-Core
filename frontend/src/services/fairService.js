@@ -120,3 +120,15 @@ export const fetchAvailableFairsForUser = async () => {
         throw error;
     }
 };
+export const addFairGuide = async (fairId, guideId) => {
+    try {
+        const response = await axios.post(`${BASE_URL}/fair-guide`, {
+            fair_id: fairId,
+            guide_id: guideId,
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error adding fair-guide:", error);
+        throw error;
+    }
+};

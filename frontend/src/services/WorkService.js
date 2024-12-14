@@ -7,10 +7,10 @@ export const getAllWorkEntries = async () => {
     try {
         const response = await axios.get(`${API_URL}/work`,
             {
-              headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`,
-              },
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`,
+                },
             });
         return response.data;
     } catch (error) {
@@ -40,10 +40,10 @@ export const getWorkEntryById = async (id) => {
     try {
         const response = await axios.get(`${API_URL}/work/${id}`,
             {
-              headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`,
-              },
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`,
+                },
             });
         return response.data;
     } catch (error) {
@@ -57,10 +57,10 @@ export const addWork = async (workData) => {
     try {
         const response = await axios.post(`${API_URL}/work/add`, workData,
             {
-              headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`,
-              },
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`,
+                },
             });
         return response.data;
     } catch (error) {
@@ -76,10 +76,10 @@ export const getUserWorkEntries = async (userId) => {
     try {
         const response = await axios.get(`${API_URL}/work/user-work?user_id=${userId}`,
             {
-              headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`,
-              },
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`,
+                },
             });
         return response.data;
     } catch (error) {
@@ -91,10 +91,10 @@ export const deleteWorkEntry = async (id) => {
     try {
         const response = await axios.delete(`${API_URL}/work/delete/${id}`,
             {
-              headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`,
-              },
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`,
+                },
             });
         return response.data;
     } catch (error) {
@@ -103,6 +103,7 @@ export const deleteWorkEntry = async (id) => {
     }
 };
 export const editWorkEntry = async (id, updatedWork) => {
+    console.log(updatedWork);
     try {
         const response = await axios.put(`${API_URL}/work/edit/${id}`, updatedWork, {
             headers: {
@@ -116,11 +117,12 @@ export const editWorkEntry = async (id, updatedWork) => {
         throw error;
     }
 };
-export const updateWorkEntry = async (id, isApproved, workType) => {
+export const updateWorkEntry = async (id, isApproved, workType, userId) => {
     try {
         const response = await axios.put(`${API_URL}/work/update/${id}`, {
             is_approved: isApproved,
             work_type: workType, // Include work_type in the payload
+            user_id: userId, // Add user_id to the payload
         }, {
             headers: {
                 "Content-Type": "application/json",
@@ -134,13 +136,16 @@ export const updateWorkEntry = async (id, isApproved, workType) => {
     }
 };
 
-export const saveWorkload = async (workId, workload) => {
 
+export const saveWorkload = async (workId, workType, workload) => {
+    //console.log(workId, workType, workload);
     try {
-        const response = await axios.put(`${API_URL}/work/${workId}/workload`, { workload }, { headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-        }});
+        const response = await axios.put(`${API_URL}/work/${workType}/${workId}/workload`, { workload }, {
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            }
+        });
         return response.data;
     } catch (error) {
         console.error("Error saving workload:", error);

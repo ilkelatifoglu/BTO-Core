@@ -6,7 +6,7 @@ import { Checkbox } from "primereact/checkbox";
 import { Button } from "primereact/button";
 import { Toast } from "primereact/toast"; // (2) Import Toast
 import "./PuantajComponents.css";
-import '../common/CommonComp.css';
+import "../common/CommonComp.css";
 
 export default function AdminWorkTable() {
     const [workEntries, setWorkEntries] = useState([]);
@@ -17,15 +17,21 @@ export default function AdminWorkTable() {
         getAllWorkEntries()
             .then((data) => {
                 const initialSelection = data.reduce((acc, entry) => {
-                    acc[entry.work_id] = entry.is_approved;
+                    const uniqueKey = JSON.stringify({
+                        work_id: entry.work_id,
+                        work_type: entry.work_type,
+                        id: entry.id, // User ID
+                    });
+                    acc[uniqueKey] = entry.is_approved; // Use composite key
                     return acc;
                 }, {});
+
                 setWorkEntries(data);
                 setSelectedEntries(initialSelection);
 
                 // Success toast after loading data
-                toast.current.clear();
-                toast.current.show({
+                toast.current?.clear();
+                toast.current?.show({
                     severity: "success",
                     summary: "Success",
                     detail: "All work entries loaded successfully.",
@@ -34,8 +40,8 @@ export default function AdminWorkTable() {
             })
             .catch((error) => {
                 console.error("Error fetching work entries:", error);
-                toast.current.clear();
-                toast.current.show({
+                toast.current?.clear();
+                toast.current?.show({
                     severity: "error",
                     summary: "Error",
                     detail: `Failed to load work entries: ${error.message}`,
@@ -44,25 +50,44 @@ export default function AdminWorkTable() {
             });
     }, []);
 
-    const handleCheckboxChange = (workId, checked) => {
+    const handleCheckboxChange = (rowData, checked) => {
+        const uniqueKey = JSON.stringify({
+            work_id: rowData.work_id,
+            work_type: rowData.work_type,
+            id: rowData.id, // User ID
+        });
+
         setSelectedEntries((prev) => ({
             ...prev,
-            [workId]: checked,
+            [uniqueKey]: checked,
         }));
     };
 
     const handleSubmit = async () => {
         const updates = workEntries
-            .filter((entry) => selectedEntries[entry.work_id] !== entry.is_approved)
+            .filter((entry) => {
+                const uniqueKey = JSON.stringify({
+                    work_id: entry.work_id,
+                    work_type: entry.work_type,
+                    id: entry.id, // User ID
+                });
+
+                return selectedEntries[uniqueKey] !== entry.is_approved;
+            })
             .map((entry) => ({
                 work_id: entry.work_id,
-                is_approved: selectedEntries[entry.work_id],
                 work_type: entry.work_type,
+                id: entry.id, // User ID
+                is_approved: selectedEntries[JSON.stringify({
+                    work_id: entry.work_id,
+                    work_type: entry.work_type,
+                    id: entry.id, // User ID
+                })],
             }));
 
         if (updates.length === 0) {
-            toast.current.clear();
-            toast.current.show({
+            toast.current?.clear();
+            toast.current?.show({
                 severity: "info",
                 summary: "No Changes",
                 detail: "No updates to submit.",
@@ -73,10 +98,11 @@ export default function AdminWorkTable() {
 
         try {
             for (const update of updates) {
-                await updateWorkEntry(update.work_id, update.is_approved, update.work_type);
+                // Pass the user ID (update.id) to updateWorkEntry
+                await updateWorkEntry(update.work_id, update.is_approved, update.work_type, update.id);
             }
-            toast.current.clear();
-            toast.current.show({
+            toast.current?.clear();
+            toast.current?.show({
                 severity: "success",
                 summary: "Success",
                 detail: "Work entries updated successfully.",
@@ -85,8 +111,8 @@ export default function AdminWorkTable() {
             refreshData();
         } catch (error) {
             console.error("Error updating work entries:", error);
-            toast.current.clear();
-            toast.current.show({
+            toast.current?.clear();
+            toast.current?.show({
                 severity: "error",
                 summary: "Error",
                 detail: `Failed to update work entries: ${error.message}`,
@@ -95,19 +121,25 @@ export default function AdminWorkTable() {
         }
     };
 
+
     const refreshData = async () => {
         try {
             const data = await getAllWorkEntries();
             const initialSelection = data.reduce((acc, entry) => {
-                acc[entry.work_id] = entry.is_approved;
+                const uniqueKey = JSON.stringify({
+                    work_id: entry.work_id,
+                    work_type: entry.work_type,
+                    id: entry.id, // User ID
+                });
+                acc[uniqueKey] = entry.is_approved;
                 return acc;
             }, {});
             setWorkEntries(data);
             setSelectedEntries(initialSelection);
         } catch (error) {
             console.error("Error refreshing data:", error);
-            toast.current.clear();
-            toast.current.show({
+            toast.current?.clear();
+            toast.current?.show({
                 severity: "error",
                 summary: "Error",
                 detail: `Failed to refresh data: ${error.message}`,
@@ -139,7 +171,7 @@ export default function AdminWorkTable() {
                     value={workEntries}
                     dataKey="work_id"
                     paginator
-                    rows={5}
+                    rows={20}
                     tableStyle={{ minWidth: "50rem" }}
                     paginatorTemplate="FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
                     currentPageReportTemplate="{first} to {last} of {totalRecords}"
@@ -148,8 +180,19 @@ export default function AdminWorkTable() {
                     <Column field="date" header="Date" body={(rowData) => formatDate(rowData.date)}></Column>
                     <Column field="day" header="Day"></Column>
                     <Column field="time" header="Time" body={(rowData) => formatTime(rowData.time)}></Column>
+                    <Column
+                        field="school_name"
+                        header="School/Fair Name"
+                        body={(rowData) => (rowData.school_name ? rowData.school_name : "-")}
+                    />
+                    <Column
+                        field="city"
+                        header="City"
+                        body={(rowData) => (rowData.city ? rowData.city : "-")}
+                    />
                     <Column field="first_name" header="First Name"></Column>
                     <Column field="last_name" header="Last Name"></Column>
+                    <Column field="iban" header="IBAN No"></Column>
                     <Column
                         field="workload"
                         header="Workload"
@@ -165,8 +208,12 @@ export default function AdminWorkTable() {
                         header="Approve"
                         body={(rowData) => (
                             <Checkbox
-                                checked={selectedEntries[rowData.work_id]}
-                                onChange={(e) => handleCheckboxChange(rowData.work_id, e.checked)}
+                                checked={selectedEntries[JSON.stringify({
+                                    work_id: rowData.work_id,
+                                    work_type: rowData.work_type,
+                                    id: rowData.id, // User ID
+                                })]}
+                                onChange={(e) => handleCheckboxChange(rowData, e.checked)}
                             />
                         )}
                     />

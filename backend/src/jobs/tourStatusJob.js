@@ -4,7 +4,7 @@ const cron = require('node-cron');
 const dayjs = require('dayjs');
 const { query } = require('../config/database');
 const { generateFeedbackToken } = require('../utils/jwt');
-const emailService = require('../services/EmailService'); 
+const emailService = require('../services/EmailService');
 require('dotenv').config();
 
 /**
@@ -47,7 +47,44 @@ async function checkAndSetToursReady() {
     console.error("Error updating tours to READY:", error.message || error);
   }
 }
+// Method to handle `individual_tours`
+async function checkAndSetToursReadyForIndividualTours() {
+  try {
+    const currentDate = dayjs().format('YYYY-MM-DD');
+    const twoWeeksLater = dayjs().add(14, 'day').format('YYYY-MM-DD');
 
+    // Select `individual_tours` that meet the criteria
+    const selectQuery = `
+      SELECT id, date, tour_status
+      FROM individual_tours
+      WHERE tour_status = 'APPROVED'
+        AND date <= $1::date
+        AND date >= $2::date
+    `;
+
+    const result = await query(selectQuery, [twoWeeksLater, currentDate]);
+
+    if (result.rows.length === 0) {
+      console.log("No individual tours need to be updated from APPROVED to READY.");
+      return;
+    }
+
+    const individualTourIds = result.rows.map(row => row.id);
+
+    // Update selected individual tours to `READY`
+    const updateQuery = `
+      UPDATE individual_tours
+      SET tour_status = 'READY'
+      WHERE id = ANY($1::int[])
+    `;
+
+    await query(updateQuery, [individualTourIds]);
+
+    console.log(`Updated ${individualTourIds.length} individual tours from APPROVED to READY.`);
+  } catch (error) {
+    console.error("Error updating individual tours to READY:", error.message || error);
+  }
+}
 /**
  * Function to update tour_status from 'READY' to 'DONE' for completed tours.
  * @param {string} tourTime - The scheduled time of the tour (e.g., '09:00').
@@ -62,7 +99,7 @@ async function updateTourStatusToDone(tourTime) {
       FROM tours
       WHERE tour_status = 'READY'
         AND date = $1::date
-        AND time = $2::time
+        AND time = $2
     `;
 
     const result = await query(selectQuery, [currentDate, tourTime]);
@@ -86,6 +123,42 @@ async function updateTourStatusToDone(tourTime) {
     console.log(`Updated ${tourIds.length} tours from READY to DONE for time ${tourTime} on ${currentDate}.`);
   } catch (error) {
     console.error(`Error updating tours to DONE for time ${tourTime}:`, error.message || error);
+  }
+}
+async function updateIndividualTourStatusToDone(tourTime) {
+  try {
+    const currentDate = dayjs().format('YYYY-MM-DD');
+
+    // Select individual tours that are READY, scheduled for today at tourTime
+    const selectQuery = `
+      SELECT id, date, time, tour_status
+      FROM individual_tours
+      WHERE tour_status = 'READY'
+        AND date = $1::date
+        AND time = $2
+    `;
+
+    const result = await query(selectQuery, [currentDate, tourTime]);
+
+    if (result.rows.length === 0) {
+      console.log(`No READY individual tours found for time ${tourTime} on ${currentDate}.`);
+      return;
+    }
+
+    const individualTourIds = result.rows.map(row => row.id);
+
+    // Update selected individual tours to DONE
+    const updateQuery = `
+      UPDATE individual_tours
+      SET tour_status = 'DONE'
+      WHERE id = ANY($1::int[])
+    `;
+
+    await query(updateQuery, [individualTourIds]);
+
+    console.log(`Updated ${individualTourIds.length} individual tours from READY to DONE for time ${tourTime} on ${currentDate}.`);
+  } catch (error) {
+    console.error(`Error updating individual tours to DONE for time ${tourTime}:`, error.message || error);
   }
 }
 
@@ -160,6 +233,7 @@ function scheduleSetToursReady() {
   cron.schedule('5 0 * * *', async () => {
     console.log("Running daily tour status check at 00:05 AM...");
     await checkAndSetToursReady();
+    await checkAndSetToursReadyForIndividualTours();
   }, {
     timezone: 'Europe/Istanbul' // Adjust timezone if needed
   });
@@ -202,6 +276,22 @@ function scheduleSetToursDone() {
     console.log(`Scheduled tour status update job for tour time ${tourTime} at cron time '${cronTime}'.`);
   });
 
+  // Schedule individual tours for each hour from 9 AM to 5 PM
+  const individualTourTimes = Array.from({ length: 9 }, (_, i) => i + 9); // [9, 10, 11, ..., 17]
+  individualTourTimes.forEach((hour) => {
+    const cronTime = `5 ${hour} * * *`; // Run at 5 minutes past the hour
+    const tourTime = `${String(hour).padStart(2, '0')}:00`; // Format as HH:00
+
+    cron.schedule(cronTime, async () => {
+      console.log(`Running individual tour status update at ${dayjs().format('HH:mm')} for tour time ${tourTime}...`);
+      await updateIndividualTourStatusToDone(tourTime);
+    }, {
+      timezone: 'Europe/Istanbul', // Adjust timezone as needed
+    });
+
+    console.log(`Scheduled individual tour status update job for tour time ${tourTime} at cron time '${cronTime}'.`);
+  });
+
   console.log('Tour completion schedulers initialized.');
 }
 
@@ -211,5 +301,7 @@ module.exports = {
   scheduleSendFeedbackLinks,
   checkAndSetToursReady, // Exported for manual invocation if needed
   updateTourStatusToDone, // Exported for manual invocation if needed
-  sendFeedbackLinksForCompletedTours, 
+  sendFeedbackLinksForCompletedTours,
+  checkAndSetToursReadyForIndividualTours,
+  updateIndividualTourStatusToDone
 };

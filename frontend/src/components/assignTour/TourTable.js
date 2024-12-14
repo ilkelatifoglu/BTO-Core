@@ -414,8 +414,7 @@ export default function ReadyToursTable() {
       ) {
       if (
         localStorage.getItem("userType") === '3' || 
-        localStorage.getItem("userType") === '4' || 
-        localStorage.getItem("userType") === '2'
+        localStorage.getItem("userType") === '4'
       ) { 
         return (
           <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "10px" }}>

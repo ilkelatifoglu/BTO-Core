@@ -38,7 +38,7 @@ const IndividualRightForm = ({
   // Handler for number of students input with validation
   const handleNumberOfStudentsChange = (e) => {
     const value = e.target.value;
-    if (/^\d{0,3}$/.test(value) && (value === '' || (Number(value) >= 0))) {
+    if (/^\d{0,1}$/.test(value) && (value === '' || (Number(value) >= 0 && Number(value) <= 5))) {
       setNumberOfStudents(value);
     }
   };
@@ -53,7 +53,7 @@ const IndividualRightForm = ({
           id="numberOfStudents"
           name="numberOfStudents"
           className="form-control"
-          placeholder="Enter number of students (0-50)"
+          placeholder="Enter number of students (0-5)"
           value={numberOfStudents}
           onChange={handleNumberOfStudentsChange}
           required

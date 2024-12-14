@@ -5,7 +5,7 @@ const { sendEmail } = require("../utils/email");
 
 const {
     insertIndividualTour,
-  } = require("../queries/individualTourQueries");
+} = require("../queries/individualTourQueries");
 
 exports.addIndividualTour = async (req, res) => {
     const {
@@ -19,7 +19,7 @@ exports.addIndividualTour = async (req, res) => {
         visitor_notes,
     } = req.body;
 
-    try{
+    try {
         const day = new Date(tour_date).toLocaleString("en-GB", { weekday: "long" });
         const tourId = await insertIndividualTour({
             name,
@@ -31,19 +31,19 @@ exports.addIndividualTour = async (req, res) => {
             contact_phone,
             email,
             visitor_notes,
-          });
-          
-          await emailService.sendIndividualTourConfirmationEmail(email, {
+        });
+
+        await emailService.sendIndividualTourConfirmationEmail(email, {
             name,
             tour_date: tour_date,
             time,
-          });
+        });
 
-          res.status(200).json({
+        res.status(200).json({
             success: true,
             message: "Tour added successfully",
             tourId,
-          });
+        });
     } catch (error) {
         console.error("Error adding tour:", error.message || error);
         res.status(500).json({ success: false, message: "Server error" });
@@ -58,7 +58,7 @@ exports.getAllIndividualTours = async (req, res) => {
                    users.last_name AS guide_last_name
             FROM individual_tours
             LEFT JOIN users ON individual_tours.guide_id = users.id
-            ORDER BY individual_tours.date ASC
+            ORDER BY individual_tours.date DESC
         `);
 
         res.status(200).json({ success: true, data: result.rows });
@@ -240,7 +240,7 @@ exports.withdrawFromIndividualTour = async (req, res) => {
                     to: adminEmails.join(","),
                     subject,
                     html
-                  });
+                });
                 console.log("Notification emails sent to admins:", adminEmails);
             } catch (emailError) {
                 console.error("Failed to send notification emails to admins:", emailError);

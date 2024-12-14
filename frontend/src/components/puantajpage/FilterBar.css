@@ -1,0 +1,29 @@
+.filter-bar-container {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    background-color: #ffffff;
+    border: 1px solid #ffffff;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+  }
+  
+  .filter-input {
+    width: 130px;
+    height: 40px;
+    margin-left: 0;
+  }
+  
+  .clearfilters-button {
+    background-color: rgb(0, 74, 119);
+    color: #fff;              /* White text for contrast */
+    border: none;             /* Remove default border */
+    border-radius: 4px;
+    height: 40px;
+    cursor: pointer;
+    padding: 0 1rem;          /* Add some horizontal padding */
+    transition: background-color 0.3s ease; /* Smooth hover transition */
+  }

@@ -29,23 +29,27 @@ export default function UserWorkTable() {
         getUserWorkEntries(userId)
             .then((data) => {
                 setWorkEntries(data);
-                toast.current.clear();
-                toast.current.show({
-                    severity: "success",
-                    summary: "Success",
-                    detail: "Work entries loaded successfully.",
-                    life: 3000,
-                });
+                if (toast.current) {
+                    toast.current.clear();
+                    toast.current.show({
+                        severity: "success",
+                        summary: "Success",
+                        detail: "Work entries loaded successfully.",
+                        life: 3000,
+                    });
+                }
             })
             .catch((error) => {
                 console.error("Error fetching user work entries:", error);
-                toast.current.clear();
-                toast.current.show({
-                    severity: "error",
-                    summary: "Error",
-                    detail: `Failed to load work entries: ${error.message}`,
-                    life: 3000,
-                });
+                if (toast.current) {
+                    toast.current.clear();
+                    toast.current.show({
+                        severity: "error",
+                        summary: "Error",
+                        detail: `Failed to load work entries: ${error.message}`,
+                        life: 3000,
+                    });
+                }
             });
     }, []);
 
@@ -69,6 +73,7 @@ export default function UserWorkTable() {
                     setWorkEntries((prevEntries) =>
                         prevEntries.filter((entry) => entry.work_id !== rowData.work_id)
                     );
+                    if (toast.current) {
                     toast.current.clear();
                     toast.current.show({
                         severity: "success",
@@ -76,6 +81,7 @@ export default function UserWorkTable() {
                         detail: `Work entry ${rowData.work_id} deleted successfully.`,
                         life: 3000,
                     });
+                    }
                     refreshData();
                 } catch (error) {
                     console.error("Error deleting work entry:", error);
@@ -158,7 +164,7 @@ export default function UserWorkTable() {
                                 : entry
                         )
                     );
-
+                    if (toast.current)
                     toast.current.clear();
                     toast.current.show({
                         severity: "success",
@@ -195,6 +201,7 @@ export default function UserWorkTable() {
             )
         );
         refreshData();
+        if (toast.current)
         toast.current.clear();
         toast.current.show({
             severity: "success",

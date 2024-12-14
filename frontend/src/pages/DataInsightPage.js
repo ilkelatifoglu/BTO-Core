@@ -40,13 +40,15 @@ const DataInsightPage = () => {
         console.error("Error fetching tour data:", error);
 
         // Show error toast if data fetching fails
-        toast.current.clear();
-        toast.current.show({
-          severity: "error",
-          summary: "Error",
-          detail: "Failed to load data. Please try again.",
-          life: 3000,
-        });
+        if (toast.current) {
+          toast.current.clear();
+          toast.current.show({
+            severity: "error",
+            summary: "Error",
+            detail: "Failed to load data. Please try again.",
+            life: 3000,
+          });
+        }
       }
     };
 

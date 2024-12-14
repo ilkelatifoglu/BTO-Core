@@ -44,6 +44,7 @@ export default function ReadyToursTable() {
   
       } catch (error) {
         console.error("Error fetching tours:", error);
+        if(toast.current){
         toast.current.clear();
         toast.current.show({
           severity: "error",
@@ -51,6 +52,7 @@ export default function ReadyToursTable() {
           detail: error.message || "Error fetching tours.",
           life: 3000,
         });
+      }
       }
     };
 
@@ -146,6 +148,7 @@ export default function ReadyToursTable() {
         user_id: userId,
         user_type: userType
       });
+      if(toast.current){
       toast.current.clear();
       toast.current.show({
         severity: "success",
@@ -153,6 +156,7 @@ export default function ReadyToursTable() {
         detail: response.message,
         life: 3000,
       });
+    }
 
       const updatedTours = await AssignTourService.getReadyTours();
       setTours(updatedTours);

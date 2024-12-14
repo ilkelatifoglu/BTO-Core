@@ -30,23 +30,27 @@ export default function AdminWorkTable() {
                 setSelectedEntries(initialSelection);
 
                 // Success toast after loading data
-                toast.current?.clear();
-                toast.current?.show({
-                    severity: "success",
-                    summary: "Success",
-                    detail: "All work entries loaded successfully.",
-                    life: 3000,
-                });
+                if (toast.current) {
+                    toast.current.clear();
+                    toast.current.show({
+                        severity: "success",
+                        summary: "Success",
+                        detail: "All work entries loaded successfully.",
+                        life: 3000,
+                    });
+                }
             })
             .catch((error) => {
                 console.error("Error fetching work entries:", error);
-                toast.current?.clear();
-                toast.current?.show({
-                    severity: "error",
-                    summary: "Error",
-                    detail: `Failed to load work entries: ${error.message}`,
-                    life: 3000,
-                });
+                if(toast.current){
+                    toast.current.clear();
+                    toast.current.show({
+                        severity: "error",
+                        summary: "Error",
+                        detail: `Failed to load work entries: ${error.message}`,
+                        life: 3000,
+                    });
+                }
             });
     }, []);
 

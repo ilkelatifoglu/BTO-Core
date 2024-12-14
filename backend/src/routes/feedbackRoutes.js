@@ -5,12 +5,13 @@ const authenticateToken = require("../middleware/auth");
 
 const router = express.Router();
 
-router.get("/getFeedbackByRole", feedbackController.getFeedbackByRole);
-router.post("/createFeedback", feedbackController.createFeedback);
-router.put("/updateFeedback", feedbackController.updateFeedback);
-router.delete("/:feedbackId", feedbackController.deleteFeedback);  
+router.get("/getFeedbackByRole", authenticateToken, feedbackController.getFeedbackByRole);
+router.post("/createFeedback", authenticateToken, feedbackController.createFeedback);
+router.put("/updateFeedback", authenticateToken, feedbackController.updateFeedback);
+router.delete("/:feedbackId", authenticateToken, feedbackController.deleteFeedback);  
 router.post("/submitFeedback", feedbackController.submitFeedback); 
 router.get("/validateToken", feedbackController.validateToken);
+router.get("/feedbackByToken", feedbackController.getFeedbackByToken);
 
 module.exports = router;
 

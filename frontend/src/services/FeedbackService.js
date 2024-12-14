@@ -13,17 +13,6 @@ const FeedbackService = {
    * @param {string} data.feedback - The feedback content.
    * @returns {Promise<void>} - Resolves if the feedback is submitted successfully.
    */
-  verifyFeedbackToken: async (token) => {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/feedback/validateToken`, {
-        params: { token },
-      });
-      return response.data.success; // Return true if token is valid
-    } catch (error) {
-      console.error("Error verifying feedback token:", error);
-      return false; // Return false if token is invalid or expired
-    }
-  },  
 
   submitFeedback: async (data) => {
     try {
@@ -66,6 +55,30 @@ const FeedbackService = {
     } catch (error) {
       console.error("Error creating feedback:", error);
       throw new Error(error.response?.data?.message || "Unable to create feedback");
+    }
+  },
+  
+  verifyFeedbackToken: async (token) => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/feedback/validateToken`, {
+        params: { token },
+      });
+      return response.data.success; // Return true if token is valid
+    } catch (error) {
+      console.error("Error verifying feedback token:", error);
+      return false; // Return false if token is invalid or expired
+    }
+  },  
+
+  getFeedbackByToken: async (token) => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/feedback/feedbackByToken`, {
+        params: { token },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching feedback by token:", error);
+      throw error;
     }
   },
 

@@ -26,7 +26,11 @@ const SchoolFeedbackPage = () => {
   
       try {
         const isValid = await FeedbackService.verifyFeedbackToken(token);
+        const feedbackData = await FeedbackService.getFeedbackByToken(token);
         setIsValidToken(isValid);
+        if (feedbackData && feedbackData.feedback) {
+          setFeedback(feedbackData.feedback); 
+        }
       } catch (error) {
         setIsValidToken(false);
         setErrorMessage("Failed to validate feedback token.");
@@ -56,7 +60,6 @@ const SchoolFeedbackPage = () => {
         summary: "Success",
         detail: "Thank you for your feedback!",
       });
-      setFeedback(""); 
     } catch (error) {
       toast.current.show({
         severity: "error",
@@ -71,13 +74,17 @@ const SchoolFeedbackPage = () => {
 
   if (!isValidToken) {
     return (
-      <div className="feedback-page">
-        <h1>Feedback</h1>
-        <p>{errorMessage || "Unable to validate your feedback link."}</p>
+      <div className="feedback-invalid">
+        <div className="feedback-container error-state">
+          <h1 className="error-title">ERROR!</h1>
+          <p className="error-message">
+            {errorMessage || "Unable to validate your feedback link."}
+          </p>
+        </div>
       </div>
     );
-  }  
-
+  }
+  
   return (
     <div className="feedback-page">
       <Toast ref={toast} />

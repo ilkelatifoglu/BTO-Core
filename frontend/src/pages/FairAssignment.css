@@ -25,7 +25,7 @@
     font-size: 35px; /* Large heading size */
     margin-bottom: 20px;
     font-weight: bold; /* Bold for emphasis */
-    text-align: left; /* Center-align heading */
+    text-align: center; /* Center-align heading */
 }
 
 /* DataTable styling */

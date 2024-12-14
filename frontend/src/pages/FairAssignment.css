@@ -21,11 +21,11 @@
 
 /* Page title styling */
 .fair-assignment-content h2 {
-    font-family: "Tiempos Text Regular";
+    font-family:'Lato', sans-serif;
     font-size: 35px; /* Large heading size */
     margin-bottom: 20px;
     font-weight: bold; /* Bold for emphasis */
-    text-align: center; /* Center-align heading */
+    text-align: left; /* Center-align heading */
 }
 
 /* DataTable styling */

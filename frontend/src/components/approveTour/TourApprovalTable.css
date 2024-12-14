@@ -136,7 +136,7 @@
 .p-datatable .p-datatable-thead > tr > th {
     padding: 8px 10px; /* Reduce padding slightly for a more compact layout */
     font-size: 0.9rem; /* Reduce font size for better fit */
-    text-align: center; /* Ensure consistent alignment */
+    text-align: left; /* Ensure consistent alignment */
 }
 
 /* Dialog Styling */

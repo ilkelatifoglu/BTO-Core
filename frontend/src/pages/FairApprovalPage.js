@@ -88,10 +88,10 @@ export default function FairApprovalPage() {
             }
         }
     };
-    
+
     const handleFilterChange = (filters) => {
         let filtered = [...fairs];
-    
+
         if (filters.date) {
             filtered = filtered.filter(
                 (fair) =>
@@ -99,17 +99,17 @@ export default function FairApprovalPage() {
                     new Date(filters.date).toLocaleDateString()
             );
         }
-    
+
         if (filters.organization) {
             filtered = filtered.filter((fair) =>
                 fair.organization_name.toLowerCase().includes(filters.organization.toLowerCase())
             );
         }
-    
+
         if (filters.status) {
             filtered = filtered.filter((fair) => fair.status === filters.status);
         }
-    
+
         setFilteredFairs(filtered);
     };
 
@@ -301,20 +301,20 @@ export default function FairApprovalPage() {
                 icon="pi pi-check"
                 className="fair-approve-button"
                 onClick={() => handleApproveFair(rowData.id)}
-                disabled={rowData.status === 'APPROVED' || rowData.status === 'CANCELLED'}
+                disabled={rowData.status !== 'WAITING'}
             />
             <Button
                 label="Cancel"
                 icon="pi pi-times"
                 className="fair-cancel-button"
                 onClick={() => handleCancelFair(rowData.id)}
-                disabled={rowData.status === 'CANCELLED'}
+                disabled={rowData.status !== 'APPROVED'}
             />
         </div>
     );
     if (!isAuthorized) {
         return <Unauthorized />;
-      }
+    }
     return (
         <div className="fair-approval-page">
             <Sidebar />

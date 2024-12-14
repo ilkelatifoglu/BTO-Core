@@ -85,6 +85,44 @@ async function checkAndSetToursReadyForIndividualTours() {
     console.error("Error updating individual tours to READY:", error.message || error);
   }
 }
+async function checkAndSetFairsReady() {
+  try {
+    const currentDate = dayjs().format('YYYY-MM-DD');
+    const twoWeeksLater = dayjs().add(14, 'day').format('YYYY-MM-DD');
+
+    // Select fairs that are APPROVED and within 2 weeks
+    const selectQuery = `
+      SELECT id, date, status
+      FROM fairs
+      WHERE status = 'APPROVED'
+        AND date <= $1::date
+        AND date >= $2::date
+    `;
+
+    const result = await query(selectQuery, [twoWeeksLater, currentDate]);
+
+    if (result.rows.length === 0) {
+      console.log("No fairs need to be updated from APPROVED to READY.");
+      return;
+    }
+
+    const fairIds = result.rows.map(row => row.id);
+
+    // Update selected fairs to READY
+    const updateQuery = `
+      UPDATE fairs
+      SET status = 'READY'
+      WHERE id = ANY($1::int[])
+    `;
+
+    await query(updateQuery, [fairIds]);
+
+    console.log(`Updated ${fairIds.length} fairs from APPROVED to READY.`);
+  } catch (error) {
+    console.error("Error updating fairs to READY:", error.message || error);
+  }
+}
+
 /**
  * Function to update tour_status from 'READY' to 'DONE' for completed tours.
  * @param {string} tourTime - The scheduled time of the tour (e.g., '09:00').
@@ -161,6 +199,41 @@ async function updateIndividualTourStatusToDone(tourTime) {
     console.error(`Error updating individual tours to DONE for time ${tourTime}:`, error.message || error);
   }
 }
+async function updateFairStatusToDone() {
+  try {
+    const currentDate = dayjs().format('YYYY-MM-DD');
+
+    // Select fairs that are READY and scheduled for today
+    const selectQuery = `
+      SELECT id, date, fair_status
+      FROM fairs
+      WHERE fair_status = 'READY'
+        AND date = $1::date
+    `;
+
+    const result = await query(selectQuery, [currentDate]);
+
+    if (result.rows.length === 0) {
+      console.log(`No READY fairs found for ${currentDate}.`);
+      return;
+    }
+
+    const fairIds = result.rows.map(row => row.id);
+
+    // Update selected fairs to DONE
+    const updateQuery = `
+      UPDATE fairs
+      SET fair_status = 'DONE'
+      WHERE id = ANY($1::int[])
+    `;
+
+    await query(updateQuery, [fairIds]);
+
+    console.log(`Updated ${fairIds.length} fairs from READY to DONE for ${currentDate}.`);
+  } catch (error) {
+    console.error(`Error updating fairs to DONE for ${currentDate}:`, error.message || error);
+  }
+}
 
 async function sendFeedbackLinksForCompletedTours() {
   try {
@@ -234,6 +307,7 @@ function scheduleSetToursReady() {
     console.log("Running daily tour status check at 00:05 AM...");
     await checkAndSetToursReady();
     await checkAndSetToursReadyForIndividualTours();
+    await checkAndSetFairsReady();
   }, {
     timezone: 'Europe/Istanbul' // Adjust timezone if needed
   });
@@ -294,6 +368,18 @@ function scheduleSetToursDone() {
 
   console.log('Tour completion schedulers initialized.');
 }
+function scheduleSetFairsDone() {
+  const cronTime = '0 20 * * *'; // At 8:00 PM every day
+
+  cron.schedule(cronTime, async () => {
+    console.log(`Running fair status update at ${dayjs().format('HH:mm')}...`);
+    await updateFairStatusToDone();
+  }, {
+    timezone: 'Europe/Istanbul', // Adjust timezone as needed
+  });
+
+  console.log(`Scheduled fair status update job to run at 8:00 PM daily.`);
+}
 
 module.exports = {
   scheduleSetToursReady,
@@ -303,5 +389,8 @@ module.exports = {
   updateTourStatusToDone, // Exported for manual invocation if needed
   sendFeedbackLinksForCompletedTours,
   checkAndSetToursReadyForIndividualTours,
-  updateIndividualTourStatusToDone
+  updateIndividualTourStatusToDone,
+  checkAndSetFairsReady,
+  updateFairStatusToDone,
+  scheduleSetFairsDone
 };

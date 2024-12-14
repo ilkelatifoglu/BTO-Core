@@ -108,7 +108,7 @@
     color: #333;
     flex: 1;
     margin-right: 60px;
-    margin-left: -40px;
+    margin-left: 0px;
 }
 
 /* Button visibility on hover */

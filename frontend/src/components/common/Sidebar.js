@@ -10,11 +10,35 @@ let cachedProfileImage = null;
 let cachedUserProfile = null;
 let cachedUserId = null;
 
-const token = localStorage.getItem("token") || localStorage.getItem("tempToken");
+const token =
+  localStorage.getItem("token") || localStorage.getItem("tempToken");
 const API_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:3001";
 
+// Add this helper function at the component level
+const getNameFontSize = (name) => {
+  if (!name) return "0.85rem";
+  const length = name.length;
+  if (length > 20) return "0.75rem";
+  if (length > 15) return "0.8rem";
+  return "0.85rem";
+};
+
+const getRoleText = (userType) => {
+  switch (userType) {
+    case 4:
+      return "Coordinator";
+    case 3:
+      return "Advisor";
+    case 2:
+      return "Guide";
+    case 1:
+      return "Candidate Guide";
+    default:
+      return "User";
+  }
+};
+
 const Sidebar = ({ setCurrentPage }) => {
-  const [isExpanded, setIsExpanded] = useState(true);
   const navigate = useNavigate();
   const [profileImage, setProfileImage] = useState(null);
   const [userName, setUserName] = useState("");
@@ -23,15 +47,9 @@ const Sidebar = ({ setCurrentPage }) => {
   const [isLoadingProfile, setIsLoadingProfile] = useState(false);
   const [userType, setUserType] = useState(null);
   const toast = useRef(null);
-
-  // Add new state for current path
   const [currentPath, setCurrentPath] = useState(
     window.location.pathname.substring(1)
   );
-
-  const toggleSidebar = () => {
-    setIsExpanded(!isExpanded);
-  };
 
   const handleNavigation = (page) => {
     if (page === "logout") {
@@ -84,14 +102,11 @@ const Sidebar = ({ setCurrentPage }) => {
 
     setIsLoadingProfile(true);
     try {
-      const response = await axios.get(
-        `${API_URL}/profile/getProfile`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.get(`${API_URL}/profile/getProfile`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       const { firstName, lastName } = response.data;
       setUserName(`${firstName} ${lastName}`);
@@ -156,59 +171,54 @@ const Sidebar = ({ setCurrentPage }) => {
   }, [window.location.pathname]);
 
   return (
-    <div style={{ display: "flex" }}>
-      <div className={`sidebar ${isExpanded ? "expanded" : "collapsed"}`}>
-        <Toast ref={toast} position="top-right" />
-        <button
-          className="sidebar__toggle"
-          onClick={toggleSidebar}
-          style={{ marginRight: "15px" }}
-        >
-          {isExpanded ? "<<" : ">>"}
-        </button>
+    <div className="sidebar">
+      <Toast ref={toast} />
+      <div>
         <div className="sidebar__header">
           <div className="profile-container">
-            <div className="profile-picture-wrapper">
-              <img
-                src={profileImage || defaultProfileImage}
-                alt="Profile"
-                className={`profile-picture ${isLoading ? "loading-blur" : ""}`}
-              />
-              {isExpanded && !isLoadingPicture && (
+            <div className="profile-content">
+              <div className="profile-picture-wrapper">
+                <img
+                  src={profileImage || defaultProfileImage}
+                  alt="Profile"
+                  className={`profile-picture ${
+                    isLoading ? "loading-blur" : ""
+                  }`}
+                />
                 <button
-                  className="refresh-button"
-                  onClick={fetchUserData}
+                  className={`refresh-button ${
+                    isLoadingPicture || isLoadingProfile ? "loading" : ""
+                  }`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    fetchUserData();
+                  }}
                   disabled={isLoadingPicture || isLoadingProfile}
-                  title="Refresh Profile and Name"
+                  title="Refresh Profile"
                 >
                   <i className="pi pi-refresh"></i>
                 </button>
-              )}
+              </div>
+              <div className="user-info">
+                <h2 className="user-name">{userName || "User"}</h2>
+                <span className="user-role">{getRoleText(userType)}</span>
+              </div>
             </div>
-            {isExpanded && <h2>{userName || "User"}</h2>}
           </div>
         </div>
-        {/* Divider */}
-        {isExpanded && <div className="sidebar__divider"></div>}
+        <div className="sidebar__divider"></div>
 
-        {isExpanded && (
-        <p
-          className={`sidebar__dashboard ${
-            currentPath === "dashboard" ? "active" : ""
-          }`}
-          onClick={() => handleNavigation("dashboard")}
-          style={{
-            cursor: "pointer", // Make it clickable
-            color: currentPath === "dashboard" ? "rgb(0, 74, 119)" : "#000",
-            fontWeight: currentPath === "dashboard" ? "bold" : "normal",
-            textDecoration: currentPath === "dashboard" ? "underline" : "none",
-          }}
-        >
-          Dashboard
-        </p>
-         )}
-         
-          <ul className="sidebar__menu">
+        <ul className="sidebar__menu">
+          <li
+            className={`menu__item ${
+              currentPath === "dashboard" ? "active" : ""
+            }`}
+            onClick={() => handleNavigation("dashboard")}
+          >
+            <i className="pi pi-home"></i>
+            <span>Dashboard</span>
+          </li>
           {(userType === 4 ||
             userType === 3 ||
             userType === 2 ||
@@ -220,7 +230,7 @@ const Sidebar = ({ setCurrentPage }) => {
               onClick={() => handleNavigation("assign-tour")}
             >
               <i className="pi pi-table"></i>
-              {isExpanded && <span>Tour Assignment</span>}
+              <span>Tour Assignment</span>
             </li>
           )}
           {(userType === 4 || userType === 3 || userType === 2) && (
@@ -231,7 +241,7 @@ const Sidebar = ({ setCurrentPage }) => {
               onClick={() => handleNavigation("guideInfo")}
             >
               <i className="pi pi-info-circle"></i>
-              {isExpanded && <span>Guide Info</span>}
+              <span>Guide Info</span>
             </li>
           )}
           {(userType === 4 || userType === 3 || userType === 2) && (
@@ -242,7 +252,7 @@ const Sidebar = ({ setCurrentPage }) => {
               onClick={() => handleNavigation("puantaj-page")}
             >
               <i className="pi pi-calendar"></i>
-              {isExpanded && <span>Puantaj Page</span>}
+              <span>Puantaj Page</span>
             </li>
           )}
           {(userType === 4 || userType === 3) && (
@@ -253,7 +263,7 @@ const Sidebar = ({ setCurrentPage }) => {
               onClick={() => handleNavigation("approve-tour")}
             >
               <i className="pi pi-check"></i>
-              {isExpanded && <span>Tour Approval</span>}
+              <span>Tour Approval</span>
             </li>
           )}
           {userType === 4 && (
@@ -264,7 +274,7 @@ const Sidebar = ({ setCurrentPage }) => {
               onClick={() => handleNavigation("data-insight")}
             >
               <i className="pi pi-chart-line"></i>
-              {isExpanded && <span>Data Insights</span>}
+              <span>Data Insights</span>
             </li>
           )}
           {userType === 4 && (
@@ -275,7 +285,7 @@ const Sidebar = ({ setCurrentPage }) => {
               onClick={() => handleNavigation("manageUser")}
             >
               <i className="pi pi-user-plus"></i>
-              {isExpanded && <span>User Management</span>}
+              <span>User Management</span>
             </li>
           )}
           {(userType === 4 || userType === 3 || userType === 2) && (
@@ -286,7 +296,7 @@ const Sidebar = ({ setCurrentPage }) => {
               onClick={() => handleNavigation("realtime-status")}
             >
               <i className="pi pi-clock"></i>
-              {isExpanded && <span>Real-time Status</span>}
+              <span>Real-time Status</span>
             </li>
           )}
           {(userType === 4 ||
@@ -300,7 +310,7 @@ const Sidebar = ({ setCurrentPage }) => {
               onClick={() => handleNavigation("feedback")}
             >
               <i className="pi pi-comments"></i>
-              {isExpanded && <span>Feedback Page</span>}
+              <span>Feedback Page</span>
             </li>
           )}
           {(userType === 4 || userType === 3 || userType === 2) && (
@@ -311,7 +321,7 @@ const Sidebar = ({ setCurrentPage }) => {
               onClick={() => handleNavigation("advisors")}
             >
               <i className="pi pi-briefcase"></i>
-              {isExpanded && <span>Advisors</span>}
+              <span>Advisors</span>
             </li>
           )}
           {(userType === 4 ||
@@ -325,7 +335,7 @@ const Sidebar = ({ setCurrentPage }) => {
               onClick={() => handleNavigation("my-tours")}
             >
               <i className="pi pi-map"></i>
-              {isExpanded && <span>My Tours</span>}
+              <span>My Tours</span>
             </li>
           )}
           {userType === 4 && (
@@ -336,7 +346,7 @@ const Sidebar = ({ setCurrentPage }) => {
               onClick={() => handleNavigation("approve-fair")}
             >
               <i className="pi pi-check-circle"></i>
-              {isExpanded && <span>Fair Approval</span>}
+              <span>Fair Approval</span>
             </li>
           )}
           {(userType === 4 || userType === 3 || userType === 2) && (
@@ -347,7 +357,7 @@ const Sidebar = ({ setCurrentPage }) => {
               onClick={() => handleNavigation("assign-fair")}
             >
               <i className="pi pi-users"></i>
-              {isExpanded && <span>Fair Assignment</span>}
+              <span>Fair Assignment</span>
             </li>
           )}
           {(userType === 4 || userType === 3 || userType === 2) && (
@@ -358,24 +368,27 @@ const Sidebar = ({ setCurrentPage }) => {
               onClick={() => handleNavigation("individual-tours")}
             >
               <i className="pi pi-user"></i>
-              {isExpanded && <span>Individual Tours</span>}
+              <span>Individual Tours</span>
             </li>
           )}
         </ul>
+
         <div className="sidebar__footer">
           <button
-           className={`menu__item ${currentPath === "Settings" ? "active" : ""}`}
+            className={`menu__item ${
+              currentPath === "Settings" ? "active" : ""
+            }`}
             onClick={() => handleNavigation("Settings")}
           >
             <i className="pi pi-cog"></i>
-            {isExpanded && <span>Settings</span>}
+            <span>Settings</span>
           </button>
           <button
             className="menu__item"
             onClick={() => handleNavigation("logout")}
           >
             <i className="pi pi-sign-out"></i>
-            {isExpanded && <span>Logout</span>}
+            <span>Logout</span>
           </button>
         </div>
       </div>

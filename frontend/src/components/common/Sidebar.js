@@ -111,12 +111,10 @@ const Sidebar = ({ setCurrentPage }) => {
       setUserName(`${firstName} ${lastName}`);
       cachedUserProfile = { firstName, lastName };
     } catch (error) {
-      toast.current.show({
-        severity: "error",
-        summary: "Error Loading Profile",
-        detail: "Failed to load user profile details. Please try again later.",
-        life: 3000,
-      });
+      console.log(
+        "Failed to load user profile details. Please try again later."
+      );
+      window.location.reload();
       setUserName("User");
     } finally {
       setIsLoadingProfile(false);

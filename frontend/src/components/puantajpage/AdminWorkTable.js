@@ -46,7 +46,7 @@ export default function AdminWorkTable() {
             })
             .catch((error) => {
                 console.error("Error fetching work entries:", error);
-                if(toast.current){
+                if (toast.current) {
                     toast.current.clear();
                     toast.current.show({
                         severity: "error",
@@ -198,7 +198,7 @@ export default function AdminWorkTable() {
         <div className="page-container">
             <Toast ref={toast} /> {/* (5) Added Toast component */}
             <div className="page-content">
-                <h1>All Work Entries</h1>
+                <h1>Puantaj Page</h1>
                 <FilterBar onFilterChange={handleFilterChange} />
                 <DataTable
                     value={filteredWorkEntries}

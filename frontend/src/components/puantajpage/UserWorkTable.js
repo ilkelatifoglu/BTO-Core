@@ -74,13 +74,13 @@ export default function UserWorkTable() {
                         prevEntries.filter((entry) => entry.work_id !== rowData.work_id)
                     );
                     if (toast.current) {
-                    toast.current.clear();
-                    toast.current.show({
-                        severity: "success",
-                        summary: "Success",
-                        detail: `Work entry ${rowData.work_id} deleted successfully.`,
-                        life: 3000,
-                    });
+                        toast.current.clear();
+                        toast.current.show({
+                            severity: "success",
+                            summary: "Success",
+                            detail: `Work entry ${rowData.work_id} deleted successfully.`,
+                            life: 3000,
+                        });
                     }
                     refreshData();
                 } catch (error) {
@@ -165,7 +165,7 @@ export default function UserWorkTable() {
                         )
                     );
                     if (toast.current)
-                    toast.current.clear();
+                        toast.current.clear();
                     toast.current.show({
                         severity: "success",
                         summary: "Success",
@@ -202,7 +202,7 @@ export default function UserWorkTable() {
         );
         refreshData();
         if (toast.current)
-        toast.current.clear();
+            toast.current.clear();
         toast.current.show({
             severity: "success",
             summary: "Success",
@@ -313,7 +313,7 @@ export default function UserWorkTable() {
         <div className="page-container">
             <Toast ref={toast} /> {/* Toast for UserWorkTable */}
             <div className="page-content">
-                <h1>All Work Entries</h1>
+                <h1>Puantaj Page</h1>
                 <DataTable
                     value={workEntries}
                     dataKey="work_id"

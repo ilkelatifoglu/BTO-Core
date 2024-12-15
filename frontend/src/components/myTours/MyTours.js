@@ -232,7 +232,7 @@ export default function MyTours() {
                 <DataTable
                     value={filteredItems}
                     paginator
-                    rows={10}
+                    rows={15}
                     className="my-tours-table"
                     tableStyle={{ tableLayout: "fixed" }}
                 >

@@ -169,7 +169,8 @@ const FeedbackTable = () => {
       <Toast ref={toast} />
       <FilterBar onFilterChange={handleFilterChange} />
 
-      <DataTable value={filteredFeedback} responsiveLayout="scroll">
+      <DataTable value={filteredFeedback} paginator
+                rows={15} responsiveLayout="scroll">
         <Column
           field="tour_date"
           header="Date"

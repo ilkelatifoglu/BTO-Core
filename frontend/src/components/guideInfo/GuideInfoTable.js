@@ -98,7 +98,7 @@ const GuideInfoTable = ({ guides, loading }) => {
             <DataTable
                 value={guides}
                 paginator
-                rows={5}
+                rows={15}
                 loading={loading}
                 responsiveLayout="scroll"
                 className="guide-info-datatable guide-info-striped"

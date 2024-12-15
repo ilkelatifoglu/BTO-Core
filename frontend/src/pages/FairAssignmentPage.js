@@ -137,7 +137,7 @@ export default function FairAssignmentPage() {
             <Toast ref={toast} /> {/* (5) Adding Toast to JSX */}
             <div className="fair-assignment-content">
                 <h2>Fair Assignment</h2>
-                <DataTable value={fairs} paginator rows={10} responsiveLayout="scroll">
+                <DataTable value={fairs} paginator rows={15} responsiveLayout="scroll">
                     <Column
                         field="date"
                         header="Date"

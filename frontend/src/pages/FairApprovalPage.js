@@ -334,7 +334,7 @@ export default function FairApprovalPage() {
                 <DataTable
                     value={filteredFairs} // Use filtered data
                     paginator
-                    rows={10}
+                    rows={15}
                     responsiveLayout="scroll"
                     rowClassName={rowClassName}
                 >

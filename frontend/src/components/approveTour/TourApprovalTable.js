@@ -370,7 +370,7 @@ const TourApprovalTable = () => {
             <DataTable
                 value={sortedTours}
                 paginator
-                rows={rows}
+                rows={15}
                 tableStyle={{  width: '100%'}}
                 paginatorTemplate="FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
                 currentPageReportTemplate="{first} to {last} of {totalRecords}"

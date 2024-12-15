@@ -104,6 +104,16 @@ const FeedbackForm = ({ visible, setVisible, initialData }) => {
   };
 
   const handleSubmit = async () => {
+    if (!content || !selectedTour || selectedUsers.length === 0) {
+      toast.current.show({
+        severity: "error",
+        summary: "Validation Error",
+        detail: "Please fill in all required fields.",
+        life: 3000,
+      });
+      return;
+    }
+
     const senderId = localStorage.getItem("userId");
     if (!senderId) {
       toast.current.clear();
@@ -138,7 +148,7 @@ const FeedbackForm = ({ visible, setVisible, initialData }) => {
       const response = feedbackDataEdit.feedback_id
       ? await FeedbackService.updateFeedback(feedbackDataEdit)
       : await FeedbackService.createFeedback(feedbackDataAdd);
-    
+
       if (response.success) {
         toast.current.clear();
         toast.current.show({
@@ -147,8 +157,12 @@ const FeedbackForm = ({ visible, setVisible, initialData }) => {
           detail: "Feedback submitted successfully.",
           life: 3000,
         });
-        setVisible(false);
-        resetForm();
+  
+        // Delay closing the dialog to ensure the toast displays
+        setTimeout(() => {
+          setVisible(false);
+          resetForm();
+        }, 500);
       } else {
         throw new Error("Failed to submit feedback.");
       }

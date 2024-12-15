@@ -24,9 +24,9 @@ export default function OtpVerification() {
   }, [timeLeft]);
 
   useEffect(() => {
-    const hasRefreshed = sessionStorage.getItem("hasRefreshed");
+    const hasRefreshed = localStorage.getItem("hasRefreshed");
     if (!hasRefreshed) {
-      sessionStorage.setItem("hasRefreshed", "true");
+      localStorage.setItem("hasRefreshed", "true");
       window.location.reload(true);
     }
   }, []);

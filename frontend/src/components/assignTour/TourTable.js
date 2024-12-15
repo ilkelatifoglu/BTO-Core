@@ -315,26 +315,29 @@ export default function ReadyToursTable() {
   const rowExpansionTemplate = (data) => {
     const guideNames = data.guide_names || "No guides assigned yet.";
     const candidateNames = data.candidate_names || "No candidates assigned yet.";
-
-    const guideLinks = guideNames
+  
+    // Render guides and candidates as plain text
+    const guideList = guideNames
       .split(',')
-      .map((name, index) => `<a href="#guide-${index}" class="guide-link">${name.trim()}</a>`)
+      .map((name) => name.trim())
       .join(', ');
-    const candidateLinks = candidateNames
+  
+    const candidateList = candidateNames
       .split(',')
-      .map((name, index) => `<a href="#candidate-${index}" class="candidate-link">${name.trim()}</a>`)
+      .map((name) => name.trim())
       .join(', ');
-
+  
     return (
       <div className="p-3">
         <h4>Assigned Guides:</h4>
-        <p dangerouslySetInnerHTML={{ __html: guideLinks }}></p>
-
+        <p>{guideList}</p>
+  
         <h4>Assigned Candidates:</h4>
-        <p dangerouslySetInnerHTML={{ __html: candidateLinks }}></p>
+        <p>{candidateList}</p>
       </div>
     );
   };
+  
 
   const rowClassName = (data) => {
     if (data.tour_status === "CANCELLED") return "cancelled-row";

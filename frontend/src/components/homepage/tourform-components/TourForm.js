@@ -19,11 +19,11 @@ const TourForm = () => {
   // State Variables for LeftForm
   // ============================
 
-  const [city, setCity] = useState({ value: "", label: "" }); 
-  const [schoolName, setSchoolName] = useState({ value: "", label: "" }); 
-  const [numberOfStudents, setNumberOfStudents] = useState(""); 
-  const [tourDate, setTourDate] = useState(""); 
-  const [selectedTimes, setSelectedTimes] = useState([]); 
+  const [city, setCity] = useState({ value: "", label: "" });
+  const [schoolName, setSchoolName] = useState({ value: "", label: "" });
+  const [numberOfStudents, setNumberOfStudents] = useState("");
+  const [tourDate, setTourDate] = useState("");
+  const [selectedTimes, setSelectedTimes] = useState([]);
 
   // =============================
   // State Variables for RightForm

@@ -202,7 +202,7 @@ const LeftForm = ({
           className="react-select-container"
           classNamePrefix="react-select"
           options={cityOptions}
-          value={city.value || ""} 
+          value={city}
           onChange={(selectedOption) => setCity(selectedOption)}
           placeholder="Select City"
           isSearchable

@@ -1,6 +1,6 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { Toast } from "primereact/toast"; // (2) Importing Toast
+import { Toast } from "primereact/toast";
 import "./ResetPassword.css";
 import PasswordService from "../services/PasswordService";
 
@@ -11,9 +11,29 @@ const ResetPassword = () => {
     newPassword: "",
     confirmPassword: "",
   });
+  const [passwordRequirements, setPasswordRequirements] = useState({
+    length: false,
+    letterNumber: false,
+    special: false,
+  });
   const [passwordsMatch, setPasswordsMatch] = useState(true);
+  const toast = useRef(null);
 
-  const toast = useRef(null); // (3) Toast ref
+  useEffect(() => {
+    if (formData.newPassword) {
+      const requirements = {
+        length: formData.newPassword.length >= 8,
+        letterNumber: /(?=.*[A-Za-z])(?=.*\d)/.test(formData.newPassword),
+        special: /[!@#$%^&*(),.?":{}|<>]/.test(formData.newPassword),
+      };
+      setPasswordRequirements(requirements);
+    }
+
+    setPasswordsMatch(
+      !formData.confirmPassword ||
+        formData.newPassword === formData.confirmPassword
+    );
+  }, [formData.newPassword, formData.confirmPassword]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -21,21 +41,27 @@ const ResetPassword = () => {
       ...prev,
       [name]: value,
     }));
+  };
 
-    // Check password match
-    if (name === "newPassword") {
-      setPasswordsMatch(value === formData.confirmPassword);
-    } else if (name === "confirmPassword") {
-      setPasswordsMatch(value === formData.newPassword);
-    }
+  const validatePassword = () => {
+    return Object.values(passwordRequirements).every(Boolean);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (formData.newPassword !== formData.confirmPassword) {
-      toast.current.clear(); // (4) Clear before showing toast
-      toast.current.show({
+    if (!validatePassword()) {
+      toast.current?.show({
+        severity: "error",
+        summary: "Invalid Password",
+        detail: "Please meet all password requirements",
+        life: 3000,
+      });
+      return;
+    }
+
+    if (!passwordsMatch) {
+      toast.current?.show({
         severity: "error",
         summary: "Error",
         detail: "Passwords do not match",
@@ -46,8 +72,7 @@ const ResetPassword = () => {
 
     try {
       await PasswordService.resetPassword(formData.newPassword, token);
-      toast.current.clear();
-      toast.current.show({
+      toast.current?.show({
         severity: "success",
         summary: "Success",
         detail: "Password successfully reset!",
@@ -58,11 +83,10 @@ const ResetPassword = () => {
         navigate("/login");
       }, 2000);
     } catch (error) {
-      toast.current.clear();
-      toast.current.show({
+      toast.current?.show({
         severity: "error",
         summary: "Error",
-        detail: error.response?.data || "An error occurred",
+        detail: error.response?.data?.message || "An error occurred",
         life: 3000,
       });
     }
@@ -70,19 +94,41 @@ const ResetPassword = () => {
 
   return (
     <div className="reset-password-container">
-      <Toast ref={toast} /> {/* (5) Adding Toast to JSX */}
+      <Toast ref={toast} />
       <div className="reset-password-form">
         <h2>Reset Password</h2>
         <form onSubmit={handleSubmit}>
           <div className="password-requirements">
-            Password must contain:
-            <ul>
-              <li>At least 8 characters</li>
-              <li>One uppercase letter</li>
-              <li>One lowercase letter</li>
-              <li>One number</li>
-              <li>One special character (@$!%*?&)</li>
-            </ul>
+            <div
+              className={`requirement-item ${
+                passwordRequirements.length ? "valid" : "invalid"
+              }`}
+            >
+              <span className="requirement-icon">
+                {passwordRequirements.length ? "✓" : "○"}
+              </span>
+              At least 8 characters
+            </div>
+            <div
+              className={`requirement-item ${
+                passwordRequirements.letterNumber ? "valid" : "invalid"
+              }`}
+            >
+              <span className="requirement-icon">
+                {passwordRequirements.letterNumber ? "✓" : "○"}
+              </span>
+              At least one letter and one number
+            </div>
+            <div
+              className={`requirement-item ${
+                passwordRequirements.special ? "valid" : "invalid"
+              }`}
+            >
+              <span className="requirement-icon">
+                {passwordRequirements.special ? "✓" : "○"}
+              </span>
+              One special character (!@#$%^&*(),.?":{}|&lt;&gt;)
+            </div>
           </div>
 
           <input
@@ -91,6 +137,13 @@ const ResetPassword = () => {
             placeholder="New Password"
             value={formData.newPassword}
             onChange={handleInputChange}
+            className={
+              formData.newPassword
+                ? validatePassword()
+                  ? "valid"
+                  : "invalid"
+                : ""
+            }
             required
           />
 
@@ -100,6 +153,13 @@ const ResetPassword = () => {
             placeholder="Confirm New Password"
             value={formData.confirmPassword}
             onChange={handleInputChange}
+            className={
+              formData.confirmPassword
+                ? passwordsMatch
+                  ? "valid"
+                  : "invalid"
+                : ""
+            }
             required
           />
 

@@ -143,8 +143,6 @@ const AdvisorPage = () => {
                     {advisor.candidate_guides.map((guide, index) => (
                       <li key={index} className="advisor-guide-item">
                         <strong>Name:</strong> {guide.full_name} <br />
-                        <strong>Department:</strong> {guide.department} <br />
-                        <strong>Phone:</strong> {guide.phone_number}
                       </li>
                     ))}
                   </ul>

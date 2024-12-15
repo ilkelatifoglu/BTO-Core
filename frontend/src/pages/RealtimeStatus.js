@@ -27,8 +27,7 @@ const RealtimeStatus = () => {
     latitude: 39.868201,
     longitude: 32.749127,
   };
-  const token =
-    localStorage.getItem("token") || localStorage.getItem("tempToken");
+  const token = localStorage.getItem("token");
   const [userLocation, setUserLocation] = useState(MOCK_USER_LOCATION);
   const [locations, setLocations] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState(null);

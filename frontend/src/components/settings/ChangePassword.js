@@ -5,8 +5,7 @@ import { Toast } from "primereact/toast";
 
 const API_BASE_URL =
   process.env.REACT_APP_BACKEND_URL || "http://localhost:3001";
-const token =
-  localStorage.getItem("token") || localStorage.getItem("tempToken");
+const token = localStorage.getItem("token");
 
 const ChangePassword = ({ userEmail }) => {
   const [oldPassword, setOldPassword] = useState("");

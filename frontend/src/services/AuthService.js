@@ -1,7 +1,8 @@
 import axios from "axios";
 
-const API_BASE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:3001";
-const token = localStorage.getItem("token") || localStorage.getItem("tempToken");
+const API_BASE_URL =
+  process.env.REACT_APP_BACKEND_URL || "http://localhost:3001";
+const token = localStorage.getItem("token");
 
 axios.interceptors.request.use(
   function (config) {

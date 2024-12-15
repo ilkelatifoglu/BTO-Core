@@ -10,8 +10,7 @@ let cachedProfileImage = null;
 let cachedUserProfile = null;
 let cachedUserId = null;
 
-const token =
-  localStorage.getItem("token") || localStorage.getItem("tempToken");
+const token = localStorage.getItem("token");
 const API_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:3001";
 
 // Add this helper function at the component level

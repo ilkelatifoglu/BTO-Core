@@ -355,7 +355,7 @@ export default function ReadyToursTable() {
         <DataTable
           value={filteredTours}
           paginator
-          rows={50}
+          rows={15}
           className="p-datatable-striped"
           tableStyle={{ width: "100%" }}
           rowClassName={rowClassName}

@@ -113,28 +113,45 @@ const FeedbackService = {
       return response.data;
     } catch (error) {
       console.error("Error updating feedback:", error);
-      throw new Error(
-        error.response?.data?.message || "Unable to update feedback"
-      );
+      throw new Error(error.response?.data?.message || "Unable to update feedback");
     }
   },
 
-  deleteFeedback: async (feedbackId) => {
+  getUsersByIds: async (userIds) => {
     try {
-      const response = await axios.delete(
-        `${API_BASE_URL}/feedback/${feedbackId}`,
+      const response = await axios.post(
+        `${API_BASE_URL}/feedback/getUsersByIds`,
+        { userIds },
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
+      return response.data.data; // Return the array of user objects
+    } catch (error) {
+      console.error("Error fetching users by IDs:", error);
+      throw new Error(error.response?.data?.message || "Unable to fetch user details by IDs");
+    }
+  },  
+
+  deleteFeedback: async (feedbackId) => {
+    if (!feedbackId) {
+      throw new Error("Feedback ID is required for deletion.");
+    }
+    try {
+      const response = await axios.delete(`${API_BASE_URL}/feedback/${feedbackId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       return response.data;
     } catch (error) {
       console.error("Error deleting feedback:", error);
-      throw new Error("Unable to delete feedback");
+      throw new Error(error.response?.data?.message || "Unable to delete feedback");
     }
   },
+  
 };
 
 export default FeedbackService;

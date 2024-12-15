@@ -30,7 +30,6 @@ const TourApprovalTable = () => {
         { label: 'Approved', value: 'APPROVED' },
         { label: 'Rejected', value: 'REJECTED' },
         { label: 'Cancelled', value: 'CANCELLED' },
-        { label: 'Done', value: 'DONE' },
     ];
 
     const toast = useRef(null); // (3) Create a ref for Toast

@@ -110,12 +110,20 @@ const Sidebar = ({ setCurrentPage }) => {
       const { firstName, lastName } = response.data;
       setUserName(`${firstName} ${lastName}`);
       cachedUserProfile = { firstName, lastName };
+      // Clear the reload flag if request succeeds
+      localStorage.removeItem("profileLoadAttempted");
     } catch (error) {
-      console.log(
-        "Failed to load user profile details. Please try again later."
-      );
-      window.location.reload();
-      setUserName("User");
+      console.error("Failed to load user profile details:", error);
+
+      // Check if we've already attempted a reload
+      if (!localStorage.getItem("profileLoadAttempted")) {
+        localStorage.setItem("profileLoadAttempted", "true");
+        window.location.reload();
+      } else {
+        // If we've already tried reloading once, just set default name
+        setUserName("User");
+        localStorage.removeItem("profileLoadAttempted"); // Reset for next time
+      }
     } finally {
       setIsLoadingProfile(false);
     }

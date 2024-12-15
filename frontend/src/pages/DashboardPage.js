@@ -1,26 +1,34 @@
-import React, { useState, useEffect, useContext } from 'react';
-import Sidebar from '../components/common/Sidebar';
-import { AuthContext } from '../context/AuthContext';
-import './DashboardPage.css';
+import React, { useState, useEffect, useContext } from "react";
+import Sidebar from "../components/common/Sidebar";
+import { AuthContext } from "../context/AuthContext";
+import "./DashboardPage.css";
 
-import btoimg2 from '../assets/btoimg2.jpeg';
-import btoimg4 from '../assets/btoimg4.jpeg';
-import btoimg5 from '../assets/btoimg5.jpeg';
-import btoimg6 from '../assets/btoimg6.jpeg';
-import btoimg7 from '../assets/btoimg7.jpeg';
-import btoimg8 from '../assets/btoimg8.jpeg';
-import btoimg9 from '../assets/btoimg9.jpeg';
+import btoimg2 from "../assets/btoimg2.jpeg";
+import btoimg4 from "../assets/btoimg4.jpeg";
+import btoimg5 from "../assets/btoimg5.jpeg";
+import btoimg6 from "../assets/btoimg6.jpeg";
+import btoimg7 from "../assets/btoimg7.jpeg";
+import btoimg8 from "../assets/btoimg8.jpeg";
+import btoimg9 from "../assets/btoimg9.jpeg";
 
-import useProtectRoute from '../hooks/useProtectRoute';
-import Unauthorized from './Unauthorized';
+import useProtectRoute from "../hooks/useProtectRoute";
+import Unauthorized from "./Unauthorized";
 
 const DashboardPage = () => {
   const isAuthorized = useProtectRoute([1, 2, 3, 4]);
   const [currentPage, setCurrentPage] = useState("default");
   const { user } = useContext(AuthContext);
 
-    const [currentSlide, setCurrentSlide] = useState(0);
-    const images = [ btoimg7, btoimg8, btoimg4, btoimg6, btoimg2, btoimg9, btoimg5];
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const images = [
+    btoimg7,
+    btoimg8,
+    btoimg4,
+    btoimg6,
+    btoimg2,
+    btoimg9,
+    btoimg5,
+  ];
 
   useEffect(() => {
     document.body.classList.add("dashboard-body");
@@ -29,10 +37,10 @@ const DashboardPage = () => {
     };
   }, []);
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setCurrentSlide((prevSlide) => (prevSlide + 1) % images.length);
-        }, 1900); 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide((prevSlide) => (prevSlide + 1) % images.length);
+    }, 5000);
 
     return () => clearInterval(interval);
   }, [images.length]);

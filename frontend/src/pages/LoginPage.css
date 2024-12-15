@@ -1,18 +1,18 @@
 .outer-container {
   display: flex;
   justify-content: center;
-  align-items: flex-start; 
+  align-items: flex-start;
   height: 100vh;
-  position: relative; 
+  position: relative;
 }
 
 .container {
   display: flex;
   height: 85vh;
   width: 85vw;
-  border-radius: 16px; 
-  overflow: hidden; 
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3); 
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
   background-color: white;
   margin-top: 50px;
   margin-left: 110px;
@@ -30,9 +30,9 @@
 }
 
 .bilkent-logo {
-  width: 200px; 
+  width: 200px;
   height: auto;
-  margin-bottom: 20px; 
+  margin-bottom: 20px;
 }
 
 .login-page {
@@ -135,8 +135,6 @@
   transform: scale(0.95); /* Slightly smaller when clicked */
 }
 
-
-
 .go-home-button {
   position: absolute; /* Enable positioning relative to the parent */
   top: 10px; /* Distance from the top of the parent/container */
@@ -155,9 +153,9 @@
 
 .go-home-button:hover {
   background-color: #004080; /* Darker blue for hover */
-  transform: scale(1.05); 
+  transform: scale(1.05);
 }
 
 .go-home-button:active {
-  transform: scale(0.95); 
+  transform: scale(0.95);
 }

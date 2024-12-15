@@ -25,11 +25,7 @@ const LoginPage = () => {
         localStorage.setItem("email", email);
         localStorage.setItem("password", password);
 
-        if (useOtp) {
-          navigate("/verify-otp");
-        } else {
-          navigate("/dashboard");
-        }
+        navigate("/verify-otp");
       } else {
         setError("Login failed");
       }
@@ -63,15 +59,6 @@ const LoginPage = () => {
           isLoading={isLoading}
           onForgotPassword={handleForgotPassword}
         />
-        <div className="otp-toggle">
-          <input
-            type="checkbox"
-            id="otpToggle"
-            checked={useOtp}
-            onChange={(e) => setUseOTP(e.target.checked)}
-          />
-          <label htmlFor="otpToggle">Enable OTP Verification</label>
-        </div>
         {error && <p className="error-message">{error}</p>}
       </div>
       <div className="right-side">

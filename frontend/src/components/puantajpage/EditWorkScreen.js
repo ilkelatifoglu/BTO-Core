@@ -52,6 +52,15 @@ function EditWorkScreen({ isOpen, onClose, workData, onSave }) {
             toast.current.show({ severity, summary, detail, life: 3000 });
         }
     };
+    const formatLocalDateTime = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        const hours = String(date.getHours()).padStart(2, "0");
+        const minutes = String(date.getMinutes()).padStart(2, "0");
+
+        return `${year}-${month}-${day}T${hours}:${minutes}`;
+    };
 
     const handleSave = async () => {
         if (!dateTime || workTime === 0) {
@@ -135,7 +144,7 @@ function EditWorkScreen({ isOpen, onClose, workData, onSave }) {
                             <input
                                 type="datetime-local"
                                 id="dateTime"
-                                value={dateTime ? dateTime.toISOString().slice(0, 16) : ""} // Format for datetime-local
+                                value={dateTime ? formatLocalDateTime(dateTime) : ""}
                                 max={new Date().toISOString().slice(0, 16)} // Restrict to today or earlier
                                 onChange={(e) => {
                                     const newDate = new Date(e.target.value);

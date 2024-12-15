@@ -7,6 +7,7 @@ const { generateCancellationToken } = require("../utils/jwt");
 const {
     insertIndividualTour,
 } = require("../queries/individualTourQueries");
+const { checkAndSetToursReadyForIndividualTours } = require("../jobs/tourStatusJob");
 exports.addIndividualTour = async (req, res) => {
     const {
         name,
@@ -59,7 +60,7 @@ exports.addIndividualTour = async (req, res) => {
         });
     } catch (error) {
         console.error("Error adding tour:", error.message || error);
-        
+
         if (error.message === "You already have a tour on this day!") {
             return res.status(400).json({
                 success: false,
@@ -100,13 +101,13 @@ exports.approveTour = async (req, res) => {
     try {
         // Check if the tour exists with 'WAITING' status
         const tourResult = await query(`
-            SELECT * FROM individual_tours WHERE id = $1 AND tour_status = 'WAITING'
+            SELECT * FROM individual_tours WHERE id = $1 AND tour_status IN ('WAITING', 'READY')
         `, [tourId]);
 
         if (tourResult.rows.length === 0) {
             return res.status(400).json({
                 success: false,
-                message: 'Tour not found or is not in "WAITING" status.'
+                message: 'Tour not found or is not in "WAITING" or "READY" status.'
             });
         }
 
@@ -119,6 +120,8 @@ exports.approveTour = async (req, res) => {
             SET guide_id = $1, tour_status = 'APPROVED'
             WHERE id = $2
         `, [guide_id, tourId]);
+
+        await checkAndSetToursReadyForIndividualTours();
 
         // Generate a cancellation token
         const cancellationToken = generateCancellationToken(tourId, date, "individual_tour");
@@ -162,13 +165,13 @@ exports.rejectTour = async (req, res) => {
     try {
         // Check if the tour exists with 'WAITING' status
         const tourResult = await query(`
-            SELECT * FROM individual_tours WHERE id = $1 AND tour_status = 'WAITING'
+            SELECT * FROM individual_tours WHERE id = $1 AND tour_status IN ('WAITING', 'READY')
         `, [tourId]);
 
         if (tourResult.rows.length === 0) {
             return res.status(400).json({
                 success: false,
-                message: 'Tour not found or is not in "WAITING" status.'
+                message: 'Tour not found or is not in "WAITING" or "READY" status.'
             });
         }
 
@@ -209,12 +212,13 @@ exports.getMyIndividualTours = async (req, res) => {
                 date, 
                 time, 
                 contact_phone, 
-                visitor_notes 
+                visitor_notes,
+                tour_status 
             FROM 
                 individual_tours
             WHERE 
                 guide_id = $1 
-                AND tour_status = 'APPROVED'
+                AND tour_status IN ('APPROVED', 'READY')
             ORDER BY 
                 date ASC
         `, [guide_id]);
@@ -253,6 +257,8 @@ exports.withdrawFromIndividualTour = async (req, res) => {
              WHERE id = $1`,
             [tourId]
         );
+
+        await checkAndSetToursReadyForIndividualTours();
 
         const adminResult = await query(
             `SELECT email FROM users WHERE user_type = 4 AND email IS NOT NULL`

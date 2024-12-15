@@ -18,9 +18,9 @@ import FilterBar from './FilterBar'; // Import the FilterBar component
 
 
 export default function MyTours() {
-    const isAuthorized = useProtectRoute([1,2,3,4]); // Check authorization
+    const isAuthorized = useProtectRoute([1, 2, 3, 4]); // Check authorization
     const [items, setItems] = useState([]);
-    const [filteredItems, setFilteredItems] = useState([]); 
+    const [filteredItems, setFilteredItems] = useState([]);
     const [confirmVisible, setConfirmVisible] = useState(false); // Manage dialog visibility
     const [pendingItem, setPendingItem] = useState(null); // Item to withdraw from
     const toast = useRef(null);
@@ -33,7 +33,7 @@ export default function MyTours() {
                 const fairs = await fetchFairs("READY")
                 const individualTours = await getMyIndividualTours();
                 const readyIndividualTours = individualTours.filter(indTour => indTour.tour_status === "READY")
-                
+
 
                 const combinedData = [
                     ...readyTours.map((tour) => ({
@@ -51,16 +51,16 @@ export default function MyTours() {
                             type: "fair",
                             event: fair.organization_name,
                         })),
-                        ...readyIndividualTours.map((indTour) => ({
-                            ...indTour,
-                            type: "individual",
-                            event: indTour.name,
-                        })),
+                    ...readyIndividualTours.map((indTour) => ({
+                        ...indTour,
+                        type: "individual",
+                        event: indTour.name,
+                    })),
                 ];
 
                 setItems(combinedData);
                 setFilteredItems(combinedData); // Show all initially
-                if (toast.current){
+                if (toast.current) {
                     toast.current.clear();
                     toast.current.show({
                         severity: "success",
@@ -70,7 +70,7 @@ export default function MyTours() {
                     });
                 }
             } catch (err) {
-                if(toast.current){
+                if (toast.current) {
                     toast.current.clear();
                     toast.current.show({
                         severity: "error",
@@ -78,7 +78,7 @@ export default function MyTours() {
                         detail: err.message || "Failed to fetch data",
                         life: 3000,
                     });
-                }    
+                }
             }
         };
 
@@ -109,9 +109,9 @@ export default function MyTours() {
         if (!pendingItem) return;
         const item = pendingItem;
         const isIndividual = item.type === "individual";
-    
+
         hideConfirmDialog();
-        if(toast.current){
+        if (toast.current) {
             toast.current.clear();
         }
         try {
@@ -122,10 +122,10 @@ export default function MyTours() {
                 // Handle general tour withdrawal
                 await AssignTourService.withdrawFromTour(item.id);
             }
-    
+
             // Update the UI
             setItems((prevItems) => prevItems.filter((i) => i.id !== item.id));
-    
+
             toast.current.show({
                 severity: "success",
                 summary: "Success",
@@ -141,7 +141,7 @@ export default function MyTours() {
             });
         }
     };
-    
+
 
     const actionTemplate = (rowData) => {
         if (rowData.type === "tour" || rowData.type === "individual") {
@@ -220,7 +220,7 @@ export default function MyTours() {
 
     if (!isAuthorized) {
         return <Unauthorized />;
-      }
+    }
     return (
         <div className="page-container">
             <Sidebar />

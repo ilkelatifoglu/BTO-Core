@@ -145,7 +145,11 @@ const IndividualToursTable = () => {
 
     // Actions column template
     const actionBodyTemplate = (rowData) => {
-        if (rowData.tour_status === "WAITING") {
+        // Display buttons for 'WAITING' status or 'READY' status with no assigned guide
+        if (
+            rowData.tour_status === "WAITING" ||
+            (rowData.tour_status === "READY" && !rowData.guide_id)
+        ) {
             return (
                 <div className="action-buttons">
                     <Button
@@ -216,8 +220,8 @@ const IndividualToursTable = () => {
 
             let matchGuide = true;
             if (guide) {
-                const guideName = tour.guide_id === null 
-                    ? "No guide is assigned yet" 
+                const guideName = tour.guide_id === null
+                    ? "No guide is assigned yet"
                     : `${tour.guide_first_name} ${tour.guide_last_name}`;
                 matchGuide = guideName.toLowerCase().includes(guide.toLowerCase());
             }
@@ -230,8 +234,8 @@ const IndividualToursTable = () => {
 
     return (
         <div className="table-wrapper" style={{ marginLeft: "10px", overflowX: "hidden" }}>
-          <Toast ref={toast} /> {/* (5) Adding the Toast to the JSX */}
-          <FilterBar onFilterChange={handleFilterChange} />
+            <Toast ref={toast} /> {/* (5) Adding the Toast to the JSX */}
+            <FilterBar onFilterChange={handleFilterChange} />
             <DataTable
                 value={filteredTours}
                 paginator

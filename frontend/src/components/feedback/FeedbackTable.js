@@ -49,13 +49,18 @@ const FeedbackTable = () => {
     setPopupVisible(true);
   };
 
-  const handleEditFeedback = (rowData) => {
-    setEditData(rowData);
-    setFormVisible(true);
-  };
-
   const handleDeleteFeedback = async (feedbackId) => {
     try {
+      if (!feedbackId) {
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Invalid feedback ID.",
+          life: 3000,
+        });
+        return;
+      }
+  
       await FeedbackService.deleteFeedback(feedbackId);
       toast.current.show({
         severity: "success",
@@ -63,47 +68,81 @@ const FeedbackTable = () => {
         detail: "Feedback deleted successfully.",
         life: 3000,
       });
-      fetchFeedback();
+      fetchFeedback(); // Refresh feedback list
     } catch (error) {
       console.error("Error deleting feedback:", error);
       toast.current.show({
         severity: "error",
         summary: "Error",
-        detail: "Failed to delete feedback.",
+        detail: error.message || "Failed to delete feedback.",
         life: 3000,
       });
     }
   };
+  
+  const handleAddFeedback = () => {
+    setEditData(null); // Reset edit data for creating a new feedback
+    setFormVisible(true); // Open the feedback form
+  };
+  
 
-  const handleFormSubmit = async (feedbackData) => {
+  // const handleFormSubmit = async (feedbackData) => {
+  //   try {
+  //     if (feedbackData.feedbackId) {
+  //       // Update feedback
+  //       await FeedbackService.updateFeedback(feedbackData);
+  //       toast.current.show({
+  //         severity: "success",
+  //         summary: "Success",
+  //         detail: "Feedback updated successfully.",
+  //       });
+  //     } else {
+  //       // Create feedback
+  //       await FeedbackService.createFeedback(feedbackData);
+  //       toast.current.show({
+  //         severity: "success",
+  //         summary: "Success",
+  //         detail: "Feedback created successfully.",
+  //       });
+  //     }
+  //     fetchFeedback();
+  //     setFormVisible(false);
+  //   } catch (error) {
+  //     toast.current.show({
+  //       severity: "error",
+  //       summary: "Error",
+  //       detail: "Failed to save feedback.",
+  //     });
+  //   }
+  // };
+
+  const handleEditFeedback = async (rowData) => {
     try {
-      if (feedbackData.feedback_id) {
-        // Update feedback
-        await FeedbackService.updateFeedback(feedbackData);
-        toast.current.show({
-          severity: "success",
-          summary: "Success",
-          detail: "Feedback updated successfully.",
-        });
-      } else {
-        // Create feedback
-        await FeedbackService.createFeedback(feedbackData);
-        toast.current.show({
-          severity: "success",
-          summary: "Success",
-          detail: "Feedback created successfully.",
-        });
-      }
-      fetchFeedback();
-      setFormVisible(false);
-    } catch (error) {
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Failed to save feedback.",
+      // Fetch user details
+      const users = await FeedbackService.getUsersByIds(rowData.user_ids);
+  
+      const guidesWithNames = users
+        .filter((user) => user.user_type !== 1)
+        .map((user) => ({ label: `${user.first_name} ${user.last_name}`, value: user.id }));
+  
+      const candidatesWithNames = users
+        .filter((user) => user.user_type === 1)
+        .map((user) => ({ label: `${user.first_name} ${user.last_name}`, value: user.id }));
+  
+      const allTaggedUsers = [...guidesWithNames, ...candidatesWithNames];
+  
+      setEditData({
+        ...rowData,
+        all_tagged_users: allTaggedUsers, // Ensures valid values
       });
+  
+      setFormVisible(true);
+    } catch (error) {
+      console.error("Error fetching user details:", error.message);
     }
   };
+  
+  
 
   const handleFilterChange = (filters) => {
     const { date, schoolOrIndividual, name, sender, city } = filters;
@@ -233,13 +272,14 @@ const FeedbackTable = () => {
                     tooltip="Delete"
                     tooltipOptions={{ position: "top" }}
                     style={{ backgroundColor: "rgb(233, 10, 10)", border: "none", color: "#fff" }}
-                    onClick={() => handleDeleteFeedback(rowData.feedback_id)}
-                  />
+                    onClick={() => handleDeleteFeedback(rowData.feedback_id)} // Pass the correct ID
+                    />
                 </>
               )}
             </div>
           )}
         />
+        
       </DataTable>
 
       {/* View Feedback Dialog */}
@@ -258,11 +298,24 @@ const FeedbackTable = () => {
       {formVisible && (
         <FeedbackForm
           visible={formVisible}
-          onClose={() => setFormVisible(false)}
+          setVisible={setFormVisible} // Pass correct function
           initialData={editData}
-          onSubmit={handleFormSubmit}
-        />
+          onSubmit={fetchFeedback}
+          />
       )}
+      <Button
+      icon="pi pi-plus"
+      className="p-button-rounded p-button-lg"
+      style={{
+        position: "fixed",
+        bottom: "2rem",
+        right: "2rem",
+        width: "4rem",
+        height: "4rem",
+      }}
+      onClick={handleAddFeedback} // Open the form in "Add Feedback" mode
+      autoFocus
+    />
     </div>
   );
 };

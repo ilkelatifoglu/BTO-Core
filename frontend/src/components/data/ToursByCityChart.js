@@ -30,7 +30,7 @@ const ToursByCityChart = ({
               <div
                 className="bar"
                 style={{
-                  width: `${(value / maxTourCount) * 2}%`, 
+                  width: `${(value / maxTourCount) * 3}%`, 
                   backgroundColor: "#007BFF", 
                 }}
               >

@@ -38,7 +38,7 @@ const DashboardPage = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentSlide((prevSlide) => (prevSlide + 1) % images.length);
-    }, 5000);
+    }, 3000);
 
     return () => clearInterval(interval);
   }, [images.length]);

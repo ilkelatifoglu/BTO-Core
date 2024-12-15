@@ -23,6 +23,14 @@ export default function OtpVerification() {
     return () => clearInterval(timer);
   }, [timeLeft]);
 
+  useEffect(() => {
+    const hasRefreshed = localStorage.getItem("hasRefreshed");
+    if (!hasRefreshed) {
+      localStorage.setItem("hasRefreshed", "true");
+      window.location.reload(true);
+    }
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");

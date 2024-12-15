@@ -79,7 +79,7 @@ exports.getFeedbackByRole = async (req, res) => {
 exports.createFeedback = async (req, res) => {
   try {
     const { user_ids, tour_id, text_feedback, sender_id, send_to_candidates } = req.body;
-
+    
     if (!user_ids || !Array.isArray(user_ids) || user_ids.length === 0) {
       return res.status(400).json({
         success: false,
@@ -123,35 +123,69 @@ exports.createFeedback = async (req, res) => {
 
 exports.updateFeedback = async (req, res) => {
   try {
-    const { feedbackId, textFeedback, sendToCandidates } = req.body;
+    const { feedback_id, text_feedback, send_to_candidates, user_ids, tour_id, sender_id } = req.body;
 
-    if (!feedbackId) {
+    console.log("Received Payload:", req.body); // Log for debugging
+
+    if (!feedback_id) {
       return res.status(400).json({ success: false, message: "Feedback ID is required." });
     }
 
-    const updatedFeedback = await updateFeedback(feedbackId, textFeedback, sendToCandidates);
-    res.status(200).json({ success: true, data: updatedFeedback });
+    // Use UPDATE query to update the existing feedback
+    const updateQuery = `
+      UPDATE feedback
+      SET 
+        text_feedback = $1,
+        send_to_candidates = $2,
+        user_ids = $3,
+        tour_id = $4,
+        sender_id = $5
+      WHERE id = $6
+      RETURNING *
+    `;
+
+    const values = [
+      text_feedback || null,       // New feedback text
+      send_to_candidates || false, // Boolean flag
+      user_ids,                    // Updated user IDs (array)
+      tour_id,                     // Tour ID
+      sender_id,                   // Sender ID
+      feedback_id                  // The existing feedback ID to update
+    ];
+
+    const result = await query(updateQuery, values);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ success: false, message: "Feedback not found." });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: result.rows[0],
+      message: "Feedback updated successfully.",
+    });
   } catch (error) {
-    console.error("Error updating feedback:", error);
+    console.error("Error updating feedback:", error.message || error);
     res.status(500).json({ success: false, message: "Failed to update feedback." });
   }
 };
 
 exports.deleteFeedback = async (req, res) => {
+  const { feedbackId } = req.params;
+
+  if (!feedbackId) {
+    return res.status(400).json({ success: false, message: "Feedback ID is required." });
+  }
+
   try {
-    const { feedbackId } = req.params;
-
-    if (!feedbackId) {
-      return res.status(400).json({ success: false, message: "Feedback ID is required." });
-    }
-
-    await deleteFeedback(feedbackId);
+    await deleteFeedback(feedbackId); // Ensure this properly deletes the feedback
     res.status(200).json({ success: true, message: "Feedback deleted successfully." });
   } catch (error) {
     console.error("Error deleting feedback:", error);
     res.status(500).json({ success: false, message: "Failed to delete feedback." });
   }
 };
+
 
 exports.getFeedbackByToken = async (req, res) => {
   const { token } = req.query;
@@ -197,5 +231,37 @@ exports.getFeedbackByToken = async (req, res) => {
     res
       .status(400)
       .json({ success: false, message: "Failed to fetch feedback." });
+  }
+};
+
+exports.getUsersByIds = async (req, res) => {
+  const { userIds } = req.body;
+
+  if (!userIds || !Array.isArray(userIds) || userIds.length === 0) {
+    return res.status(400).json({
+      success: false,
+      message: "User IDs must be a non-empty array.",
+    });
+  }
+
+  try {
+    const queryText = 
+      `SELECT id, first_name, last_name, user_type
+      FROM users
+      WHERE id = ANY($1)`
+    ;
+
+    const result = await query(queryText, [userIds]);
+
+    res.status(200).json({
+      success: true,
+      data: result.rows, // Return all matching users with their roles
+    });
+  } catch (error) {
+    console.error("Error fetching users by IDs:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch user details.",
+    });
   }
 };

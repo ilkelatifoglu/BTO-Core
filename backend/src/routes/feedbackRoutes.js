@@ -12,6 +12,7 @@ router.delete("/:feedbackId", authenticateToken, feedbackController.deleteFeedba
 router.post("/submitFeedback", feedbackController.submitFeedback); 
 router.get("/validateToken", feedbackController.validateToken);
 router.get("/feedbackByToken", feedbackController.getFeedbackByToken);
+router.post("/getUsersByIds", authenticateToken, feedbackController.getUsersByIds);
 
 module.exports = router;
 

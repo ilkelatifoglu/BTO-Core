@@ -1,5 +1,7 @@
 # S2-T7-agora
 
+[DELIVERABLES](https://github.com/CS319-24-FA/S2-T7-agora/tree/main/Deliverables)
+
 ## 1\. Project Title
 
 BTO Core

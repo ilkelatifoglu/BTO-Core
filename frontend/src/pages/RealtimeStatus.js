@@ -26,13 +26,14 @@ const BILKENT_CENTER = {
 
 const RealtimeStatus = () => {
   // TODO: change user types
-  const isAuthorized = useProtectRoute([1, 2, 3, 4]);
+  const isAuthorized = useProtectRoute([2, 3, 4]);
 
   const MOCK_USER_LOCATION = {
     latitude: 39.868201,
     longitude: 32.749127,
   };
-  const token = localStorage.getItem("token") || localStorage.getItem("tempToken");
+  const token =
+    localStorage.getItem("token") || localStorage.getItem("tempToken");
   const [userLocation, setUserLocation] = useState(MOCK_USER_LOCATION);
   const [locations, setLocations] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState(null);
@@ -60,17 +61,24 @@ const RealtimeStatus = () => {
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          setUserLocation({
+          const newLocation = {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
-          });
+          };
+
+          setUserLocation(newLocation);
           setLocationDenied(false);
-          toast.current.show({
-            severity: "success",
-            summary: "Success",
-            detail: "Location access granted!",
-            life: 3000,
-          });
+
+          if (
+            !isWithinBilkentBounds(newLocation.latitude, newLocation.longitude)
+          ) {
+            toast.current.show({
+              severity: "warn",
+              summary: "Warning",
+              detail: "You cannot use this feature unless you're in campus.",
+              life: 3000,
+            });
+          }
         },
         (error) => {
           console.error("Location access denied:", error);
@@ -125,42 +133,43 @@ const RealtimeStatus = () => {
 
   // Add new function to fetch locations
   const fetchLocations = async () => {
-
     // Optional: Check if the token exists before making the request
     if (!token) {
-        console.error('No authentication token found. Please log in.');
-        setError('No authentication token found. Please log in.');
-        return;
+      console.error("No authentication token found. Please log in.");
+      setError("No authentication token found. Please log in.");
+      return;
     }
 
     try {
-          const response = await fetch(
-              `${process.env.REACT_APP_BACKEND_URL}/tour-locations/`,
-              {
-                  method: 'GET',
-                  headers: {
-                      'Content-Type': 'application/json',
-                      'Authorization': `Bearer ${token}`, // Include the token here
-                  },
-              }
-          );
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/tour-locations/`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // Include the token here
+          },
+        }
+      );
 
-          if (!response.ok) {
-              // Optionally, parse error details from the response
-              const errorData = await response.json();
-              throw new Error(
-                  `Failed to fetch locations: ${response.status} ${response.statusText} - ${errorData.message || ''}`
-              );
-          }
-
-          const data = await response.json();
-          setLocations(data);
-          return data;
-      } catch (error) {
-          console.error("Error fetching locations:", error);
-          setError(`Failed to fetch locations: ${error.message}`);
-          throw error;
+      if (!response.ok) {
+        // Optionally, parse error details from the response
+        const errorData = await response.json();
+        throw new Error(
+          `Failed to fetch locations: ${response.status} ${
+            response.statusText
+          } - ${errorData.message || ""}`
+        );
       }
+
+      const data = await response.json();
+      setLocations(data);
+      return data;
+    } catch (error) {
+      console.error("Error fetching locations:", error);
+      setError(`Failed to fetch locations: ${error.message}`);
+      throw error;
+    }
   };
 
   // Update handleStatusChange function
@@ -180,7 +189,7 @@ const RealtimeStatus = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             userId: localStorage.getItem("userId"),
@@ -216,17 +225,33 @@ const RealtimeStatus = () => {
     const initializeData = async () => {
       setIsLoading(true);
       try {
-        // Get user location and fetch locations in parallel
         await Promise.all([
           new Promise((resolve) => {
             if ("geolocation" in navigator) {
               navigator.geolocation.getCurrentPosition(
                 (position) => {
-                  setUserLocation({
+                  const newLocation = {
                     latitude: position.coords.latitude,
                     longitude: position.coords.longitude,
-                  });
+                  };
+
+                  setUserLocation(newLocation);
                   setLocationDenied(false);
+
+                  if (
+                    !isWithinBilkentBounds(
+                      newLocation.latitude,
+                      newLocation.longitude
+                    )
+                  ) {
+                    toast.current.show({
+                      severity: "warn",
+                      summary: "Warning",
+                      detail:
+                        "You cannot use this feature unless you're in campus.",
+                      life: 3000,
+                    });
+                  }
                   resolve();
                 },
                 (error) => {
@@ -316,11 +341,22 @@ const RealtimeStatus = () => {
   const centerToUser = () => {
     const map = mapRef.current;
     if (map && userLocation) {
-      map.flyTo({
-        center: [userLocation.longitude, userLocation.latitude],
-        zoom: 15,
-        duration: 1000,
-      });
+      if (
+        isWithinBilkentBounds(userLocation.latitude, userLocation.longitude)
+      ) {
+        map.flyTo({
+          center: [userLocation.longitude, userLocation.latitude],
+          zoom: 17, // Increased zoom level
+          duration: 1000,
+        });
+      } else {
+        toast.current.show({
+          severity: "warn",
+          summary: "Warning",
+          detail: "You cannot use this feature unless you're in campus.",
+          life: 3000,
+        });
+      }
     }
   };
 
@@ -355,7 +391,7 @@ const RealtimeStatus = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -382,8 +418,17 @@ const RealtimeStatus = () => {
     }
   };
 
+  const isWithinBilkentBounds = (latitude, longitude) => {
+    return (
+      longitude >= BILKENT_BOUNDS[0][0] && // West
+      longitude <= BILKENT_BOUNDS[1][0] && // East
+      latitude >= BILKENT_BOUNDS[0][1] && // South
+      latitude <= BILKENT_BOUNDS[1][1] // North
+    );
+  };
+
   if (!isAuthorized) {
-    return <Unauthorized/>;
+    return <Unauthorized />;
   }
 
   return (
@@ -522,7 +567,20 @@ const RealtimeStatus = () => {
                 <div className="realtime-status__map-controls">
                   <button
                     onClick={centerToUser}
-                    className="realtime-status__button realtime-status__button--icon realtime-status__button--crosshair"
+                    disabled={
+                      !isWithinBilkentBounds(
+                        userLocation.latitude,
+                        userLocation.longitude
+                      )
+                    }
+                    className={`realtime-status__button realtime-status__button--icon realtime-status__button--crosshair ${
+                      !isWithinBilkentBounds(
+                        userLocation.latitude,
+                        userLocation.longitude
+                      )
+                        ? "realtime-status__button--disabled"
+                        : ""
+                    }`}
                   >
                     <Crosshair size={24} color="white" />
                   </button>
@@ -536,10 +594,23 @@ const RealtimeStatus = () => {
       <div className="realtime-status__controls">
         <button
           onClick={isTourActive ? handleEndTour : handleStartTour}
+          disabled={
+            !isWithinBilkentBounds(
+              userLocation.latitude,
+              userLocation.longitude
+            )
+          }
           className={`realtime-status__button ${
             isTourActive
               ? "realtime-status__button--end"
               : "realtime-status__button--start"
+          } ${
+            !isWithinBilkentBounds(
+              userLocation.latitude,
+              userLocation.longitude
+            )
+              ? "realtime-status__button--disabled"
+              : ""
           }`}
         >
           {isTourActive ? "End Tour" : "Start Tour"}
@@ -550,18 +621,6 @@ const RealtimeStatus = () => {
         >
           <RefreshCw size={24} color="white" />
         </button>
-        {userType === "coordinator" && (
-          <button
-            onClick={handleResetOccupancies}
-            className="realtime-status__button realtime-status__button--reset"
-            style={{
-              backgroundColor: "#dc3545",
-              marginLeft: "10px",
-            }}
-          >
-            Reset All
-          </button>
-        )}
       </div>
 
       <div className="realtime-status__locations-list">

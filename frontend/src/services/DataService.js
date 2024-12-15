@@ -1,5 +1,6 @@
 const BASE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:3001";
-const token = localStorage.getItem("token");
+const token =
+  localStorage.getItem("token") || localStorage.getItem("tempToken");
 
 export const fetchTourData = async (filter, periodIndex) => {
   try {

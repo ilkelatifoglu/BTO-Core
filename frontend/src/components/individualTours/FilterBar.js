@@ -25,10 +25,12 @@ export default function FilterBar({ onFilterChange }) {
 
 
   const handleFilterChange = (field, value) => {
-    const updated = { ...filters, [field]: value };
+    const updatedValue = value?.value ?? value; // Extract 'value' if it's an object
+    const updated = { ...filters, [field]: updatedValue };
     setFilters(updated);
     onFilterChange(updated);
   };
+
 
   const clearFilters = () => {
     const cleared = {

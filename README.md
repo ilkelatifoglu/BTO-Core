@@ -1,6 +1,7 @@
 # S2-T7-agora
 
-[DELIVERABLES](https://github.com/CS319-24-FA/S2-T7-agora/tree/main/Deliverables)
+[Deliverables](https://github.com/CS319-24-FA/S2-T7-agora/tree/main/Deliverables)
+[Google Drive Link for the Demo Video](https://drive.google.com/file/d/1MYvbM_5-sCMftVQk3benZG2E4zz9OgDY/view?usp=sharing)
 
 ## 1\. Project Title
 

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BTO Core Manual</title>
+    <style>
+        body {
+            font-family: 'Lato', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333;
+            line-height: 1.6;
+        }
+        header {
+            background: #2d3748;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+        h1, h2 {
+            color: #2d3748;
+        }
+        main {
+            margin: 20px auto;
+            max-width: 1100px;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        section {
+            margin-bottom: 30px;
+        }
+        h3 {
+            margin-top: 20px;
+            color: #1a202c;
+            font-weight: 600;
+        }
+        p {
+            margin: 10px 0;
+        }
+        ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        footer {
+            text-align: center;
+            padding: 10px;
+            background: #2d3748;
+            color: #fff;
+        }
+        a {
+            color: #3182ce;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Welcome to BTO - Core Manual</h1>
+        <p>A comprehensive guide to streamline and utilize the BTO Core web application effectively.</p>
+    </header>
+
+    <main>
+        <section>
+            <h2>Introduction</h2>
+            <p>
+                BTO - Core is a robust web application designed to simplify and optimize the operations of Bilkent University's Information Office. From automating tour applications to managing data securely, BTO Core ensures efficiency, accuracy, and seamless communication.
+            </p>
+            <p>
+                Terms such as <strong>'Users'</strong>, <strong>'Bilkent Information Staff'</strong>, and <strong>'BTO'</strong> are used interchangeably throughout this guide.
+            </p>
+        </section>
+
+        <section>
+            <h2>Core Features</h2>
+            <h3>1. Automated Tour Applications</h3>
+            <p>High schools can submit campus tour applications using a user-friendly form. Applications are prioritized using a built-in algorithm for efficiency.</p>
+
+            <h3>2. Role-Based Dashboards</h3>
+            <p>Different roles such as coordinators, advisors, guides, and candidates have tailored dashboards to access relevant tools and data seamlessly.</p>
+
+            <h3>3. Conditional Rendering</h3>
+            <p>Pages are dynamically displayed based on the user’s level of authority, ensuring a clean and organized experience for each role.</p>
+
+            <h3>4. Real-Time Communication</h3>
+            <p>During campus tours, guides can coordinate in real time to ensure smooth operations and collaboration.</p>
+
+            <h3>5. Feedback System</h3>
+            <p>A streamlined mechanism to collect feedback from high schools, guides, and candidates, helping to monitor and improve performance.</p>
+        </section>
+
+        <section>
+            <h2>Security</h2>
+            <h3>3-Layered Access Security</h3>
+            <ul>
+                <li><strong>Frontend Layer:</strong> Unauthorized users are redirected to the login page to prevent access to protected content.</li>
+                <li><strong>Backend Layer 1:</strong> JWT token protection guards against unauthorized external access.</li>
+                <li><strong>Backend Layer 2:</strong> Role-based permissions ensure users only access the data they are authorized for.</li>
+            </ul>
+            <p>These layers guarantee that sensitive information remains secure and the system operates smoothly.</p>
+        </section>
+
+        <section>
+            <h2>Troubleshooting</h2>
+            <h3>Why am I unable to access certain pages?</h3>
+            <p>Ensure you have the correct permissions for the page. If access issues persist, contact the system administrator.</p>
+
+            <h3>How do I reset my password?</h3>
+            <p>On the login page, click on the 'Forgot Password' link and follow the instructions sent to your email.</p>
+
+            <h3>How do I report technical issues?</h3>
+            <p>If you encounter any errors, contact the technical support team at <a href="mailto:agorateam@bilkent.edu.tr">agorateam@bilkent.edu.tr</a>.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Bilkent University Information Office | <a href="mailto:agorateam@bilkent.edu.tr">Contact Support</a></p>
+    </footer>
+</body>
+</html>

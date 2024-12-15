@@ -15,15 +15,14 @@ const HelpSupport = () => {
                     <strong>A:</strong> "After logging in, go to the 'Highschool Application Tracking System' on your dashboard, 
                     select an available date and time, and follow the on-screen instructions to complete your booking."
                 </p>
-                <p>For more questions and answers, please <a href="#">click here</a>.</p>
-            </div>
-
+                <p>For more questions and answers, please <a href="faq.html" target="_blank" rel="noopener noreferrer">click here</a>.</p>
+                </div>
             <div className="help-support-section">
                 <h2>
                     <i className="pi pi-book help-icon"></i> How to Use BTO Core?
                 </h2>
                 <p>
-                    To learn more, please <a href="#">click here</a> for the detailed user manual and comprehensive tutorial videos 
+                    To learn more, please <a href="bto-core.html" target="_blank" rel="noopener noreferrer">click here</a> for the detailed user manual and comprehensive tutorial videos 
                     that will guide you through using BTO Core efficiently.
                 </p>
             </div>

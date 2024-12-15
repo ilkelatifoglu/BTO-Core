@@ -93,7 +93,7 @@ export default function MyTours() {
     };
 
     const timeTemplate = (rowData) =>
-        rowData.type === "tour" ? rowData.time || "Not Assigned" : "-";
+        rowData.type === "tour" || rowData.type === "individual" ? rowData.time || "Not Assigned" : "-";
 
     const showConfirmDialog = (item) => {
         setPendingItem(item);

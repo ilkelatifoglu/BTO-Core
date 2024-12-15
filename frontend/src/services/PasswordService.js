@@ -1,7 +1,8 @@
 import axios from "axios";
 
-const API_BASE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:3001";
-const token = localStorage.getItem("token") || localStorage.getItem("tempToken");
+const API_BASE_URL =
+  process.env.REACT_APP_BACKEND_URL || "http://localhost:3001";
+const token = localStorage.getItem("token");
 
 const PasswordService = {
   requestPasswordReset: async (email) => {
@@ -13,7 +14,7 @@ const PasswordService = {
       {
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       }
     );
@@ -29,7 +30,7 @@ const PasswordService = {
       {
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       }
     );

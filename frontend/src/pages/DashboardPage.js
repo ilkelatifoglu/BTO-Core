@@ -5,7 +5,6 @@ import "./DashboardPage.css";
 
 import btoimg2 from "../assets/btoimg2.jpeg";
 import btoimg4 from "../assets/btoimg4.jpeg";
-import btoimg5 from "../assets/btoimg5.jpeg";
 import btoimg6 from "../assets/btoimg6.jpeg";
 import btoimg7 from "../assets/btoimg7.jpeg";
 import btoimg8 from "../assets/btoimg8.jpeg";
@@ -27,7 +26,6 @@ const DashboardPage = () => {
     btoimg6,
     btoimg2,
     btoimg9,
-    btoimg5,
   ];
 
   useEffect(() => {

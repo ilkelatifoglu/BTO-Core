@@ -1,0 +1,39 @@
+.edit-work-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem; 
+    margin-top: 1rem;
+}
+
+.edit-work-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.edit-work-field label {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.edit-work-field input,
+.edit-work-field .p-dropdown,
+.edit-work-field .p-inputnumber {
+    width: 100%;
+    padding: 0.5rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.p-inputnumber .p-button {
+    border-radius: 0;
+}
+
+.dialog-footer-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}

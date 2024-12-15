@@ -10,8 +10,18 @@ let cachedProfileImage = null;
 let cachedUserProfile = null;
 let cachedUserId = null;
 
-const token = localStorage.getItem("token") || localStorage.getItem("tempToken");
+const token =
+  localStorage.getItem("token") || localStorage.getItem("tempToken");
 const API_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:3001";
+
+// Add this helper function at the component level
+const getNameFontSize = (name) => {
+  if (!name) return "0.85rem";
+  const length = name.length;
+  if (length > 20) return "0.75rem";
+  if (length > 15) return "0.8rem";
+  return "0.85rem";
+};
 
 const Sidebar = ({ setCurrentPage }) => {
   const [isExpanded, setIsExpanded] = useState(true);
@@ -84,14 +94,11 @@ const Sidebar = ({ setCurrentPage }) => {
 
     setIsLoadingProfile(true);
     try {
-      const response = await axios.get(
-        `${API_URL}/profile/getProfile`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.get(`${API_URL}/profile/getProfile`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       const { firstName, lastName } = response.data;
       setUserName(`${firstName} ${lastName}`);
@@ -168,47 +175,51 @@ const Sidebar = ({ setCurrentPage }) => {
         </button>
         <div className="sidebar__header">
           <div className="profile-container">
-            <div className="profile-picture-wrapper">
-              <img
-                src={profileImage || defaultProfileImage}
-                alt="Profile"
-                className={`profile-picture ${isLoading ? "loading-blur" : ""}`}
-              />
-              {isExpanded && !isLoadingPicture && (
+            <div className="profile-content">
+              <div className="profile-picture-wrapper">
+                <img
+                  src={profileImage || defaultProfileImage}
+                  alt="Profile"
+                  className={`profile-picture ${
+                    isLoading ? "loading-blur" : ""
+                  }`}
+                />
                 <button
-                  className="refresh-button"
-                  onClick={fetchUserData}
+                  className={`refresh-button ${
+                    isLoadingPicture || isLoadingProfile ? "loading" : ""
+                  }`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    fetchUserData();
+                  }}
                   disabled={isLoadingPicture || isLoadingProfile}
-                  title="Refresh Profile and Name"
+                  title="Refresh Profile"
                 >
                   <i className="pi pi-refresh"></i>
                 </button>
-              )}
+              </div>
+              <div className="user-info">
+                <h2 className="user-name" style={{ fontSize: "1rem" }}>
+                  {userName || "User"}
+                </h2>
+              </div>
             </div>
-            {isExpanded && <h2>{userName || "User"}</h2>}
           </div>
         </div>
         {/* Divider */}
         {isExpanded && <div className="sidebar__divider"></div>}
 
-        {isExpanded && (
-        <p
-          className={`sidebar__dashboard ${
-            currentPath === "dashboard" ? "active" : ""
-          }`}
-          onClick={() => handleNavigation("dashboard")}
-          style={{
-            cursor: "pointer", // Make it clickable
-            color: currentPath === "dashboard" ? "rgb(0, 74, 119)" : "#000",
-            fontWeight: currentPath === "dashboard" ? "bold" : "normal",
-            textDecoration: currentPath === "dashboard" ? "underline" : "none",
-          }}
-        >
-          Dashboard
-        </p>
-         )}
-         
-          <ul className="sidebar__menu">
+        <ul className="sidebar__menu">
+          <li
+            className={`menu__item ${
+              currentPath === "dashboard" ? "active" : ""
+            }`}
+            onClick={() => handleNavigation("dashboard")}
+          >
+            <i className="pi pi-home"></i>
+            {isExpanded && <span>Dashboard</span>}
+          </li>
           {(userType === 4 ||
             userType === 3 ||
             userType === 2 ||
@@ -364,7 +375,9 @@ const Sidebar = ({ setCurrentPage }) => {
         </ul>
         <div className="sidebar__footer">
           <button
-           className={`menu__item ${currentPath === "Settings" ? "active" : ""}`}
+            className={`menu__item ${
+              currentPath === "Settings" ? "active" : ""
+            }`}
             onClick={() => handleNavigation("Settings")}
           >
             <i className="pi pi-cog"></i>

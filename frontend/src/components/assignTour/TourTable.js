@@ -44,6 +44,7 @@ export default function ReadyToursTable() {
   
       } catch (error) {
         console.error("Error fetching tours:", error);
+        if(toast.current){
         toast.current.clear();
         toast.current.show({
           severity: "error",
@@ -51,6 +52,7 @@ export default function ReadyToursTable() {
           detail: error.message || "Error fetching tours.",
           life: 3000,
         });
+      }
       }
     };
 
@@ -146,6 +148,7 @@ export default function ReadyToursTable() {
         user_id: userId,
         user_type: userType
       });
+      if(toast.current){
       toast.current.clear();
       toast.current.show({
         severity: "success",
@@ -153,6 +156,7 @@ export default function ReadyToursTable() {
         detail: response.message,
         life: 3000,
       });
+    }
 
       const updatedTours = await AssignTourService.getReadyTours();
       setTours(updatedTours);
@@ -311,26 +315,29 @@ export default function ReadyToursTable() {
   const rowExpansionTemplate = (data) => {
     const guideNames = data.guide_names || "No guides assigned yet.";
     const candidateNames = data.candidate_names || "No candidates assigned yet.";
-
-    const guideLinks = guideNames
+  
+    // Render guides and candidates as plain text
+    const guideList = guideNames
       .split(',')
-      .map((name, index) => `<a href="#guide-${index}" class="guide-link">${name.trim()}</a>`)
+      .map((name) => name.trim())
       .join(', ');
-    const candidateLinks = candidateNames
+  
+    const candidateList = candidateNames
       .split(',')
-      .map((name, index) => `<a href="#candidate-${index}" class="candidate-link">${name.trim()}</a>`)
+      .map((name) => name.trim())
       .join(', ');
-
+  
     return (
       <div className="p-3">
         <h4>Assigned Guides:</h4>
-        <p dangerouslySetInnerHTML={{ __html: guideLinks }}></p>
-
+        <p>{guideList}</p>
+  
         <h4>Assigned Candidates:</h4>
-        <p dangerouslySetInnerHTML={{ __html: candidateLinks }}></p>
+        <p>{candidateList}</p>
       </div>
     );
   };
+  
 
   const rowClassName = (data) => {
     if (data.tour_status === "CANCELLED") return "cancelled-row";
@@ -414,8 +421,7 @@ export default function ReadyToursTable() {
       ) {
       if (
         localStorage.getItem("userType") === '3' || 
-        localStorage.getItem("userType") === '4' || 
-        localStorage.getItem("userType") === '2'
+        localStorage.getItem("userType") === '4'
       ) { 
         return (
           <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "10px" }}>

@@ -58,17 +58,26 @@ const IndividualTourForm = ({ onClose }) => {
           severity: 'success',
           summary: 'Application Submitted',
           detail: 'Your application has been submitted successfully!',
-          life: 5000, // Notification disappears after 5 seconds
-        });
-        handleClear(); // Clear the form
-      } else {
-        const errorData = await response.json();
-        toastRef.current.show({
-          severity: 'error',
-          summary: 'Submission Failed',
-          detail: errorData.message || 'An error occurred while submitting the form.',
           life: 5000,
         });
+        handleClear(); 
+      } else {
+        const errorData = await response.json();
+        if (errorData.message === "You already have a tour on this day!") {
+          toastRef.current.show({
+            severity: 'error', 
+            summary: 'Error',
+            detail: errorData.message, 
+            life: 5000,
+          });
+        } else {
+          toastRef.current.show({
+            severity: 'error',
+            summary: 'Submission Failed',
+            detail: errorData.message || 'An error occurred while submitting the form.',
+            life: 5000,
+          });
+        }
       }
     } catch (error) {
       console.error('Error:', error);

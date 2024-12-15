@@ -1,3 +1,11 @@
+.feedback-invalid{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 40vh; 
+}
+
+
 .feedback-page {
     display: flex;
     justify-content: center;

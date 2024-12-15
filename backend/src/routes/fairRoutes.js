@@ -9,7 +9,7 @@ const router = express.Router();
 const authorizeRole = require('../middleware/authorizeRole'); // Middleware for role-based authorization
 
 router.get('/', authenticateToken, getFairs);
-router.post('/createFair', authenticateToken, createFair);
+router.post('/createFair', createFair);
 router.post('/fair-requests', authenticateToken, createFairRequest);
 router.put('/:id/assign', authenticateToken, authorizeRole(2, 3, 4), assignGuide);
 router.get('/available-guides', authenticateToken, getAvailableGuides);

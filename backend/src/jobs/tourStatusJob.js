@@ -278,7 +278,7 @@ async function sendFeedbackLinksForCompletedTours() {
       `;
       await query(updateQuery, [id]);
 
-      const feedbackToken = generateFeedbackToken(id, tour_date, type);
+      const feedbackToken = generateFeedbackToken(id, type);
 
       const FRONTEND_URL = process.env.FRONTEND_URL;
       const feedbackLink = `${FRONTEND_URL}/school-feedback?token=${feedbackToken}`;

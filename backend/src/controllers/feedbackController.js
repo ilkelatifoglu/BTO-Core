@@ -1,13 +1,31 @@
 // feedbackController.js
+const jwt = require("jsonwebtoken"); 
+const JWT_SECRET = process.env.JWT_SECRET; 
 const aws = require("aws-sdk");
 const { query } = require("../config/database");
 const { getFeedbackByRole, deleteFeedback, updateFeedback, createFeedback } = require("../queries/feedbackQueries");
-const { verifyToken } = require("../utils/jwt");
+const jwtUtils = require("../utils/jwt"); 
+
+exports.validateToken = async (req, res) => {
+  const { token } = req.query;
+
+  try {
+    jwt.verify(token, JWT_SECRET); // Use the verify method with your secret
+    res.status(200).json({ success: true });
+  } catch (error) {
+    console.error("Error validating token:", error.message);
+    res.status(401).json({
+      success: false,
+      message: error.name === "TokenExpiredError" ? "Token has expired." : "Invalid token.",
+    });
+  }
+};
+
 
 exports.submitFeedback = async (req, res) => {
   const { token, feedback } = req.body;
   try {
-    const decoded = verifyToken(token); 
+    const decoded = jwtUtils.verifyToken(token);
     const { tourId, type } = decoded;
 
     if (type == "individual_tour") {
@@ -135,108 +153,49 @@ exports.deleteFeedback = async (req, res) => {
   }
 };
 
-//exports.getFeedbackWithPagination = async (req, res) => {
-  //   const page = parseInt(req.query.page, 10) || 1;
-  //   const limit = parseInt(req.query.limit, 10) || 50;
-  //   const offset = (page - 1) * limit;
-  
-  //   try {
-  //     const feedback = await getPaginatedFeedback(limit, offset);
-  //     res.status(200).json({
-  //       success: true,
-  //       page,
-  //       limit,
-  //       data: feedback,
-  //     });
-  //   } catch (error) {
-  //     console.error("Error fetching feedback:", error.message || error);
-  //     res.status(500).json({ success: false, message: "Server error" });
-  //   }
-  // };
-  
-  // exports.uploadFeedback = async (req, res) => {
-  //   const { tourId } = req.body;
-  //   const userId = req.user.id;
-  //   const file = req.file;
-  
-  //   if (!file) {
-  //     return res.status(400).json({ message: "No file uploaded" });
-  //   }
-  
-  //   try {
-  //     const s3Params = {
-  //       Bucket: process.env.BUCKET_NAME,
-  //       Key: `feedback/${Date.now()}_${file.originalname}`,
-  //       Body: file.buffer,
-  //       ContentType: file.mimetype,
-  //     };
-  
-  //     const s3Response = await s3.upload(s3Params).promise();
-  
-  //     const result = await addFeedback(
-  //       file.originalname,
-  //       file.mimetype,
-  //       file.size,
-  //       s3Response.Location,
-  //       userId,
-  //       tourId
-  //     );
-  
-  //     res.status(201).json({
-  //       success: true,
-  //       message: "Feedback uploaded successfully",
-  //       feedbackId: result.rows[0].id,
-  //     });
-  //   } catch (error) {
-  //     console.error("Error uploading feedback:", error.message);
-  //     res.status(500).json({ success: false, message: "Server error" });
-  //   }
-  // };
-  
-  // exports.getFeedbackDownloadLink = async (req, res) => {
-  //   const { feedbackId } = req.params;
-  
-  //   try {
-  //     const sql = `SELECT s3_url FROM feedback WHERE id = $1`;
-  //     const result = await query(sql, [feedbackId]);
-  
-  //     if (result.rows.length === 0) {
-  //       return res.status(404).json({ message: "Feedback not found" });
-  //     }
-  
-  //     const s3Url = result.rows[0].s3_url;
-  //     const fileKey = new URL(s3Url).pathname.substring(1);
-  //     const s3Params = {
-  //       Bucket: process.env.BUCKET_NAME,
-  //       Key: fileKey,
-  //       Expires: 300,
-  //     };
-  
-  //     const presignedUrl = await s3.getSignedUrlPromise("getObject", s3Params);
-  //     res.status(200).json({ url: presignedUrl });
-  //   } catch (error) {
-  //     console.error("Error generating download link:", error.message);
-  //     res.status(500).json({ success: false, message: "Server error" });
-  //   }
-  // };
-  
-  // exports.deleteFeedback = async (req, res) => {
-  //   const { feedbackId } = req.params;
-  
-  //   try {
-  //     const result = await deleteFeedback(feedbackId);
-  
-  //     if (result.rows.length === 0) {
-  //       return res.status(404).json({ message: "Feedback not found" });
-  //     }
-  
-  //     const s3Url = result.rows[0].s3_url;
-  //     const fileKey = new URL(s3Url).pathname.substring(1);
-  
-  //     await s3.deleteObject({ Bucket: process.env.BUCKET_NAME, Key: fileKey }).promise();
-  //     res.status(200).json({ success: true, message: "Feedback deleted successfully" });
-  //   } catch (error) {
-  //     console.error("Error deleting feedback:", error.message);
-  //     res.status(500).json({ success: false, message: "Server error" });
-  //   }
-  // };
+exports.getFeedbackByToken = async (req, res) => {
+  const { token } = req.query;
+
+  try {
+    const decoded = jwtUtils.verifyToken(token);
+    const { tourId, type } = decoded;
+
+    let feedbackQuery;
+    if (type == "individual_tour") {
+      feedbackQuery = `
+        SELECT feedback AS text_feedback
+        FROM individual_tours
+        WHERE id = $1
+      `;
+    } else if (type == "tour") {
+      feedbackQuery = `
+        SELECT school_feedback AS text_feedback
+        FROM tours
+        WHERE id = $1
+      `;
+    } else {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid feedback type." });
+    }
+
+    const result = await query(feedbackQuery, [tourId]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Feedback not found.",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      feedback: result.rows[0].text_feedback,
+    });
+  } catch (error) {
+    console.error("Error fetching feedback:", error.message || error);
+    res
+      .status(400)
+      .json({ success: false, message: "Failed to fetch feedback." });
+  }
+};

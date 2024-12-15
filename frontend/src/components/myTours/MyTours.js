@@ -5,8 +5,6 @@ import AssignTourService from "../../services/AssignTourService";
 import {
     getMyIndividualTours,
     withdrawFromIndividualTour,
-    approveTour,
-    rejectTour,
 } from "../../services/IndividualTourService"; // Destructured imports
 import { fetchFairs, unassignGuide } from "../../services/fairService";
 import { Toast } from "primereact/toast";
@@ -16,10 +14,13 @@ import Sidebar from '../../components/common/Sidebar';
 import '../common/CommonComp.css';
 import Unauthorized from '../../pages/Unauthorized'; // Import the Unauthorized component
 import useProtectRoute from '../../hooks/useProtectRoute';
+import FilterBar from './FilterBar'; // Import the FilterBar component
+
 
 export default function MyTours() {
     const isAuthorized = useProtectRoute([1,2,3,4]); // Check authorization
     const [items, setItems] = useState([]);
+    const [filteredItems, setFilteredItems] = useState([]); 
     const [confirmVisible, setConfirmVisible] = useState(false); // Manage dialog visibility
     const [pendingItem, setPendingItem] = useState(null); // Item to withdraw from
     const toast = useRef(null);
@@ -28,11 +29,14 @@ export default function MyTours() {
         const fetchData = async () => {
             try {
                 const tours = await AssignTourService.getMyTours();
-                const fairs = await fetchFairs();
+                const readyTours = tours.filter(tour => tour.tour_status === "READY");
+                const fairs = await fetchFairs("READY")
                 const individualTours = await getMyIndividualTours();
+                const readyIndividualTours = individualTours.filter(indTour => indTour.tour_status === "READY")
+                
 
                 const combinedData = [
-                    ...tours.map((tour) => ({
+                    ...readyTours.map((tour) => ({
                         ...tour,
                         type: "tour",
                         event: tour.school_name,
@@ -47,7 +51,7 @@ export default function MyTours() {
                             type: "fair",
                             event: fair.organization_name,
                         })),
-                        ...individualTours.map((indTour) => ({
+                        ...readyIndividualTours.map((indTour) => ({
                             ...indTour,
                             type: "individual",
                             event: indTour.name,
@@ -55,22 +59,26 @@ export default function MyTours() {
                 ];
 
                 setItems(combinedData);
-
-                toast.current.clear();
-                toast.current.show({
-                    severity: "success",
-                    summary: "Success",
-                    detail: "Assignments loaded successfully.",
-                    life: 3000,
-                });
+                setFilteredItems(combinedData); // Show all initially
+                if (toast.current){
+                    toast.current.clear();
+                    toast.current.show({
+                        severity: "success",
+                        summary: "Success",
+                        detail: "Assignments loaded successfully.",
+                        life: 3000,
+                    });
+                }
             } catch (err) {
-                toast.current.clear();
-                toast.current.show({
-                    severity: "error",
-                    summary: "Error",
-                    detail: err.message || "Failed to fetch data",
-                    life: 3000,
-                });
+                if(toast.current){
+                    toast.current.clear();
+                    toast.current.show({
+                        severity: "error",
+                        summary: "Error",
+                        detail: err.message || "Failed to fetch data",
+                        life: 3000,
+                    });
+                }    
             }
         };
 
@@ -103,7 +111,9 @@ export default function MyTours() {
         const isIndividual = item.type === "individual";
     
         hideConfirmDialog();
-        toast.current.clear();
+        if(toast.current){
+            toast.current.clear();
+        }
         try {
             if (isIndividual) {
                 // Handle individual tour withdrawal
@@ -163,6 +173,51 @@ export default function MyTours() {
             </button>
         </div>
     );
+
+    const handleFilterChange = (filters) => {
+        const { date, event, type, time } = filters;
+
+        const filtered = items.filter((entry) => {
+            // Match date
+            let matchDate = true;
+            if (date) {
+                const entryDateStr = new Date(entry.date).toDateString();
+                const filterDateStr = new Date(date).toDateString();
+                matchDate = entryDateStr === filterDateStr;
+            }
+
+            // Match event (case-insensitive)
+            let matchEvent = true;
+            if (event) {
+                matchEvent = entry.event?.toLowerCase().includes(event.toLowerCase());
+            }
+
+            // Match type
+            let matchType = true;
+            if (type) {
+                // Convert entry.type to user-friendly type
+                let entryTypeLabel = "-";
+                if (entry.type === "fair") entryTypeLabel = "Fair";
+                else if (entry.type === "individual") entryTypeLabel = "Individual Tour";
+                else if (entry.type === "tour") entryTypeLabel = "Tour";
+
+                matchType = entryTypeLabel.toLowerCase().includes(type.toLowerCase());
+            }
+
+            // Match time
+            let matchTime = true;
+            if (time) {
+                const entryTime = entry.type === "tour" ? (entry.time || "Not Assigned") : "-";
+                matchTime = entryTime.toLowerCase().includes(time.toLowerCase());
+            }
+
+            return matchDate && matchEvent && matchType && matchTime;
+        });
+
+        setFilteredItems(filtered);
+    };
+
+
     if (!isAuthorized) {
         return <Unauthorized />;
       }
@@ -171,9 +226,11 @@ export default function MyTours() {
             <Sidebar />
             <Toast ref={toast} />
             <div className="page-content">
-                <h1>My Tours</h1>
+                <h1>My Assignments</h1>
+                <FilterBar onFilterChange={handleFilterChange} />
+
                 <DataTable
-                    value={items}
+                    value={filteredItems}
                     paginator
                     rows={10}
                     className="my-tours-table"
@@ -195,6 +252,17 @@ export default function MyTours() {
                         field="event"
                         header="Event"
                         style={{ width: "40%" }}
+                    ></Column>
+                    <Column
+                        field="type"
+                        header="Type"
+                        body={(rowData) => {
+                            if (rowData.type === "fair") return "Fair";
+                            if (rowData.type === "individual") return "Individual Tour";
+                            if (rowData.type === "tour") return "Tour";
+                            return "-";
+                        }}
+                        style={{ width: "20%" }}
                     ></Column>
                     <Column
                         field="time"

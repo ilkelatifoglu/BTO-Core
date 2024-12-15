@@ -7,9 +7,12 @@ import { Button } from "primereact/button";
 import { Toast } from "primereact/toast"; // (2) Import Toast
 import "./PuantajComponents.css";
 import "../common/CommonComp.css";
+import FilterBar from "./FilterBar"; // Import the new FilterBar component
+
 
 export default function AdminWorkTable() {
     const [workEntries, setWorkEntries] = useState([]);
+    const [filteredWorkEntries, setFilteredWorkEntries] = useState([]);
     const [selectedEntries, setSelectedEntries] = useState({});
     const toast = useRef(null); // (3) Toast ref
 
@@ -27,26 +30,31 @@ export default function AdminWorkTable() {
                 }, {});
 
                 setWorkEntries(data);
+                setFilteredWorkEntries(data); // Initially show all entries
                 setSelectedEntries(initialSelection);
 
                 // Success toast after loading data
-                toast.current?.clear();
-                toast.current?.show({
-                    severity: "success",
-                    summary: "Success",
-                    detail: "All work entries loaded successfully.",
-                    life: 3000,
-                });
+                if (toast.current) {
+                    toast.current.clear();
+                    toast.current.show({
+                        severity: "success",
+                        summary: "Success",
+                        detail: "All work entries loaded successfully.",
+                        life: 3000,
+                    });
+                }
             })
             .catch((error) => {
                 console.error("Error fetching work entries:", error);
-                toast.current?.clear();
-                toast.current?.show({
-                    severity: "error",
-                    summary: "Error",
-                    detail: `Failed to load work entries: ${error.message}`,
-                    life: 3000,
-                });
+                if(toast.current){
+                    toast.current.clear();
+                    toast.current.show({
+                        severity: "error",
+                        summary: "Error",
+                        detail: `Failed to load work entries: ${error.message}`,
+                        life: 3000,
+                    });
+                }
             });
     }, []);
 
@@ -135,6 +143,7 @@ export default function AdminWorkTable() {
                 return acc;
             }, {});
             setWorkEntries(data);
+            setFilteredWorkEntries(data);
             setSelectedEntries(initialSelection);
         } catch (error) {
             console.error("Error refreshing data:", error);
@@ -162,13 +171,37 @@ export default function AdminWorkTable() {
         return `${hours} hour(s) ${minutes} minute(s)`;
     };
 
+    const handleFilterChange = (filters) => {
+        const { date, type, name, status } = filters;
+
+        const filtered = workEntries.filter((entry) => {
+            const entryDate = new Date(entry.date);
+            const matchDate = !date || entryDate.toDateString() === new Date(date).toDateString();
+            const matchType = !type || entry.work_type.toLowerCase().includes(type.toLowerCase());
+
+            // Combine first and last name
+            const fullName = (entry.first_name + " " + entry.last_name).toLowerCase();
+            const matchName = !name || fullName.includes(name.toLowerCase());
+
+            const matchStatus =
+                !status ||
+                (status === "Approved" && entry.is_approved) ||
+                (status === "Pending" && !entry.is_approved);
+
+            return matchDate && matchType && matchName && matchStatus;
+        });
+
+        setFilteredWorkEntries(filtered);
+    };
+
     return (
         <div className="page-container">
             <Toast ref={toast} /> {/* (5) Added Toast component */}
             <div className="page-content">
                 <h1>All Work Entries</h1>
+                <FilterBar onFilterChange={handleFilterChange} />
                 <DataTable
-                    value={workEntries}
+                    value={filteredWorkEntries}
                     dataKey="work_id"
                     paginator
                     rows={20}

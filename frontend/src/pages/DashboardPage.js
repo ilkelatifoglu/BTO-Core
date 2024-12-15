@@ -4,14 +4,17 @@ import { AuthContext } from '../context/AuthContext';
 import './DashboardPage.css';
 import welcomeImage from '../assets/btowelcome.jpeg';
 import btoimg from '../assets/btoimg.jpeg';
+import btoimg3 from '../assets/btoimg3.jpeg';
 import useProtectRoute from '../hooks/useProtectRoute';
 import Unauthorized from './Unauthorized';
 
 const DashboardPage = () => {
     const isAuthorized = useProtectRoute([1, 2, 3, 4]);
-
     const [currentPage, setCurrentPage] = useState('default');
     const { user } = useContext(AuthContext);
+
+    const [currentSlide, setCurrentSlide] = useState(0);
+    const images = [welcomeImage, btoimg3, btoimg];
 
     useEffect(() => {
         document.body.classList.add("dashboard-body");
@@ -19,6 +22,14 @@ const DashboardPage = () => {
             document.body.classList.remove("dashboard-body");
         };
     }, []);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentSlide((prevSlide) => (prevSlide + 1) % images.length);
+        }, 1500); 
+
+        return () => clearInterval(interval); 
+    }, [images.length]);
 
     const renderContent = () => {
         switch (currentPage) {
@@ -30,10 +41,18 @@ const DashboardPage = () => {
                             <p>Your centralized platform to manage tours, guides, and feedback effectively.</p>
                         </header>
                         <div className="dashboard-content">
-                            {/* Images Section */}
-                            <div className="images-section">
-                                <img src={welcomeImage} alt="Welcome" className="dashboard-image" />
-                                <img src={btoimg} alt="BTO Team" className="dashboard-image" />
+                            {/* Slayt Gösterisi */}
+                            <div className="slideshow-container">
+                                <img
+                                    src={images[currentSlide]}
+                                    alt="Slideshow"
+                                    className="dashboard-image"
+                                    style={{
+                                        width: '100%',
+                                        borderRadius: '8px',
+                                        transition: 'opacity 1s ease-in-out',
+                                    }}
+                                />
                             </div>
 
                             {/* Cards Section */}

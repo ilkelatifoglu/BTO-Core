@@ -17,7 +17,7 @@ export const fetchTourData = async (filter, periodIndex) => {
 
 export const fetchSchoolStudentData = async (year) => { // Ensure 'year' is required
   try {
-    const response = await fetch(`${BASE_URL}/data/yearly/${year}`, {headers: {Authorization: `Bearer ${token}`}}); // Correct endpoint
+    const response = await fetch(`${BASE_URL}/data/school/yearly/${year}`, {headers: {Authorization: `Bearer ${token}`}}); // Correct endpoint
     if (!response.ok) {
       throw new Error("Failed to fetch school student data");
     }

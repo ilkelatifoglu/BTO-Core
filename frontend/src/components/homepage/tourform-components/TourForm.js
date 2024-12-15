@@ -19,11 +19,11 @@ const TourForm = () => {
   // State Variables for LeftForm
   // ============================
 
-  const [city, setCity] = useState(null);
-  const [schoolName, setSchoolName] = useState(null);
-  const [numberOfStudents, setNumberOfStudents] = useState(null);
-  const [tourDate, setTourDate] = useState(null);
-  const [selectedTimes, setSelectedTimes] = useState([]);
+  const [city, setCity] = useState({ value: "", label: "" }); 
+  const [schoolName, setSchoolName] = useState({ value: "", label: "" }); 
+  const [numberOfStudents, setNumberOfStudents] = useState(""); 
+  const [tourDate, setTourDate] = useState(""); 
+  const [selectedTimes, setSelectedTimes] = useState([]); 
 
   // =============================
   // State Variables for RightForm
@@ -48,8 +48,8 @@ const TourForm = () => {
 
   const handleClear = () => {
     // Reset LeftForm fields
-    setCity({ value: "Ankara", label: "Ankara" });
-    setSchoolName("");
+    setCity({ value: "", label: "" });
+    setSchoolName({ value: "", label: "" });
     setNumberOfStudents("");
     setTourDate("");
     setSelectedTimes([]);

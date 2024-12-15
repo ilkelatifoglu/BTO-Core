@@ -10,8 +10,9 @@ const API_BASE_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3001
  */
 export const fetchProfileData = async (token) => {
     try {
+        const token2 = localStorage.getItem('token') || localStorage.getItem('tempToken');
         const response = await axios.get(`${API_BASE_URL}/profile/getProfile`, {
-            headers: { 'Authorization': `Bearer ${token}` },
+            headers: { 'Authorization': `Bearer ${token2}` },
         });
         return response.data;
     } catch (error) {

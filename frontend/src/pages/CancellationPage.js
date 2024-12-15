@@ -26,13 +26,15 @@ const CancelConfirmation = () => {
         setIsLoading(true);
         try {
             const response = await cancelTour(token);
-            toast.current.clear();
-            toast.current.show({
-                severity: "success",
-                summary: "Success",
-                detail: response.message || "Tour successfully canceled.",
-                life: 3000,
-            });
+            if (toast.current) {
+                toast.current.clear();
+                toast.current.show({
+                    severity: "success",
+                    summary: "Success",
+                    detail: response.message || "Tour successfully canceled.",
+                    life: 3000,
+                });
+            }
 
             // (3) Redirect to home after a short delay, giving time for the toast to appear
             setTimeout(() => {

@@ -60,23 +60,27 @@ const TourApprovalTable = () => {
                 setRows(rowsToFit);
 
                 // Show success toast after fetching tours
-                toast.current.clear(); // (4) Clear existing toasts
-                toast.current.show({
-                    severity: "success",
-                    summary: "Success",
-                    detail: "Tours loaded successfully.",
-                    life: 3000,
-                });
+                if(toast.current){
+                    toast.current.clear(); // (4) Clear existing toasts
+                    toast.current.show({
+                        severity: "success",
+                        summary: "Success",
+                        detail: "Tours loaded successfully.",
+                        life: 3000,
+                    });
+                }
             } catch (error) {
                 console.error("Error loading tours:", error);
                 // Show error toast
-                toast.current.clear();
-                toast.current.show({
-                    severity: "error",
-                    summary: "Error",
-                    detail: `Failed to load tours: ${error.message}`,
-                    life: 3000,
-                });
+                if(toast.current){
+                    toast.current.clear();
+                    toast.current.show({
+                        severity: "error",
+                        summary: "Error",
+                        detail: `Failed to load tours: ${error.message}`,
+                        life: 3000,
+                    });
+                }
             }
         };
 
@@ -89,6 +93,7 @@ const TourApprovalTable = () => {
 
         if (!selectedTime) {
             // Notify user to select time
+            if(toast.current){
             toast.current.clear();
             toast.current.show({
                 severity: "error",
@@ -96,6 +101,7 @@ const TourApprovalTable = () => {
                 detail: "Please select a time preference!",
                 life: 3000,
             });
+            }
             return;
         }
 
@@ -110,6 +116,7 @@ const TourApprovalTable = () => {
             );
 
             // Success toast
+            if(toast.current){
             toast.current.clear();
             toast.current.show({
                 severity: "success",
@@ -117,9 +124,11 @@ const TourApprovalTable = () => {
                 detail: `Tour ${rowData.tour_id} approved successfully.`,
                 life: 3000,
             });
+            }
         } catch (error) {
             console.error("Error approving tour:", error);
             // Error toast
+            if(toast.current){
             toast.current.clear();
             toast.current.show({
                 severity: "error",
@@ -127,6 +136,7 @@ const TourApprovalTable = () => {
                 detail: `Error approving tour ${rowData.tour_id}: ${error.message}`,
                 life: 3000,
             });
+        }
         }
     };
 
@@ -141,6 +151,7 @@ const TourApprovalTable = () => {
                 )
             );
             // Success toast
+            if(toast.current){
             toast.current.clear();
             toast.current.show({
                 severity: "success",
@@ -148,9 +159,11 @@ const TourApprovalTable = () => {
                 detail: `Tour ${rowData.tour_id} rejected successfully.`,
                 life: 3000,
             });
+            }
         } catch (error) {
             console.error("Error rejecting tour:", error);
             // Error toast
+            if(toast.current){
             toast.current.clear();
             toast.current.show({
                 severity: "error",
@@ -158,6 +171,7 @@ const TourApprovalTable = () => {
                 detail: `Error rejecting tour ${rowData.tour_id}: ${error.message}`,
                 life: 3000,
             });
+        }
         }
     };
 
@@ -362,7 +376,6 @@ const TourApprovalTable = () => {
                 currentPageReportTemplate="{first} to {last} of {totalRecords}"
                 rowClassName={rowClassName}
             >
-                <Column field="tour_id" header="Tour ID" style={{ width: '10%' }}></Column>
                 <Column field="display_status" header="Tour Status" style={{ width: '10%' }}></Column>
                 <Column field="school_name" header="School Name" style={{ width: '10%' }}></Column>
                 <Column field="city" header="City" style={{ width: '10%' }}></Column>

@@ -25,8 +25,6 @@ exports.generateCancellationToken = (tourId, tourDate, type) => {
   return jwt.sign({ tourId, type }, JWT_SECRET, { expiresIn: expirationTime });
 };
 
-exports.generateFeedbackToken = (tourId, tourDate, type) => {
-  const expirationTime = Math.floor(new Date(tourDate).getTime() / 1000) + 7 * 24 * 60 * 60;
-
-  return jwt.sign({ tourId, type }, JWT_SECRET, { expiresIn: expirationTime });
+exports.generateFeedbackToken = (tourId, type) => {
+  return jwt.sign({ tourId, type }, JWT_SECRET, { expiresIn: "7d"});
 };

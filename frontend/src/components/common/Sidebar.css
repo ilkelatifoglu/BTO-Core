@@ -31,7 +31,7 @@
 
 /* Profile Container */
 .profile-container {
-  padding: 15px 15px 15px 10px; /* Reduced left padding */
+  padding: 20px 15px 15px 10px; /* Increased top padding to 20px */
   background-color: #ffffff;
   border-radius: 8px;
   margin: 5px 10px;

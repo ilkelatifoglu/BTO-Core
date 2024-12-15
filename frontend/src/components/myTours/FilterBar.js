@@ -1,15 +1,14 @@
 import React, { useState } from "react";
-import { InputText } from "primereact/inputtext";
 import { Calendar } from "primereact/calendar";
+import { InputText } from "primereact/inputtext";
 import "./FilterBar.css";
 
 export default function FilterBar({ onFilterChange }) {
   const [filters, setFilters] = useState({
     date: null,
-    schoolOrIndividual: "",
-    name: "",
-    sender: "",
-    city: "" 
+    event: "",
+    type: "",
+    time: ""
   });
 
   const handleFilterChange = (field, value) => {
@@ -21,10 +20,9 @@ export default function FilterBar({ onFilterChange }) {
   const clearFilters = () => {
     const cleared = {
       date: null,
-      schoolOrIndividual: "",
-      name: "",
-      sender: "",
-      city: "" 
+      event: "",
+      type: "",
+      time: ""
     };
     setFilters(cleared);
     onFilterChange(cleared);
@@ -41,38 +39,31 @@ export default function FilterBar({ onFilterChange }) {
         dateFormat="dd/mm/yy"
       />
 
-      {/* School/Individual Filter */}
+      {/* Event Filter */}
       <InputText
-        value={filters.schoolOrIndividual}
-        onChange={(e) => handleFilterChange("schoolOrIndividual", e.target.value)}
-        placeholder="School/Individual"
+        value={filters.event}
+        onChange={(e) => handleFilterChange("event", e.target.value)}
+        placeholder="Event"
         className="filter-input"
       />
 
-      {/* Name Filter (Tagged Guides/Candidates) */}
+      {/* Type Filter */}
       <InputText
-        value={filters.name}
-        onChange={(e) => handleFilterChange("name", e.target.value)}
-        placeholder="Name (Guide/Candidate)"
+        value={filters.type}
+        onChange={(e) => handleFilterChange("type", e.target.value)}
+        placeholder="Type"
         className="filter-input"
       />
 
-      {/* Sender Filter */}
+      {/* Time Filter */}
       <InputText
-        value={filters.sender}
-        onChange={(e) => handleFilterChange("sender", e.target.value)}
-        placeholder="Sender"
-        className="filter-input"
-      />
-      {/* City Filter */}
-      <InputText
-        value={filters.city}
-        onChange={(e) => handleFilterChange("city", e.target.value)}
-        placeholder="City"
+        value={filters.time}
+        onChange={(e) => handleFilterChange("time", e.target.value)}
+        placeholder="Time"
         className="filter-input"
       />
 
-      <button className="button clearfilters-button" onClick={clearFilters}>
+      <button className="clearfilters-button" onClick={clearFilters}>
         Clear Filters
       </button>
     </div>

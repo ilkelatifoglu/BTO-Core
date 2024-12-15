@@ -202,7 +202,6 @@ const IndividualToursTable = () => {
                 currentPageReportTemplate="{first} to {last} of {totalRecords}"
                 rowClassName={(data) => getRowClass(data.tour_status)}
             >
-                <Column field="id" header="ID" style={{ width: "5%" }}></Column>
                 <Column field="tour_status" header="Tour Status" style={{ width: "10%" }}></Column>
                 <Column field="date" header="Date" style={{ width: "10%" }} body={(rowData) => formatDate(rowData.date)}></Column>
                 <Column field="day" header="Day" style={{ width: "10%" }}></Column>

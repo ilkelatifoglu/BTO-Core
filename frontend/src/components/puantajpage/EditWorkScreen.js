@@ -5,7 +5,7 @@ import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
 import { InputNumber } from "primereact/inputnumber";
 import { editWorkEntry } from "../../services/WorkService";
-
+import "./EditWorkScreen.css";
 function EditWorkScreen({ isOpen, onClose, workData, onSave }) {
     const [formData, setFormData] = useState({});
     const [workTime, setWorkTime] = useState(0);
@@ -111,27 +111,33 @@ function EditWorkScreen({ isOpen, onClose, workData, onSave }) {
                     }}
                 >
 
-                    <div className="p-fluid">
-                        <div className="p-field">
-                            <label htmlFor="type">Work Type</label>
-                            <Dropdown
+                <div
+                    style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "1.5rem", 
+                        marginTop: "1rem",
+                    }}
+                >
+                    {/* Work Type */}
+                    <div style={{ display: "flex", flexDirection: "column" }}>
+                        <label htmlFor="type" style={{ marginBottom: "0.5rem", fontWeight: "600" }}>
+                            Work Type
+                        </label>
+                                <Dropdown
                                 id="type"
                                 value={formData.work_type || ""}
                                 options={workTypes} // Updated dropdown options
                                 onChange={handleDropdownChange}
                                 placeholder="Select a Work Type"
-                                style={{
-                                    width: "10rem",
-                                    height: "3rem",
-                                    fontSize: "1rem",
-                                    borderRadius: "5px",
-                                    flexShrink: 0,
-                                }}
+                                style={{ height: "3rem", fontSize: "1rem", borderRadius: "5px" }}
                             />
                         </div>
 
-                        <div className="p-field">
-                            <label htmlFor="dateTime">Date & Time</label>
+                        <div style={{ display: "flex", flexDirection: "column" }}>
+                            <label htmlFor="dateTime" style={{ marginBottom: "0.5rem", fontWeight: "600" }}>
+                                Date & Time
+                            </label>
                             <input
                                 type="datetime-local"
                                 id="dateTime"
@@ -151,17 +157,18 @@ function EditWorkScreen({ isOpen, onClose, workData, onSave }) {
                                 placeholder="Select Date & Time"
                                 style={{
                                     height: "3rem",
+                                    padding: "0.5rem",
                                     fontSize: "1rem",
                                     borderRadius: "5px",
-                                    padding: "0.5rem",
                                     border: "1px solid #ccc",
-                                    flexShrink: 0,
                                 }}
                             />
                         </div>
 
-                        <div className="p-field">
-                            <label htmlFor="workTime">Workload (Hours)</label>
+                        <div style={{ display: "flex", flexDirection: "column" }}>
+                            <label htmlFor="workTime" style={{ marginBottom: "0.5rem", fontWeight: "600" }}>
+                                Workload (Hours)
+                            </label>
                             <InputNumber
                                 id="workTime"
                                 value={workTime}

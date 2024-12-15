@@ -106,8 +106,8 @@ const FeedbackTable = () => {
   };
 
   const handleFilterChange = (filters) => {
-    const { date, schoolOrIndividual, name, sender } = filters;
-
+    const { date, schoolOrIndividual, name, sender, city } = filters;
+  
     const filtered = feedback.filter((entry) => {
       // Match date
       let matchDate = true;
@@ -116,16 +116,15 @@ const FeedbackTable = () => {
         const selectedDate = new Date(date).toDateString();
         matchDate = entryDate === selectedDate;
       }
-
+  
       // Match school/individual
-      // (Checking if school_name includes the search text)
       let matchSchoolOrIndividual = true;
       if (schoolOrIndividual) {
         matchSchoolOrIndividual = entry.school_name
           ?.toLowerCase()
           .includes(schoolOrIndividual.toLowerCase());
       }
-
+  
       // Match sender
       let matchSender = true;
       if (sender) {
@@ -133,7 +132,7 @@ const FeedbackTable = () => {
           ?.toLowerCase()
           .includes(sender.toLowerCase());
       }
-
+  
       // Match name (tagged guides or candidates)
       let matchName = true;
       if (name) {
@@ -146,18 +145,24 @@ const FeedbackTable = () => {
           entry.tagged_candidates.some((c) =>
             c.toLowerCase().includes(searchTerm)
           );
-
-        // If none of them match and name filter is provided, fail the match
+  
         if (!guidesMatched && !candidatesMatched) {
           matchName = false;
         }
       }
-
-      return matchDate && matchSchoolOrIndividual && matchSender && matchName;
+  
+      // Match city
+      let matchCity = true;
+      if (city) {
+        matchCity = entry.city?.toLowerCase().includes(city.toLowerCase());
+      }
+  
+      return matchDate && matchSchoolOrIndividual && matchSender && matchName && matchCity;
     });
-
+  
     setFilteredFeedback(filtered);
   };
+  
 
   return (
     <div>

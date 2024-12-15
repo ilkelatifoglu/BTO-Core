@@ -376,7 +376,6 @@ const TourApprovalTable = () => {
                 currentPageReportTemplate="{first} to {last} of {totalRecords}"
                 rowClassName={rowClassName}
             >
-                <Column field="tour_id" header="Tour ID" style={{ width: '10%' }}></Column>
                 <Column field="display_status" header="Tour Status" style={{ width: '10%' }}></Column>
                 <Column field="school_name" header="School Name" style={{ width: '10%' }}></Column>
                 <Column field="city" header="City" style={{ width: '10%' }}></Column>

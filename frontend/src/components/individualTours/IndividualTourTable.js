@@ -7,9 +7,11 @@ import { Toast } from "primereact/toast";
 import { getIndividualTours, approveTour, rejectTour } from "../../services/IndividualTourService";
 import '../approveTour/TourApprovalTable.css';
 import './IndividualTourTable.css';
+import FilterBar from "./FilterBar"; // Import the new FilterBar component
 
 const IndividualToursTable = () => {
     const [tours, setTours] = useState([]);
+    const [filteredTours, setFilteredTours] = useState([]);
     const [rows, setRows] = useState(10);
     const [visible, setVisible] = useState(false);
     const [selectedNote, setSelectedNote] = useState("");
@@ -23,6 +25,7 @@ const IndividualToursTable = () => {
         try {
             const data = await getIndividualTours();
             setTours(data);
+            setFilteredTours(data); // Initially show all
 
             // Dynamically calculate rows to fit the screen
             const availableHeight = window.innerHeight;
@@ -190,11 +193,48 @@ const IndividualToursTable = () => {
         }
     };
 
+    const handleFilterChange = (filters) => {
+        const { tourStatus, date, major, guide } = filters;
+
+        const filtered = tours.filter((tour) => {
+            let matchStatus = true;
+            if (tourStatus) {
+                matchStatus = tour.tour_status?.toLowerCase().includes(tourStatus.toLowerCase());
+            }
+
+            let matchDate = true;
+            if (date) {
+                const entryDate = new Date(tour.date).toDateString();
+                const selectedDate = new Date(date).toDateString();
+                matchDate = entryDate === selectedDate;
+            }
+
+            let matchMajor = true;
+            if (major) {
+                matchMajor = tour.major_of_interest?.toLowerCase().includes(major.toLowerCase());
+            }
+
+            let matchGuide = true;
+            if (guide) {
+                const guideName = tour.guide_id === null 
+                    ? "No guide is assigned yet" 
+                    : `${tour.guide_first_name} ${tour.guide_last_name}`;
+                matchGuide = guideName.toLowerCase().includes(guide.toLowerCase());
+            }
+
+            return matchStatus && matchDate && matchMajor && matchGuide;
+        });
+
+        setFilteredTours(filtered);
+    };
+
     return (
         <div className="table-wrapper" style={{ marginLeft: "10px", overflowX: "hidden" }}>
           <Toast ref={toast} /> {/* (5) Adding the Toast to the JSX */}
+          <FilterBar onFilterChange={handleFilterChange} />
+
             <DataTable
-                value={tours}
+                value={filteredTours}
                 paginator
                 rows={rows}
                 tableStyle={{ width: "100%" }}

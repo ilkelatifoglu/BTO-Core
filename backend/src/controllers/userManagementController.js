@@ -25,7 +25,7 @@ exports.removeUser = async (req, res) => {
         // Remove the user from the main users table
         await pool.query("DELETE FROM users WHERE id = $1", [userId]);
 
-        res.status(200).json({ message: "User removed successfully from all relevant tables." });
+        res.status(200).json({ message: "User removed successfully." });
     } catch (error) {
         console.error("Error removing user:", error);
         res.status(500).json({ error: "An error occurred while removing the user." });

@@ -320,12 +320,10 @@ exports.addSchool = async (req, res) => {
   }
 };
 
-// Retrieve all schools with optional city filtering
 exports.getAllSchools = async (req, res) => {
-  const { city } = req.query; // Get city from query parameters
 
   try {
-    const schools = await getSchools(city); // Fetch schools based on city
+    const schools = await getAllSchools(); 
 
     res.status(200).json({
       success: true,

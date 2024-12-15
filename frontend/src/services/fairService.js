@@ -56,7 +56,7 @@ export const assignGuide = async (fairId, column, guideId) => {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
-            }
+        }
         );
     } catch (error) {
         console.error("Error assigning guide:", error);
@@ -66,7 +66,8 @@ export const assignGuide = async (fairId, column, guideId) => {
 
 export const approveFair = async (fairId) => {
     try {
-        const response = await axios.put(`${BASE_URL}/${fairId}/approve`, {headers: 
+        const response = await axios.put(`${BASE_URL}/${fairId}/approve`, {
+            headers:
             {
                 Authorization: `Bearer ${token}`,
             },
@@ -80,7 +81,8 @@ export const approveFair = async (fairId) => {
 
 export const cancelFair = async (fairId) => {
     try {
-        const response = await axios.put(`${BASE_URL}/${fairId}/cancel`, {headers: 
+        const response = await axios.put(`${BASE_URL}/${fairId}/cancel`, {
+            headers:
             {
                 Authorization: `Bearer ${token}`,
             },
@@ -94,7 +96,8 @@ export const cancelFair = async (fairId) => {
 
 export const unassignGuide = async (fairId, column) => {
     try {
-        const response = await axios.put(`${BASE_URL}/${fairId}/unassign`, { column }, {headers: 
+        const response = await axios.put(`${BASE_URL}/${fairId}/unassign`, { column }, {
+            headers:
             {
                 Authorization: `Bearer ${token}`,
             },
@@ -129,6 +132,17 @@ export const addFairGuide = async (fairId, guideId) => {
         return response.data;
     } catch (error) {
         console.error("Error adding fair-guide:", error);
+        throw error;
+    }
+};
+export const removeFairGuide = async (fairId, column) => {
+    try {
+        const response = await axios.delete(`${BASE_URL}/remove-fair-guide`, {
+            params: { fair_id: fairId, column }, // Send as query params
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error removing fair-guide:", error);
         throw error;
     }
 };

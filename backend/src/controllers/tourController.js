@@ -168,7 +168,7 @@ exports.assignCandidateGuidesToTour = async (req, res) => {
     console.log("Fetched assigned candidates before insert:", assigned_candidates);
 
     const newAssignments = [];
-    const unassignableCandidates = []; 
+    const unassignableCandidates = [];
 
     for (const user_id of user_ids) {
       if (await isUserAssignedToTour(tour_id, user_id)) {
@@ -336,7 +336,7 @@ exports.approveTour = async (req, res) => {
     await query(updateQuery, [selectedTime, id]);
 
     // Generate the cancellation token
-    const cancellationToken = generateCancellationToken(id, tourDate);
+    const cancellationToken = generateCancellationToken(id, tourDate, "tour");
 
     // Construct the cancellation link
     const FRONTEND_URL = process.env.FRONTEND_URL;
@@ -357,7 +357,7 @@ exports.approveTour = async (req, res) => {
     });
 
     await checkAndSetToursReady();
-    
+
     res.status(200).json({ message: "Tour approved, status updated, and email sent" });
   } catch (error) {
     console.error("Error approving tour:", error);
@@ -401,52 +401,81 @@ exports.cancelTour = async (req, res) => {
   try {
     // Step 1: Verify the token
     const decoded = verifyToken(token);
-    const { tourId } = decoded;
+    const { tourId, type } = decoded;
 
-    if (!tourId) {
+    if (!tourId || !type) {
       return res.status(400).json({ message: "Invalid cancellation token." });
     }
 
-    // Step 2: Check if the cancellation token has already been used
-    const tourResult = await query(
-      'SELECT cancellation_used, school_id, date, day FROM "tours" WHERE "id" = $1',
-      [tourId]
-    );
-
-    if (tourResult.rows.length === 0) {
-      return res.status(404).json({ message: "Tour not found." });
+    // Determine the table and columns based on the type
+    let tableName, statusColumn, dateColumn, dayColumn;
+    switch (type) {
+      case "tour":
+        tableName = "tours";
+        statusColumn = "tour_status";
+        dateColumn = "date";
+        dayColumn = "day";
+        break;
+      case "individual_tour":
+        tableName = "individual_tours";
+        statusColumn = "tour_status";
+        dateColumn = "date";
+        dayColumn = "day";
+        break;
+      default:
+        return res.status(400).json({ message: "Invalid type in cancellation token." });
     }
 
-    const { cancellation_used, school_id, date, day } = tourResult.rows[0];
+    // Step 2: Check if the cancellation token has already been used
+    const selectQuery = `
+      SELECT cancellation_used, ${dateColumn}, ${dayColumn || "NULL"} AS day
+      FROM "${tableName}"
+      WHERE id = $1
+    `;
+    const result = await query(selectQuery, [tourId]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: `${type} not found.` });
+    }
+
+    const { cancellation_used, date, day } = result.rows[0];
 
     if (cancellation_used) {
-      return res
-        .status(400)
-        .json({ message: "This cancellation link has already been used." });
+      return res.status(400).json({ message: "This cancellation link has already been used." });
     }
 
-    // Step 3: Cancel the tour
-    await query(
-      'UPDATE "tours" SET "tour_status" = $1, "cancellation_used" = TRUE WHERE "id" = $2',
-      ["CANCELLED", tourId]
-    );
+    // Step 3: Cancel the tour or individual tour
+    const updateQuery = `
+      UPDATE "${tableName}"
+      SET "${statusColumn}" = $1, "cancellation_used" = TRUE
+      WHERE id = $2
+    `;
+    await query(updateQuery, ["CANCELLED", tourId]);
 
-    // Step 4: Fetch school name
-    const schoolResult = await query(
-      'SELECT school_name FROM "schools" WHERE "id" = $1',
-      [school_id]
-    );
-    const school_name =
-      schoolResult.rows.length > 0
-        ? schoolResult.rows[0].school_name
-        : "Unknown School";
+    // Step 4: Fetch assigned guides and send emails
+    let guideIds = [];
 
-    // Step 5: Fetch assigned guides and send emails
-    const guideIdsResult = await query(
-      'SELECT guide_id FROM "tour_guide" WHERE "tour_id" = $1',
-      [tourId]
-    );
-    const guideIds = guideIdsResult.rows.map((row) => row.guide_id);
+    // If type is individual_tour, fetch guide_id directly from the individual_tours table
+    if (type === "individual_tour") {
+      const guideQuery = `
+    SELECT guide_id
+    FROM individual_tours
+    WHERE id = $1
+  `;
+      const guideResult = await query(guideQuery, [tourId]);
+
+      if (guideResult.rows.length > 0 && guideResult.rows[0].guide_id) {
+        guideIds = [guideResult.rows[0].guide_id]; // Store the guide_id in an array for consistency
+      }
+    } else {
+      // For tours, fetch guide IDs from the tour_guide table
+      const guideIdsResult = await query(
+        'SELECT guide_id FROM "tour_guide" WHERE "tour_id" = $1',
+        [tourId]
+      );
+      guideIds = guideIdsResult.rows.map((row) => row.guide_id);
+    }
+
 
     if (guideIds.length > 0) {
       const userResult = await query(
@@ -456,7 +485,7 @@ exports.cancelTour = async (req, res) => {
       const emails = userResult.rows.map((row) => row.email).filter((email) => !!email);
 
       if (emails.length > 0) {
-        const subject = "Tour Cancelled";
+        const subject = `${type === "individual_tour" ? "Individual Tour" : "Tour"} Cancelled`;
         const formattedDate = new Date(date).toLocaleDateString("en-GB", {
           year: "numeric",
           month: "long",
@@ -464,9 +493,8 @@ exports.cancelTour = async (req, res) => {
         });
         const html = `
           <p>Dear Guide,</p>
-          <p>We regret to inform you that the following tour has been cancelled:</p>
-          <p><strong>School:</strong> ${school_name}<br/>
-          <strong>Date:</strong> ${formattedDate} (${day})</p>
+          <p>We regret to inform you that the following ${type === "individual_tour" ? "individual tour" : "tour"} has been cancelled:</p>
+          <p><strong>Date:</strong> ${formattedDate} ${day ? `(${day})` : ""}</p>
           <p>We apologize for any inconvenience caused. If you have any questions, please contact us.</p>
           <p>Best regards,<br/><strong>BTO Core Team</strong></p>
         `;
@@ -480,7 +508,6 @@ exports.cancelTour = async (req, res) => {
           console.log("Cancellation emails sent to assigned guides.");
         } catch (emailError) {
           console.error("Failed to send cancellation emails:", emailError);
-          // Not throwing here so that the cancellation process completes
         }
       } else {
         console.log("No emails found for assigned guides.");
@@ -489,20 +516,22 @@ exports.cancelTour = async (req, res) => {
       console.log("No guides assigned to this tour.");
     }
 
-    await checkAndSetToursReady();
+    // Optional: Trigger additional updates for tours
+    /*if (type === "tour") {
+      await checkAndSetToursReady();
+    }*/
 
-    res.status(200).send("<h1>Tour successfully canceled.</h1>");
+    res.status(200).send(`<h1>${type.charAt(0).toUpperCase() + type.slice(1)} successfully canceled.</h1>`);
   } catch (error) {
-    console.error("Error canceling tour:", error);
+    console.error("Error canceling:", error);
 
     if (error.name === "TokenExpiredError") {
       return res.status(400).json({ message: "Cancellation token has expired." });
     }
 
-    res.status(500).json({ message: "Failed to cancel the tour." });
+    res.status(500).json({ message: "Failed to cancel the entity." });
   }
 };
-
 
 exports.updateClassroom = async (req, res) => {
   const { id } = req.params;

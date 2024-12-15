@@ -2,6 +2,7 @@
 const { query } = require("../config/database");
 const emailService = require('../services/EmailService');
 const { sendEmail } = require("../utils/email");
+const { generateCancellationToken } = require("../utils/jwt");
 
 const {
     insertIndividualTour,
@@ -109,6 +110,9 @@ exports.approveTour = async (req, res) => {
             });
         }
 
+        const tour = tourResult.rows[0];
+        const { contact_email, date, contact_name } = tour;
+
         // Update the tour status and guide_id
         await query(`
             UPDATE individual_tours
@@ -116,18 +120,40 @@ exports.approveTour = async (req, res) => {
             WHERE id = $2
         `, [guide_id, tourId]);
 
+        // Generate a cancellation token
+        const cancellationToken = generateCancellationToken(tourId, date, "individual_tour");
+        const cancellationLink = `${process.env.FRONTEND_URL}/tours/cancel?token=${cancellationToken}`;
+
+        // Send approval email
+        const subject = "Your Tour Has Been Approved";
+        const html = `
+            <p>Dear ${contact_name},</p>
+            <p>We are pleased to inform you that your tour scheduled on <strong>${new Date(date).toLocaleDateString('tr-TR')}</strong> has been approved.</p>
+            <p>Your assigned guide will contact you shortly to provide more details.</p>
+            <p>If you wish to cancel the tour, please use the link below:</p>
+            <a href="${cancellationLink}" style="display: inline-block; padding: 10px 20px; background-color: #d9534f; color: white; text-decoration: none; border-radius: 5px;">Cancel Tour</a>
+            <p>Best regards,<br/><strong>Bilkent Information Office Team</strong></p>
+        `;
+
+        await sendEmail({
+            to: contact_email,
+            subject,
+            html,
+        });
+
         res.status(200).json({
             success: true,
-            message: 'Tour approved successfully'
+            message: 'Tour approved successfully, and notification email sent.',
         });
     } catch (error) {
         console.error('Error approving tour:', error);
         res.status(500).json({
             success: false,
-            message: 'Failed to approve the tour'
+            message: 'Failed to approve the tour',
         });
     }
 };
+
 
 // Reject Tour
 exports.rejectTour = async (req, res) => {

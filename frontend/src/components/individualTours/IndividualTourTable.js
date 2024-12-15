@@ -3,7 +3,7 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
-import { Toast } from "primereact/toast"; 
+import { Toast } from "primereact/toast";
 import { getIndividualTours, approveTour, rejectTour } from "../../services/IndividualTourService";
 import '../approveTour/TourApprovalTable.css';
 import './IndividualTourTable.css';
@@ -157,7 +157,7 @@ const IndividualToursTable = () => {
                     {(userType === "3" || userType === "4") && (
                         <Button
                             icon="pi pi-times"
-                           className="p-button-reject"
+                            className="p-button-reject"
                             onClick={() => handleRejectTour(rowData.id)}
                             aria-label="Reject Tour"
                         />
@@ -232,7 +232,6 @@ const IndividualToursTable = () => {
         <div className="table-wrapper" style={{ marginLeft: "10px", overflowX: "hidden" }}>
           <Toast ref={toast} /> {/* (5) Adding the Toast to the JSX */}
           <FilterBar onFilterChange={handleFilterChange} />
-
             <DataTable
                 value={filteredTours}
                 paginator
@@ -252,7 +251,7 @@ const IndividualToursTable = () => {
                 <Column field="major_of_interest" header="Major of Interest" style={{ width: "10%" }}></Column>
                 <Column field="visitor_notes" header="Visitor Notes" style={{ width: "5%" }} body={noteBodyTemplate}></Column>
                 <Column header="Guide Name" style={{ width: "10%" }} body={combineGuideName}></Column>
-                <Column body={actionBodyTemplate} header="Actions" style={{ width: "10%" }}></Column>
+                <Column body={actionBodyTemplate} header="Assign to/Cancel Tour" style={{ width: "10%" }}></Column>
             </DataTable>
 
             <Dialog visible={visible} onHide={hideNote} header="Visitor Notes" modal>

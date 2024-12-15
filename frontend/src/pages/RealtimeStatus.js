@@ -1,10 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import Map, {
-  Marker,
-  Popup,
-  AttributionControl,
-  NavigationControl,
-} from "react-map-gl";
+import Map, { Marker, Popup, AttributionControl } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { MapPin, RefreshCw, Crosshair, ArrowLeft } from "lucide-react";
 import "./RealtimeStatus.css";
@@ -73,9 +68,9 @@ const RealtimeStatus = () => {
             !isWithinBilkentBounds(newLocation.latitude, newLocation.longitude)
           ) {
             toast.current.show({
-              severity: "warn",
-              summary: "Warning",
-              detail: "You cannot use this feature unless you're in campus.",
+              severity: "info",
+              summary: "Notice",
+              detail: "You are outside campus. Some features may be limited.",
               life: 3000,
             });
           }
@@ -245,10 +240,10 @@ const RealtimeStatus = () => {
                     )
                   ) {
                     toast.current.show({
-                      severity: "warn",
-                      summary: "Warning",
+                      severity: "info",
+                      summary: "Notice",
                       detail:
-                        "You cannot use this feature unless you're in campus.",
+                        "You are outside campus. Some features may be limited.",
                       life: 3000,
                     });
                   }
@@ -313,13 +308,13 @@ const RealtimeStatus = () => {
   const getMarkerColor = (status) => {
     switch (status) {
       case "empty":
-        return "#00C851"; // Green for empty
+        return "#00A300"; // Darker green
       case "partial":
-        return "#FFBB33"; // Yellow for partially occupied
+        return "#FF8C00"; // Darker orange
       case "full":
-        return "#FF4444"; // Red for full
+        return "#CC0000"; // Darker red
       default:
-        return "#00C851"; // Default to green
+        return "#00A300";
     }
   };
 
@@ -457,7 +452,6 @@ const RealtimeStatus = () => {
             minZoom={14}
             maxZoom={18}
             attributionControl={false}
-            cooperativeGestures={true}
             onLoad={() => setMapLoaded(true)}
           >
             {mapLoaded && (
@@ -469,8 +463,6 @@ const RealtimeStatus = () => {
                     backgroundColor: "rgba(255, 255, 255, 0.8)",
                   }}
                 />
-
-                <NavigationControl position="bottom-left" />
 
                 {locationDenied && <LocationAccessButton />}
                 {userLocation && (
@@ -498,11 +490,11 @@ const RealtimeStatus = () => {
                       }`}
                       style={{
                         backgroundColor: getMarkerColor(location.status),
-                        width: "20px",
-                        height: "20px",
+                        width: "32px", // Increased from 24px
+                        height: "32px", // Increased from 24px
                         borderRadius: "50%",
-                        border: "2px solid white", // Add white border for contrast
-                        boxShadow: "0 0 4px rgba(0,0,0,0.5)", // Add shadow for better visibility
+                        border: "4px solid white", // Increased from 3px
+                        boxShadow: "0 0 10px rgba(0,0,0,0.4)", // Enhanced shadow
                       }}
                     />
                   </Marker>
@@ -594,23 +586,10 @@ const RealtimeStatus = () => {
       <div className="realtime-status__controls">
         <button
           onClick={isTourActive ? handleEndTour : handleStartTour}
-          disabled={
-            !isWithinBilkentBounds(
-              userLocation.latitude,
-              userLocation.longitude
-            )
-          }
           className={`realtime-status__button ${
             isTourActive
               ? "realtime-status__button--end"
               : "realtime-status__button--start"
-          } ${
-            !isWithinBilkentBounds(
-              userLocation.latitude,
-              userLocation.longitude
-            )
-              ? "realtime-status__button--disabled"
-              : ""
           }`}
         >
           {isTourActive ? "End Tour" : "Start Tour"}

@@ -22,6 +22,7 @@ function AddWork({ refreshData }) {
     };
 
     const handleAddWork = async () => {
+        if (toast.current)
         toast.current.clear(); // Clear toast before showing a new one
 
         if (!selectedWorkType || !dateTime || workTime === 0) {
@@ -52,7 +53,8 @@ function AddWork({ refreshData }) {
 
         try {
             await addWork(newWork);
-            toast.current.clear();
+            if(toast.current)
+                toast.current.clear();
             toast.current.show({
                 severity: "success",
                 summary: "Success",
@@ -62,6 +64,7 @@ function AddWork({ refreshData }) {
             refreshData();
         } catch (error) {
             console.error("Error adding work:", error);
+            if(toast.current){
             toast.current.clear();
             toast.current.show({
                 severity: "error",
@@ -69,6 +72,7 @@ function AddWork({ refreshData }) {
                 detail: "Failed to add work.",
                 life: 3000,
             });
+        }
         }
     };
 

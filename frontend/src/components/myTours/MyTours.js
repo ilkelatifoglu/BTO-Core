@@ -60,22 +60,25 @@ export default function MyTours() {
 
                 setItems(combinedData);
                 setFilteredItems(combinedData); // Show all initially
-
-                toast.current.clear();
-                toast.current.show({
-                    severity: "success",
-                    summary: "Success",
-                    detail: "Assignments loaded successfully.",
-                    life: 3000,
-                });
+                if (toast.current){
+                    toast.current.clear();
+                    toast.current.show({
+                        severity: "success",
+                        summary: "Success",
+                        detail: "Assignments loaded successfully.",
+                        life: 3000,
+                    });
+                }
             } catch (err) {
-                toast.current.clear();
-                toast.current.show({
-                    severity: "error",
-                    summary: "Error",
-                    detail: err.message || "Failed to fetch data",
-                    life: 3000,
-                });
+                if(toast.current){
+                    toast.current.clear();
+                    toast.current.show({
+                        severity: "error",
+                        summary: "Error",
+                        detail: err.message || "Failed to fetch data",
+                        life: 3000,
+                    });
+                }    
             }
         };
 
@@ -108,7 +111,9 @@ export default function MyTours() {
         const isIndividual = item.type === "individual";
     
         hideConfirmDialog();
-        toast.current.clear();
+        if(toast.current){
+            toast.current.clear();
+        }
         try {
             if (isIndividual) {
                 // Handle individual tour withdrawal

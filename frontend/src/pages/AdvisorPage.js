@@ -83,15 +83,6 @@ const AdvisorPage = () => {
                         onClick={() => scrollToAdvisor(advisor.advisor_id)}
                     >
                         <span className="advisor-name">{advisor.advisor_name}</span>
-                        <button
-                            className="hover-button"
-                            onClick={(e) => {
-                                e.stopPropagation(); // Prevent triggering parent click
-                                scrollToAdvisor(advisor.advisor_id);
-                            }}
-                        >
-                            Go to Details
-                        </button>
                     </div>
                 ))}
             </div>

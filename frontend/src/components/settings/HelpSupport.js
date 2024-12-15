@@ -33,7 +33,7 @@ const HelpSupport = () => {
                     <i className="pi pi-envelope help-icon"></i> Contact us
                 </h2>
                 <p>
-                    For support, email us at <a href="mailto:agorateam@gmail.com">btocoresupport@gmail.com</a>.
+                    For support, email us at <a href="mailto:agorateam@gmail.com">agorateam@gmail.com</a>.
                 </p>
             </div>
         </div>

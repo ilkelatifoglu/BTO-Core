@@ -13,6 +13,7 @@ exports.getSchoolId = async (school_name, city, academic_year_start) => {
 
 // Retrieve all schools
 exports.getAllSchools = async () => {
+  const currentYear = new Date().getFullYear(); // Get the current year
   const result = await query(
     `SELECT 
       id, 
@@ -27,7 +28,9 @@ exports.getAllSchools = async () => {
       lgs_score,
       credit_score
      FROM schools
-     ORDER BY credit_score DESC, school_name ASC;` // Order by credit_score descending
+     WHERE academic_year_start = $1
+     ORDER BY credit_score DESC, school_name ASC;`, 
+    [currentYear] 
   );
   return result.rows;
 };

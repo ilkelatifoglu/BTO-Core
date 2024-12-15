@@ -6,7 +6,7 @@
 
 BTO Core
 
-**Note:** BTO Core is publicly accessible via the following link: [https://s2-t7-agora.vercel.app/](url) _(availability may vary depending on the time period)_.
+**Note:** BTO Core is publicly accessible via the following link: https://s2-t7-agora.vercel.app/ _(availability may vary depending on the time period)_.
 
 ## 2\. Team Members
 

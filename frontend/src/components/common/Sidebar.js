@@ -23,8 +23,22 @@ const getNameFontSize = (name) => {
   return "0.85rem";
 };
 
+const getRoleText = (userType) => {
+  switch (userType) {
+    case 4:
+      return "Coordinator";
+    case 3:
+      return "Advisor";
+    case 2:
+      return "Guide";
+    case 1:
+      return "Candidate Guide";
+    default:
+      return "User";
+  }
+};
+
 const Sidebar = ({ setCurrentPage }) => {
-  const [isExpanded, setIsExpanded] = useState(true);
   const navigate = useNavigate();
   const [profileImage, setProfileImage] = useState(null);
   const [userName, setUserName] = useState("");
@@ -33,15 +47,9 @@ const Sidebar = ({ setCurrentPage }) => {
   const [isLoadingProfile, setIsLoadingProfile] = useState(false);
   const [userType, setUserType] = useState(null);
   const toast = useRef(null);
-
-  // Add new state for current path
   const [currentPath, setCurrentPath] = useState(
     window.location.pathname.substring(1)
   );
-
-  const toggleSidebar = () => {
-    setIsExpanded(!isExpanded);
-  };
 
   const handleNavigation = (page) => {
     if (page === "logout") {
@@ -163,16 +171,9 @@ const Sidebar = ({ setCurrentPage }) => {
   }, [window.location.pathname]);
 
   return (
-    <div style={{ display: "flex" }}>
-      <div className={`sidebar ${isExpanded ? "expanded" : "collapsed"}`}>
-        <Toast ref={toast} position="top-right" />
-        <button
-          className="sidebar__toggle"
-          onClick={toggleSidebar}
-          style={{ marginRight: "15px" }}
-        >
-          {isExpanded ? "<<" : ">>"}
-        </button>
+    <div className="sidebar">
+      <Toast ref={toast} />
+      <div>
         <div className="sidebar__header">
           <div className="profile-container">
             <div className="profile-content">
@@ -200,15 +201,13 @@ const Sidebar = ({ setCurrentPage }) => {
                 </button>
               </div>
               <div className="user-info">
-                <h2 className="user-name" style={{ fontSize: "1rem" }}>
-                  {userName || "User"}
-                </h2>
+                <h2 className="user-name">{userName || "User"}</h2>
+                <span className="user-role">{getRoleText(userType)}</span>
               </div>
             </div>
           </div>
         </div>
-        {/* Divider */}
-        {isExpanded && <div className="sidebar__divider"></div>}
+        <div className="sidebar__divider"></div>
 
         <ul className="sidebar__menu">
           <li
@@ -218,7 +217,7 @@ const Sidebar = ({ setCurrentPage }) => {
             onClick={() => handleNavigation("dashboard")}
           >
             <i className="pi pi-home"></i>
-            {isExpanded && <span>Dashboard</span>}
+            <span>Dashboard</span>
           </li>
           {(userType === 4 ||
             userType === 3 ||
@@ -231,7 +230,7 @@ const Sidebar = ({ setCurrentPage }) => {
               onClick={() => handleNavigation("assign-tour")}
             >
               <i className="pi pi-table"></i>
-              {isExpanded && <span>Tour Assignment</span>}
+              <span>Tour Assignment</span>
             </li>
           )}
           {(userType === 4 || userType === 3 || userType === 2) && (
@@ -242,7 +241,7 @@ const Sidebar = ({ setCurrentPage }) => {
               onClick={() => handleNavigation("guideInfo")}
             >
               <i className="pi pi-info-circle"></i>
-              {isExpanded && <span>Guide Info</span>}
+              <span>Guide Info</span>
             </li>
           )}
           {(userType === 4 || userType === 3 || userType === 2) && (
@@ -253,7 +252,7 @@ const Sidebar = ({ setCurrentPage }) => {
               onClick={() => handleNavigation("puantaj-page")}
             >
               <i className="pi pi-calendar"></i>
-              {isExpanded && <span>Puantaj Page</span>}
+              <span>Puantaj Page</span>
             </li>
           )}
           {(userType === 4 || userType === 3) && (
@@ -264,7 +263,7 @@ const Sidebar = ({ setCurrentPage }) => {
               onClick={() => handleNavigation("approve-tour")}
             >
               <i className="pi pi-check"></i>
-              {isExpanded && <span>Tour Approval</span>}
+              <span>Tour Approval</span>
             </li>
           )}
           {userType === 4 && (
@@ -275,7 +274,7 @@ const Sidebar = ({ setCurrentPage }) => {
               onClick={() => handleNavigation("data-insight")}
             >
               <i className="pi pi-chart-line"></i>
-              {isExpanded && <span>Data Insights</span>}
+              <span>Data Insights</span>
             </li>
           )}
           {userType === 4 && (
@@ -286,7 +285,7 @@ const Sidebar = ({ setCurrentPage }) => {
               onClick={() => handleNavigation("manageUser")}
             >
               <i className="pi pi-user-plus"></i>
-              {isExpanded && <span>User Management</span>}
+              <span>User Management</span>
             </li>
           )}
           {(userType === 4 || userType === 3 || userType === 2) && (
@@ -297,7 +296,7 @@ const Sidebar = ({ setCurrentPage }) => {
               onClick={() => handleNavigation("realtime-status")}
             >
               <i className="pi pi-clock"></i>
-              {isExpanded && <span>Real-time Status</span>}
+              <span>Real-time Status</span>
             </li>
           )}
           {(userType === 4 ||
@@ -311,7 +310,7 @@ const Sidebar = ({ setCurrentPage }) => {
               onClick={() => handleNavigation("feedback")}
             >
               <i className="pi pi-comments"></i>
-              {isExpanded && <span>Feedback Page</span>}
+              <span>Feedback Page</span>
             </li>
           )}
           {(userType === 4 || userType === 3 || userType === 2) && (
@@ -322,7 +321,7 @@ const Sidebar = ({ setCurrentPage }) => {
               onClick={() => handleNavigation("advisors")}
             >
               <i className="pi pi-briefcase"></i>
-              {isExpanded && <span>Advisors</span>}
+              <span>Advisors</span>
             </li>
           )}
           {(userType === 4 ||
@@ -336,7 +335,7 @@ const Sidebar = ({ setCurrentPage }) => {
               onClick={() => handleNavigation("my-tours")}
             >
               <i className="pi pi-map"></i>
-              {isExpanded && <span>My Tours</span>}
+              <span>My Tours</span>
             </li>
           )}
           {userType === 4 && (
@@ -347,7 +346,7 @@ const Sidebar = ({ setCurrentPage }) => {
               onClick={() => handleNavigation("approve-fair")}
             >
               <i className="pi pi-check-circle"></i>
-              {isExpanded && <span>Fair Approval</span>}
+              <span>Fair Approval</span>
             </li>
           )}
           {(userType === 4 || userType === 3 || userType === 2) && (
@@ -358,7 +357,7 @@ const Sidebar = ({ setCurrentPage }) => {
               onClick={() => handleNavigation("assign-fair")}
             >
               <i className="pi pi-users"></i>
-              {isExpanded && <span>Fair Assignment</span>}
+              <span>Fair Assignment</span>
             </li>
           )}
           {(userType === 4 || userType === 3 || userType === 2) && (
@@ -369,10 +368,11 @@ const Sidebar = ({ setCurrentPage }) => {
               onClick={() => handleNavigation("individual-tours")}
             >
               <i className="pi pi-user"></i>
-              {isExpanded && <span>Individual Tours</span>}
+              <span>Individual Tours</span>
             </li>
           )}
         </ul>
+
         <div className="sidebar__footer">
           <button
             className={`menu__item ${
@@ -381,14 +381,14 @@ const Sidebar = ({ setCurrentPage }) => {
             onClick={() => handleNavigation("Settings")}
           >
             <i className="pi pi-cog"></i>
-            {isExpanded && <span>Settings</span>}
+            <span>Settings</span>
           </button>
           <button
             className="menu__item"
             onClick={() => handleNavigation("logout")}
           >
             <i className="pi pi-sign-out"></i>
-            {isExpanded && <span>Logout</span>}
+            <span>Logout</span>
           </button>
         </div>
       </div>

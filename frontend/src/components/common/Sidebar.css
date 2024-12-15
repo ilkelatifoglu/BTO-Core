@@ -2,41 +2,17 @@
 
 /* Sidebar Container */
 .sidebar {
-  width: 250px; /* Sabit genişlik */
-  height: 100vh; /* Tam yükseklik */
+  width: 280px; /* Increased from 250px */
+  height: 100vh;
   display: flex;
   flex-direction: column;
   background-color: #ffffff;
   border-right: 1px solid #ddd;
   position: fixed;
-  justify-content: space-between; /* Footer'ı alta it */
-  overflow: hidden; /* Taşma durumlarını gizle */
-  padding-bottom: 5px; /* Reduced padding to save space */
-  transition: width 0.3s ease;
+  justify-content: space-between;
+  overflow: hidden;
+  padding-bottom: 5px;
   transform: translateY(-10px);
-}
-
-.sidebar.collapsed {
-  width: 80px; /* Collapsed width */
-}
-
-/* Toggle Button */
-.sidebar__toggle {
-  background: none;
-  border: none;
-  color: #2b0b0b;
-  cursor: pointer;
-  margin-top: 10px;
-  font-size: 1.2em;
-  font-family: "Lato", sans-serif;
-  padding: 0;
-  margin-left: auto; /* Align toggle to the right */
-  transition: color 0.3s;
-}
-
-.sidebar__toggle:hover {
-  background-color: #f1f3f4;
-  color: #000000;
 }
 
 /* Sidebar Header */
@@ -55,7 +31,7 @@
 
 /* Profile Container */
 .profile-container {
-  padding: 12px 15px;
+  padding: 15px 15px 15px 10px; /* Reduced left padding */
   background-color: #ffffff;
   border-radius: 8px;
   margin: 5px 10px;
@@ -72,23 +48,24 @@
 
 .profile-content {
   display: flex;
+  flex-direction: row;
   align-items: center;
-  gap: 15px;
+  gap: 12px; /* Slightly reduced gap */
 }
 
 /* Profile Picture Wrapper */
 .profile-picture-wrapper {
   position: relative;
-  min-width: 50px;
-  width: 50px;
-  height: 50px;
-  margin-left: -2px;
+  min-width: 65px;
+  width: 65px;
+  height: 65px;
+  margin-left: -5px; /* Move photo more to the left */
 }
 
 /* Profile Picture */
 .profile-picture {
-  width: 50px;
-  height: 50px;
+  width: 65px;
+  height: 65px;
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid #ffffff;
@@ -358,17 +335,30 @@
   flex-direction: column;
   justify-content: center;
   flex: 1;
-  max-width: calc(100% - 65px);
+  gap: 4px;
+  max-width: calc(100% - 70px); /* Ensure text has more space */
 }
 
 /* User Name */
 .user-name {
-  font-size: 1rem !important;
+  font-size: 1.1rem;
   font-weight: 600;
   color: #333;
   margin: 0;
   padding: 0;
   line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* User Role */
+.user-role {
+  font-size: 0.8rem;
+  color: #666;
+  margin: 0;
+  padding: 0;
+  line-height: 1;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

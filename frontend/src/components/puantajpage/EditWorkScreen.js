@@ -52,15 +52,6 @@ function EditWorkScreen({ isOpen, onClose, workData, onSave }) {
             toast.current.show({ severity, summary, detail, life: 3000 });
         }
     };
-    const formatLocalDateTime = (date) => {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, "0");
-        const day = String(date.getDate()).padStart(2, "0");
-        const hours = String(date.getHours()).padStart(2, "0");
-        const minutes = String(date.getMinutes()).padStart(2, "0");
-
-        return `${year}-${month}-${day}T${hours}:${minutes}`;
-    };
 
     const handleSave = async () => {
         if (!dateTime || workTime === 0) {
@@ -73,9 +64,10 @@ function EditWorkScreen({ isOpen, onClose, workData, onSave }) {
             return;
         }
 
-        const date = dateTime.toISOString().split("T")[0];
-        const time = dateTime.toISOString().split("T")[1].slice(0, 5);
-        console.log(date, time);
+        const localDate = new Date(dateTime);
+        const date = localDate.toLocaleDateString("en-CA"); // Format: YYYY-MM-DD
+        const time = localDate.toLocaleTimeString("en-GB").slice(0, 5); // Format: HH:mm
+        //console.log(date, time);
         const workload = workTime * 60;
 
         const updatedData = {
@@ -120,20 +112,20 @@ function EditWorkScreen({ isOpen, onClose, workData, onSave }) {
                     }}
                 >
 
-                <div
-                    style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "1.5rem", 
-                        marginTop: "1rem",
-                    }}
-                >
-                    {/* Work Type */}
-                    <div style={{ display: "flex", flexDirection: "column" }}>
-                        <label htmlFor="type" style={{ marginBottom: "0.5rem", fontWeight: "600" }}>
-                            Work Type
-                        </label>
-                                <Dropdown
+                    <div
+                        style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: "1.5rem",
+                            marginTop: "1rem",
+                        }}
+                    >
+                        {/* Work Type */}
+                        <div style={{ display: "flex", flexDirection: "column" }}>
+                            <label htmlFor="type" style={{ marginBottom: "0.5rem", fontWeight: "600" }}>
+                                Work Type
+                            </label>
+                            <Dropdown
                                 id="type"
                                 value={formData.work_type || ""}
                                 options={workTypes} // Updated dropdown options
@@ -150,17 +142,23 @@ function EditWorkScreen({ isOpen, onClose, workData, onSave }) {
                             <input
                                 type="datetime-local"
                                 id="dateTime"
-                                value={dateTime ? formatLocalDateTime(dateTime) : ""}
+                                value={
+                                    dateTime
+                                        ? new Date(dateTime.getTime() - dateTime.getTimezoneOffset() * 60000)
+                                            .toISOString()
+                                            .slice(0, 16) // Adjust date to local time
+                                        : ""
+                                }
                                 max={new Date().toISOString().slice(0, 16)} // Restrict to today or earlier
                                 onChange={(e) => {
                                     const newDate = new Date(e.target.value);
                                     if (newDate > new Date()) {
-                                        showToast("error", "Invalid Date", "Date cannot be later than today.");
+                                        showToast("error", "Invalid Date", "Date cannot be later than today."); // Show error for future dates
                                         setDateTime(""); // Reset the date-time input
                                     } else if (!isNaN(newDate)) {
-                                        setDateTime(newDate);
+                                        setDateTime(newDate); // Valid date, update state
                                     } else {
-                                        showToast("error", "Invalid Date", "Please select a valid date and time.");
+                                        showToast("error", "Invalid Date", "Please select a valid date and time."); // Show error for invalid date
                                     }
                                 }}
                                 placeholder="Select Date & Time"
@@ -172,6 +170,7 @@ function EditWorkScreen({ isOpen, onClose, workData, onSave }) {
                                     border: "1px solid #ccc",
                                 }}
                             />
+
                         </div>
 
                         <div style={{ display: "flex", flexDirection: "column" }}>

@@ -365,4 +365,58 @@ exports.addFairGuide = async (req, res) => {
         res.status(500).json({ error: "Failed to add fair-guide assignment." });
     }
 };
+exports.removeFairGuide = async (req, res) => {
+    const { fair_id, column } = req.query; // Use query parameters instead of body
+    console.log(fair_id, column);
+    // Validate the input
+    const allowedColumns = ["guide_1_id", "guide_2_id", "guide_3_id"];
+    if (!fair_id || !column || !allowedColumns.includes(column)) {
+        return res.status(400).json({
+            success: false,
+            message: "Fair ID and a valid column are required.",
+        });
+    }
 
+    try {
+        const selectQuery = `
+            SELECT ${column} AS guide_id
+            FROM fairs
+            WHERE id = $1
+        `;
+        const selectResult = await db.query(selectQuery, [fair_id]);
+
+        if (selectResult.rows.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "Fair not found.",
+            });
+        }
+
+        const { guide_id } = selectResult.rows[0];
+
+        if (!guide_id) {
+            return res.status(400).json({
+                success: false,
+                message: `No guide assigned in column ${column}.`,
+            });
+        }
+
+        const deleteQuery = `
+            DELETE FROM fair_guide
+            WHERE fair_id = $1 AND guide_id = $2
+        `;
+        await db.query(deleteQuery, [fair_id, guide_id]);
+
+        res.status(200).json({
+            success: true,
+            message: `Guide removed from column ${column} and fair_guide table.`,
+            data: { fair_id, guide_id },
+        });
+    } catch (error) {
+        console.error("Error in removeFairGuide controller:", error);
+        res.status(500).json({
+            success: false,
+            message: "Failed to remove guide from fair.",
+        });
+    }
+};

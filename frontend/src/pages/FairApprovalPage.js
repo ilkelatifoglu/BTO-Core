@@ -4,7 +4,7 @@ import { Column } from "primereact/column";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog"; // Use Dialog instead of window.confirm
 import { Toast } from "primereact/toast"; // (2) Importing Toast
-import { fetchFairs, fetchAvailableGuides, assignGuide, approveFair, cancelFair, unassignGuide, addFairGuide } from "../services/fairService";
+import { fetchFairs, fetchAvailableGuides, assignGuide, approveFair, cancelFair, unassignGuide, addFairGuide, removeFairGuide } from "../services/fairService";
 import DropdownOrText from '../components/fair/DropdownOrText';
 import Sidebar from '../components/common/Sidebar';
 import "./FairApproval.css";
@@ -58,7 +58,13 @@ export default function FairApprovalPage() {
 
 
     const rowClassName = (rowData) => {
-        return rowData.status === "CANCELLED" ? "cancelled-row" : "";
+        if (rowData.status === "CANCELLED") {
+            return "cancelled-row"; // Apply CSS class for cancelled rows
+        }
+        if (rowData.status === "DONE") {
+            return "done-row"; // Apply CSS class for done rows
+        }
+        return ""; // Default case, no specific class
     };
 
     const loadGuides = async (fairId) => {
@@ -258,9 +264,11 @@ export default function FairApprovalPage() {
     };
 
     const handleUnassignGuide = (fairId, column) => {
+        console.log(column);
         setConfirmMessage("Are you sure you want to unassign this guide?");
         setConfirmAction(() => async () => {
             try {
+                await removeFairGuide(fairId, column);
                 const result = await unassignGuide(fairId, column);
                 toast.current.clear();
                 toast.current.show({
@@ -308,7 +316,7 @@ export default function FairApprovalPage() {
                 icon="pi pi-times"
                 className="fair-cancel-button"
                 onClick={() => handleCancelFair(rowData.id)}
-                disabled={rowData.status !== 'APPROVED'}
+                disabled={rowData.status === 'CANCELLED' || rowData.status === 'DONE'}
             />
         </div>
     );
@@ -350,7 +358,7 @@ export default function FairApprovalPage() {
                                     handleAssignGuide={handleAssignGuide}
                                     handleUnassignGuide={handleUnassignGuide}
                                     loadGuides={loadGuides}
-                                    disabled={rowData.status === "CANCELLED"}
+                                    disabled={rowData.status === "CANCELLED" || rowData.status === "WAITING"}
                                 />
                             )}
                         />
